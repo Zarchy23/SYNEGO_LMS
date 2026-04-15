@@ -1,0 +1,15 @@
+<!-- Sidebar Dispatcher - Routes to role-specific sidebar -->
+{% if user.is_authenticated %}
+    {% if user.role == 'admin' or user.is_superuser %}
+        {% include "lms/partials/_sidebar_admin.html" %}
+    {% elif user.role == 'dept_head' %}
+        {% include "lms/partials/_sidebar_dept_head.html" %}
+    {% elif user.role == 'approver' %}
+        {% include "lms/partials/_sidebar_approver.html" %}
+    {% elif user.role == 'instructor' %}
+        {% include "lms/partials/_sidebar_instructor.html" %}
+    {% else %}
+        {# Default to learner sidebar for 'learner' role #}
+        {% include "lms/partials/_sidebar_learner.html" %}
+    {% endif %}
+{% endif %}

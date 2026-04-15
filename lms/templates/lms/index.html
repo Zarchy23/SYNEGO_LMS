@@ -1,0 +1,384 @@
+﻿{% extends "lms/base.html" %}
+
+{% block title %}Synego Institute - Learn, Grow, Succeed{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Remove default body padding for full-screen hero */
+    body {
+        padding-top: 0 !important;
+    }
+
+    /* Full-screen hero section */
+    .hero-fullscreen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: linear-gradient(135deg, rgba(16, 33, 57, 0.88), rgba(28, 69, 120, 0.85)), 
+                          url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2000&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+        overflow: hidden;
+        margin-top: 80px;
+    }
+
+    /* Animated background overlay */
+    .hero-fullscreen::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 36%);
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        text-align: center;
+        color: white;
+        padding: 2rem;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-content h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        letter-spacing: -0.02em;
+    }
+
+    .hero-content p {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        color: rgba(255, 255, 255, 0.95);
+        max-width: 700px;
+        margin: 0 auto 2.5rem;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        font-weight: 400;
+    }
+
+    .hero-search-wrapper {
+        max-width: 900px;
+        margin: 0 auto 2.5rem;
+        animation: fadeInUp 1.2s ease-out;
+    }
+
+    .hero-search {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 16px;
+        padding: 1.25rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-search .form-control,
+    .hero-search .form-select {
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        min-height: 50px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .hero-search .form-control::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-search .form-control:focus,
+    .hero-search .form-select:focus {
+        background: white;
+        border: 2px solid #2f80ed;
+        box-shadow: 0 0 0 0 rgba(47, 128, 237, 0.1);
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.25rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1.4s ease-out;
+    }
+
+    .hero-btn {
+        padding: 0.85rem 2.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border-radius: 50px;
+        border: 2px solid white;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .hero-btn-primary {
+        background: #2f80ed;
+        color: white;
+        border-color: #2f80ed;
+    }
+
+    .hero-btn-primary:hover {
+        background: white;
+        color: #2f80ed;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(47, 128, 237, 0.4);
+    }
+
+    .hero-btn-secondary {
+        background: transparent;
+        color: white;
+    }
+
+    .hero-btn-secondary:hover {
+        background: white;
+        color: #1f3a5d;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: bounce 2s infinite;
+        z-index: 10;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(10px); }
+    }
+
+    .scroll-icon {
+        width: 30px;
+        height: 45px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .scroll-icon::after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.7);
+        left: 50%;
+        top: 10px;
+        margin-left: -1px;
+        animation: scrolling 1.5s infinite;
+    }
+
+    @keyframes scrolling {
+        0% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(10px); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-fullscreen {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+
+        .hero-content h1 {
+            margin-bottom: 1rem;
+        }
+
+        .hero-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .hero-search {
+            padding: 0.75rem;
+        }
+
+        .hero-search .form-control,
+        .hero-search .form-select {
+            min-height: 44px;
+            font-size: 0.95rem;
+        }
+
+        .hero-buttons {
+            gap: 0.75rem;
+        }
+
+        .hero-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Footer styles */
+    .footer {
+        background-color: var(--bg-dark);
+        color: rgba(255,255,255,0.84);
+    }
+
+    .footer a {
+        color: rgba(255,255,255,0.75);
+        text-decoration: none;
+    }
+
+    .footer a:hover {
+        color: #ffffff;
+    }
+
+    .border-white-10 {
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    .text-white-50 {
+        color: rgba(255,255,255,0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-fullscreen">
+    <div class="hero-content">
+        <h1>Learn. Grow. Succeed.</h1>
+        <p>Discover expert-led courses, earn verified certificates, and transform your career with Synego Institute.</p>
+
+        <div class="hero-search-wrapper">
+            <form class="hero-search" method="get" action="{% url 'lms:course_list' %}">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-6">
+                        <input type="text" name="q" class="form-control" placeholder="Search departments or courses...">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="department">
+                            <option value="">All departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.slug }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="hero-buttons">
+            <a href="{% url 'lms:course_list' %}" class="hero-btn hero-btn-primary">Explore Courses</a>
+            <a href="{% url 'lms:department_list' %}" class="hero-btn hero-btn-secondary">Browse Departments</a>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="scroll-dot"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer - Home Page Only -->
+<footer class="footer py-5">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <h5 class="text-white">Synego Training Institute</h5>
+                <p class="text-white-50">Quality education for tomorrow's leaders. Empowering minds, building futures.</p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="text-white-50"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <h6 class="text-white">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'lms:course_list' %}" class="text-white-50">Courses</a></li>
+                    <li><a href="{% url 'lms:department_list' %}" class="text-white-50">Departments</a></li>
+                    <li><a href="{% url 'lms:about' %}" class="text-white-50">About Us</a></li>
+                    <li><a href="{% url 'lms:contact' %}" class="text-white-50">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-3">
+                <h6 class="text-white">Support</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'lms:help_center' %}" class="text-white-50">Help Center</a></li>
+                    <li><a href="#" class="text-white-50">FAQs</a></li>
+                    <li><a href="#" class="text-white-50">Privacy Policy</a></li>
+                    <li><a href="#" class="text-white-50">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6 class="text-white">Contact Info</h6>
+                <ul class="list-unstyled text-white-50">
+                    <li><i class="fas fa-map-marker-alt me-2"></i>Harare, Zimbabwe</li>
+                    <li><i class="fas fa-phone me-2"></i>+263 24 2123456</li>
+                    <li><i class="fas fa-envelope me-2"></i>info@synego.ac.zw</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-white-10 mt-4">
+        <div class="text-center text-white-50">
+            <small>&copy; {% now "Y" %} Synego Training Institute. All rights reserved.</small>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const counters = document.querySelectorAll('.counter-value');
+        if (!counters.length) {
+            return;
+        }
+
+        const animateCounter = (counter) => {
+            const target = parseInt(counter.dataset.target || '0', 10);
+            const duration = 1200;
+            const start = performance.now();
+
+            const tick = (time) => {
+                const progress = Math.min((time - start) / duration, 1);
+                const value = Math.floor(progress * target);
+                counter.textContent = value.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    counter.textContent = target.toLocaleString();
+                }
+            };
+
+            requestAnimationFrame(tick);
+        };
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach((counter) => observer.observe(counter));
+    })();
+</script>
+{% endblock %}

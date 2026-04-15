@@ -1,0 +1,155 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Certificates Help - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-4">
+                <a href="{% url 'lms:help_center' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Help Center
+                </a>
+            </div>
+
+            <h1 class="mb-3">🎓 Certificates</h1>
+            <p class="lead">Learn about earning and managing your course certificates.</p>
+
+            <!-- Earning Certificates -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">How to Earn a Certificate</h5>
+                </div>
+                <div class="card-body">
+                    <p>To earn a certificate of completion, you must:</p>
+                    <ol>
+                        <li>Complete all required course materials</li>
+                        <li>Participate in course activities</li>
+                        <li>Submit all assignments and projects</li>
+                        <li>Pass all quizzes with minimum passing grade (typically 60%)</li>
+                        <li>Achieve an overall course grade of 60% or above</li>
+                    </ol>
+                    <p class="text-muted">Upon meeting all requirements, your certificate will be generated automatically.</p>
+                </div>
+            </div>
+
+            <!-- Certificate Requirements -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Certificate Requirements by Course</h5>
+                </div>
+                <div class="card-body">
+                    <p>Different courses may have different requirements:</p>
+                    <ul>
+                        <li><strong>Beginner Courses:</strong> 60% overall grade required</li>
+                        <li><strong>Intermediate Courses:</strong> 70% overall grade required</li>
+                        <li><strong>Advanced Courses:</strong> 80% overall grade required</li>
+                    </ul>
+                    <p class="text-muted">Check your course syllabus for specific grading breakdown (assignments, quizzes, participation).</p>
+                </div>
+            </div>
+
+            <!-- Viewing & Access -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Accessing Your Certificates</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>To view your certificates:</strong></p>
+                    <ol>
+                        <li>Go to your Student Dashboard</li>
+                        <li>Click <strong>Recent Certificates</strong> section</li>
+                        <li>All earned certificates are displayed with date issued</li>
+                        <li>Click a certificate to view or download</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Certificate Verification -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Verifying Your Certificate</h5>
+                </div>
+                <div class="card-body">
+                    <p>Each certificate includes:</p>
+                    <ul>
+                        <li><strong>Verification Hash:</strong> Unique identifier for authenticity</li>
+                        <li><strong>QR Code:</strong> Scannable code to verify certificate online</li>
+                        <li><strong>Issue Date:</strong> When you earned the certificate</li>
+                        <li><strong>Instructor Signature:</strong> Digital verification</li>
+                    </ul>
+                    <p class="mt-3"><strong>To verify a certificate:</strong></p>
+                    <ol>
+                        <li>Visit the <a href="{% url 'lms:verify_certificate' %}">Certificate Verification</a> page</li>
+                        <li>Enter the verification hash or upload the certificate</li>
+                        <li>Scan the QR code with your phone</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Sharing Certificates -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Sharing Your Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <p>You can share your certificates:</p>
+                    <ul>
+                        <li>Download as PDF for email or printing</li>
+                        <li>Share on LinkedIn and other professional networks</li>
+                        <li>Include in resumes and job applications</li>
+                        <li>Share verification link with employers</li>
+                    </ul>
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Certificates are recognized credentials</strong> that demonstrate your completion and competency in course material.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retaking Courses -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">If You Don't Earn a Certificate</h5>
+                </div>
+                <div class="card-body">
+                    <p>If you don't meet the requirements:</p>
+                    <ol>
+                        <li>Review your grade report</li>
+                        <li>Identify areas that need improvement</li>
+                        <li>Contact your instructor for feedback</li>
+                        <li>You can typically retake the course after a waiting period</li>
+                        <li>Your highest grade will be recorded</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="alert alert-secondary">
+                <i class="fas fa-question-circle me-2"></i>
+                <strong>Questions about your certificate?</strong> <a href="{% url 'lms:create_support_ticket' %}" class="alert-link">Create a support ticket</a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Related Topics</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'lms:help_topic' 'getting-started' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-rocket me-2"></i> Getting Started
+                    </a>
+                    <a href="{% url 'lms:help_topic' 'courses' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-book me-2"></i> Courses
+                    </a>
+                    <a href="{% url 'lms:help_topic' 'assignments' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tasks me-2"></i> Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

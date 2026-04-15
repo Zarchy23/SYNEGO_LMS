@@ -1,0 +1,15 @@
+{% extends "lms/base.html" %}
+{% block title %}Edit Chapter{% endblock %}
+{% block content %}
+<div class="container py-4"><div class="row justify-content-center"><div class="col-lg-8"><div class="card"><div class="card-header bg-primary text-white">Edit Chapter - {{ course.title }}</div><div class="card-body">
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" value="{{ chapter.title }}" required></div>
+<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Order</label><input type="number" name="order" class="form-control" value="{{ chapter.order }}" required></div><div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="chapter_type" class="form-select">{% for v,l in chapter_types %}<option value="{{ v }}" {% if chapter.chapter_type == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div></div>
+<div class="mb-3"><label class="form-label">Video URL</label><input type="url" name="video_url" class="form-control" value="{{ chapter.video_url }}"></div>
+<div class="mb-3"><label class="form-label">Content</label><textarea name="content" class="form-control" rows="6" required>{{ chapter.content }}</textarea></div>
+<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Estimated Minutes</label><input type="number" name="estimated_minutes" class="form-control" value="{{ chapter.estimated_minutes }}"></div><div class="col-md-6 mb-3"><label class="form-label">Template Doc ID</label><input name="template_doc_id" class="form-control" value="{{ chapter.template_doc_id }}"></div></div>
+<div class="form-check mb-2"><input type="checkbox" name="is_free_preview" class="form-check-input" id="free" {% if chapter.is_free_preview %}checked{% endif %}><label class="form-check-label" for="free">Free preview</label></div>
+<div class="form-check mb-3"><input type="checkbox" name="requires_previous_quiz_pass" class="form-check-input" id="req" {% if chapter.requires_previous_quiz_pass %}checked{% endif %}><label class="form-check-label" for="req">Requires previous completion</label></div>
+<button class="btn btn-primary" type="submit">Save Changes</button> <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Cancel</a>
+</form></div></div></div></div></div>
+{% endblock %}

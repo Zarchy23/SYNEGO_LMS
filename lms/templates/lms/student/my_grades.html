@@ -1,0 +1,105 @@
+{% extends "lms/base.html" %}
+
+{% block title %}My Grades - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h2 mb-4">My Grades</h1>
+    
+    <div class="card">
+        <div class="card-header bg-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">All Assignments</h5>
+                </div>
+                <div class="col-auto">
+                    <select id="courseFilter" class="form-select form-select-sm">
+                        <option value="all">All Courses</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Assignment</th>
+                            <th>Course</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                            <tr data-course="{{ submission.assignment.course.id }}">
+                                <td>{{ submission.assignment.title }}</td>
+                                <td>{{ submission.assignment.course.title }}</td>
+                                <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if submission.grade %}
+                                        <span class="badge bg-success">Graded</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if submission.grade %}
+                                        <strong>{{ submission.grade }}%</strong>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if submission.feedback %}
+                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="popover" 
+                                                title="Feedback" data-bs-content="{{ submission.feedback }}">
+                                            <i class="fas fa-comment"></i> View
+                                        </button>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="fas fa-star fa-3x text-muted mb-2"></i>
+                                    <p class="mb-0">No graded submissions yet.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Filter by course
+    document.getElementById('courseFilter').addEventListener('change', function() {
+        const filter = this.value;
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            if (filter === 'all' || row.dataset.course === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Initialize popovers
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    });
+</script>
+{% endblock %}

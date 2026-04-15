@@ -1,0 +1,160 @@
+{% extends "lms/base.html" %}
+
+{% block title %}My Profile - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px;">
+                            <i class="fas fa-user fa-4x"></i>
+                        </div>
+                    {% endif %}
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">{{ user.get_role_display }}</p>
+                    <p class="mb-2">
+                        <span class="badge {% if user.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if user.is_approved %}Approved{% else %}Pending Approval{% endif %}
+                        </span>
+                    </p>
+                    <a href="{% url 'lms:edit_profile' %}" class="btn btn-primary w-100 mt-3">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Member Since:</strong><br>
+                        {{ user.date_joined|date:"F d, Y" }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Last Login:</strong><br>
+                        {{ user.last_login|date:"F d, Y H:i"|default:"Never" }}
+                    </div>
+                    <div>
+                        <strong>Completion Rate:</strong><br>
+                        {{ completion_rate|floatformat:0 }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Details -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Username</label>
+                            <p class="mb-0 fw-bold">{{ user.username }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Email Address</label>
+                            <p class="mb-0 fw-bold">{{ user.email }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">First Name</label>
+                            <p class="mb-0">{{ user.first_name|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Last Name</label>
+                            <p class="mb-0">{{ user.last_name|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Phone Number</label>
+                            <p class="mb-0">{{ user.phone_number|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Gender</label>
+                            <p class="mb-0">{{ user.get_gender_display|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="text-muted small">Address</label>
+                            <p class="mb-0">{{ user.address|default:"Not provided"|linebreaks }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Department</label>
+                            <p class="mb-0">{{ user.department.name|default:"Not assigned" }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Date of Birth</label>
+                            <p class="mb-0">{{ user.date_of_birth|date:"F d, Y"|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enrolled Courses -->
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Enrolled Courses</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for enrollment in enrollments %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ enrollment.course.title }}</strong><br>
+                                        <small class="text-muted">{{ enrollment.course.code }} | Status: {{ enrollment.status }}</small>
+                                    </div>
+                                    <a href="{% url 'lms:course_detail' enrollment.course.slug %}" class="btn btn-sm btn-outline-primary">
+                                        View Course
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="list-group-item text-center py-4">
+                                <p class="mb-0 text-muted">No enrolled courses.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificates -->
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Certificates</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for certificate in certificates %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-certificate text-success me-2"></i>
+                                        <strong>{{ certificate.course.title }}</strong><br>
+                                        <small class="text-muted">Issued: {{ certificate.issued_at|date:"F d, Y" }}</small>
+                                    </div>
+                                    <a href="{% url 'lms:view_certificate' certificate.certificate_id %}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download me-1"></i>View
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="list-group-item text-center py-4">
+                                <p class="mb-0 text-muted">No certificates yet.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

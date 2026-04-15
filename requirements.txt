@@ -1,0 +1,81 @@
+# Django Core
+Django
+django-environ
+django-debug-toolbar
+
+# Database
+psycopg2-binary
+dj-database-url
+
+# Authentication & Security
+django-allauth
+django-crispy-forms
+crispy-bootstrap5
+django-csp
+django-cors-headers
+
+# Google Integration
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+
+# Turnitin LTI Integration
+pylti1p3
+PyJWT
+jwcrypto
+
+# Email & Notifications
+django-sendgrid-v5
+sendgrid
+
+# Task Queue (for async operations)
+celery
+redis
+
+# File Handling
+django-storages
+boto3 # For AWS S3 (if using cloud storage)
+Pillow  # Image handling
+python-magic # File type detection
+
+# PDF Generation (Certificates)
+weasyprint
+reportlab
+qrcode
+
+# Data Processing & Reporting
+openpyxl  # Excel export
+pandas # Data analysis for reports
+xlwt # Old Excel format
+
+# REST API (if needed)
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg # API documentation
+
+# Utilities
+python-dateutil
+pytz
+requests
+beautifulsoup4
+bleach  # HTML sanitization
+markdown
+
+# Logging & Monitoring
+sentry-sdk
+django-prometheus
+
+# Development & Testing
+pytest
+pytest-django
+coverage
+factory-boy
+faker
+
+# Production Server
+gunicorn
+whitenoise
+
+# Deployment
+django-heroku  # For Heroku deployment
+django-s3-storage  # For AWS S3 static/media files

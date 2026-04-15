@@ -1,0 +1,18 @@
+{% extends "lms/base.html" %}
+{% block title %}Add Quiz Questions{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h4 mb-0">Questions: {{ quiz.title }}</h1><a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Back</a></div>
+    <div class="card mb-4"><div class="card-body">
+        <form method="post">{% csrf_token %}
+            <div class="mb-3"><label class="form-label">Question Text</label><textarea name="question_text" class="form-control" rows="3" required></textarea></div>
+            <div class="row"><div class="col-md-4 mb-3"><label class="form-label">Type</label><select name="question_type" class="form-select"><option value="mcq">Multiple Choice</option><option value="tf">True/False</option><option value="short">Short Answer</option></select></div><div class="col-md-4 mb-3"><label class="form-label">Points</label><input type="number" name="points" class="form-control" value="1"></div></div>
+            <div class="mb-3"><label class="form-label">Options (for MCQ)</label><input class="form-control mb-2" name="options[]" placeholder="Option 1"><input class="form-control mb-2" name="options[]" placeholder="Option 2"><input class="form-control mb-2" name="options[]" placeholder="Option 3"><input class="form-control" name="options[]" placeholder="Option 4"></div>
+            <div class="mb-3"><label class="form-label">Correct Answer</label><input name="correct_answer" class="form-control" required></div>
+            <div class="form-check mb-3"><input type="checkbox" class="form-check-input" id="another" name="add_another" checked><label class="form-check-label" for="another">Add another after save</label></div>
+            <button class="btn btn-primary" type="submit">Save Question</button>
+        </form>
+    </div></div>
+    <div class="card"><div class="card-header bg-white"><strong>Current Questions</strong></div><div class="card-body p-0"><div class="table-responsive"><table class="table mb-0"><thead class="table-light"><tr><th>#</th><th>Question</th><th>Type</th><th>Points</th><th class="text-end">Actions</th></tr></thead><tbody>{% for q in questions %}<tr><td>{{ q.order }}</td><td>{{ q.text|truncatechars:80 }}</td><td>{{ q.get_question_type_display }}</td><td>{{ q.points }}</td><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'lms:admin_edit_question' q.id %}">Edit</a> <a class="btn btn-sm btn-outline-danger" href="{% url 'lms:admin_delete_question' q.id %}">Delete</a></td></tr>{% empty %}<tr><td colspan="5" class="text-center text-muted py-3">No questions yet.</td></tr>{% endfor %}</tbody></table></div></div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Edit Assignment - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Assignment</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Assignment Title *</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{ assignment.title }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description *</label>
+                            <textarea name="description" id="description" class="form-control" rows="5" required>{{ assignment.description }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="assignment_type" class="form-label">Assignment Type</label>
+                                <select name="assignment_type" id="assignment_type" class="form-select">
+                                    <option value="individual" {% if assignment.assignment_type == 'individual' %}selected{% endif %}>Individual</option>
+                                    <option value="group" {% if assignment.assignment_type == 'group' %}selected{% endif %}>Group</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="total_points" class="form-label">Total Points</label>
+                                <input type="number" name="total_points" id="total_points" class="form-control" value="{{ assignment.total_points }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="due_date" class="form-label">Due Date & Time *</label>
+                                <input type="datetime-local" name="due_date" id="due_date" class="form-control" value="{{ assignment.due_date|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="soft_deadline" class="form-label">Soft Deadline (Optional)</label>
+                                <input type="datetime-local" name="soft_deadline" id="soft_deadline" class="form-control" value="{{ assignment.soft_deadline|date:'Y-m-d\TH:i'|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="late_penalty_percent" class="form-label">Late Penalty (% per day)</label>
+                                <input type="number" name="late_penalty_percent" id="late_penalty_percent" class="form-control" value="{{ assignment.late_penalty_percent }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="max_file_size_mb" class="form-label">Max File Size (MB)</label>
+                                <input type="number" name="max_file_size_mb" id="max_file_size_mb" class="form-control" value="{{ assignment.max_file_size_mb }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="allowed_file_types" class="form-label">Allowed File Types</label>
+                            <input type="text" name="allowed_file_types" id="allowed_file_types" class="form-control" value="{{ assignment.allowed_file_types }}">
+                            <small class="text-muted">Comma-separated extensions (e.g., .pdf,.doc,.docx)</small>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="enable_plagiarism_check" id="enable_plagiarism_check" class="form-check-input" {% if assignment.enable_plagiarism_check %}checked{% endif %}>
+                            <label for="enable_plagiarism_check" class="form-check-label">Enable Turnitin Plagiarism Check</label>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Rubric JSON Format:</strong>
+                            <pre class="mb-0 mt-2 small">{
+    "criteria": [
+        {"name": "Quality", "max_score": 50, "description": "Overall quality of work"},
+        {"name": "Completeness", "max_score": 30},
+        {"name": "Citations", "max_score": 20}
+    ]
+}</pre>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rubric" class="form-label">Rubric (JSON)</label>
+                            <textarea name="rubric" id="rubric" class="form-control" rows="8">{{ assignment.rubric|safe }}</textarea>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lms:manage_course' assignment.course.slug %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

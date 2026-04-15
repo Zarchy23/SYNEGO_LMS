@@ -1,0 +1,103 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Contact{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: linear-gradient(145deg, #1f3a5d 0%, #2f80ed 100%);
+        color: #fff;
+        padding: 4rem 0 3rem;
+    }
+
+    .contact-card {
+        border: 1px solid rgba(46, 68, 99, 0.12);
+        border-radius: 18px;
+        box-shadow: 0 16px 36px rgba(31, 58, 93, 0.10);
+    }
+
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        border-radius: 12px;
+        min-height: 46px;
+    }
+
+    textarea.form-control {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .info-item i {
+        width: 24px;
+        color: #2f80ed;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="fw-bold mb-3">Contact Synego Institute</h1>
+                <p class="mb-0 text-white-50">Have a question about courses, enrollment, or support? Send us a message and our team will respond as soon as possible.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card contact-card border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <h4 class="mb-4">Send an Inquiry</h4>
+                        <form method="post" action="{% url 'lms:contact' %}">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="name">Full Name</label>
+                                    <input type="text" id="name" name="name" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="message">Message</label>
+                                    <textarea id="message" name="message" class="form-control" placeholder="Tell us how we can help..." required></textarea>
+                                </div>
+                                <div class="col-12 d-grid d-md-block">
+                                    <button type="submit" class="btn btn-primary px-4">Submit Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card contact-card border-0 h-100">
+                    <div class="card-body p-4 p-lg-5">
+                        <h5 class="mb-4">Contact Information</h5>
+                        <ul class="list-unstyled mb-4">
+                            <li class="info-item mb-3"><i class="fas fa-map-marker-alt me-2"></i>Harare, Zimbabwe</li>
+                            <li class="info-item mb-3"><i class="fas fa-phone me-2"></i>+263 24 2123456</li>
+                            <li class="info-item mb-3"><i class="fas fa-envelope me-2"></i>info@synego.ac.zw</li>
+                            <li class="info-item"><i class="fas fa-clock me-2"></i>Mon - Fri: 08:00 to 17:00</li>
+                        </ul>
+                        <h6 class="mb-3">Follow Us</h6>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">Facebook</a>
+                            <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">LinkedIn</a>
+                            <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-3">Instagram</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

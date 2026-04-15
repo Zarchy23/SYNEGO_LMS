@@ -1,0 +1,105 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Edit Profile - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i>Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}" readonly disabled>
+                            <small class="text-muted">Email cannot be changed. Contact admin for assistance.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" name="phone_number" id="phone_number" class="form-control" value="{{ user.phone_number }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea name="address" id="address" class="form-control" rows="3">{{ user.address }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select name="gender" id="gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="M" {% if user.gender == 'M' %}selected{% endif %}>Male</option>
+                                    <option value="F" {% if user.gender == 'F' %}selected{% endif %}>Female</option>
+                                    <option value="O" {% if user.gender == 'O' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            {% if user.profile_picture %}
+                                <div class="mb-2">
+                                    <img src="{{ user.profile_picture.url }}" alt="Current" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                            {% endif %}
+                            <input type="file" name="profile_picture" id="profile_picture" class="form-control" accept="image/*">
+                            <small class="text-muted">Upload a new profile picture (JPG, PNG, GIF)</small>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="receive_notifications" id="receive_notifications" class="form-check-input" {% if user.receive_notifications %}checked{% endif %}>
+                            <label for="receive_notifications" class="form-check-label">Receive email notifications</label>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lms:profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Change Password Section -->
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-key me-2"></i>Change Password</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'lms:password_reset' %}" class="btn btn-outline-warning">
+                        <i class="fas fa-redo me-2"></i>Reset Password
+                    </a>
+                    <small class="text-muted ms-3">You will receive an email with password reset instructions.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

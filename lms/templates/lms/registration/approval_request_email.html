@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New Registration Approval Required</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f39c12;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .user-details {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            padding: 15px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>New Registration Pending Approval</h2>
+        </div>
+        <div class="content">
+            <p>Dear Administrator,</p>
+            <p>A new user has registered and requires your approval.</p>
+            
+            <div class="user-details">
+                <h4>User Details</h4>
+                <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Phone:</strong> {{ user.phone_number|default:"Not provided" }}</p>
+                <p><strong>Registered:</strong> {{ user.date_joined|date:"F d, Y H:i" }}</p>
+                {% if course %}
+                    <p><strong>Requested Course:</strong> {{ course.title }}</p>
+                {% endif %}
+                {% if reason %}
+                    <p><strong>Reason for enrollment:</strong> {{ reason }}</p>
+                {% endif %}
+            </div>
+            
+            <p>Please review and take action:</p>
+            <p style="text-align: center;">
+                <a href="{{ approval_url }}" class="button">Review Registration</a>
+            </p>
+            
+            <p>You can also log in to the admin panel to approve or reject this registration.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} Synego Training Institute. All rights reserved.</p>
+            <p>This is an automated message from the registration system.</p>
+        </div>
+    </div>
+</body>
+</html>

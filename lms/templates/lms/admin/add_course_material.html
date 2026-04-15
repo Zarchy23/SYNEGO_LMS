@@ -1,0 +1,172 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Add Course Material - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add Material to {{ course.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-4" id="materialTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab"><i class="fas fa-file-pdf me-2"></i>Add Documents</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#chapter" type="button" role="tab"><i class="fas fa-book me-2"></i>Add Chapter</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#assignment" type="button" role="tab"><i class="fas fa-tasks me-2"></i>Add Assignment</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#quiz" type="button" role="tab"><i class="fas fa-question-circle me-2"></i>Add Quiz</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Documents Tab -->
+                        <div class="tab-pane fade show active" id="documents" role="tabpanel">
+                            <div class="alert alert-info mb-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Upload course documents:</strong> Add PDFs, PowerPoint presentations, or Excel spreadsheets. Learners can download and read these materials at their own pace.
+                            </div>
+                            
+                            <form method="post" action="{% url 'lms:admin_add_material' course.slug %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Document Title *</label>
+                                    <input type="text" name="title" class="form-control" placeholder="e.g., Introduction to Python Basics" required>
+                                    <small class="form-text text-muted">Give your document a clear, descriptive title</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Document File * <span class="badge bg-info">PDF, PowerPoint, Excel</span></label>
+                                    <input type="file" name="file" class="form-control" accept=".pdf,.pptx,.ppt,.xlsx,.xls,.doc,.docx" required>
+                                    <small class="form-text text-muted">Accepted formats: PDF, PowerPoint (.pptx), Excel (.xlsx), Word (.docx)</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" rows="3" placeholder="Describe the document content and what learners will learn..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Order</label>
+                                    <input type="number" name="order" class="form-control" value="0" min="0">
+                                    <small class="form-text text-muted">Lower numbers appear first (0, 1, 2, ...)</small>
+                                </div>
+
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Learners will be able to <strong>download and read</strong> these documents offline. No video playback required.
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload me-2"></i>Upload Document
+                                </button>
+                                <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                            </form>
+
+                            <!-- List of uploaded documents -->
+                            {% if documents %}
+                            <div class="mt-5 pt-4 border-top">
+                                <h6 class="mb-3"><i class="fas fa-list me-2"></i>Uploaded Documents for This Chapter</h6>
+                                <div class="list-group">
+                                    {% for doc in documents %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <p class="mb-1">
+                                                    <i class="{{ doc.icon_class }} me-2" style="color: #0d6efd;"></i>
+                                                    <strong>{{ doc.title }}</strong>
+                                                    <span class="badge bg-light text-dark">{{ doc.get_material_type_display }}</span>
+                                                </p>
+                                                <small class="text-muted">{{ doc.description }}</small>
+                                            </div>
+                                            <div class="ms-3">
+                                                <small class="text-muted">{{ doc.created_at|date:"M d, Y" }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Chapter Tab -->
+                        <div class="tab-pane fade" id="chapter" role="tabpanel">
+                            <form method="post" action="{% url 'lms:admin_add_chapter' course.slug %}">
+                                {% csrf_token %}
+                                <div class="mb-3"><label class="form-label">Chapter Title *</label><input type="text" name="title" class="form-control" required></div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Order *</label><input type="number" name="order" class="form-control" required></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="chapter_type" class="form-select"><option value="lesson">Lesson</option><option value="reading">Reading</option><option value="quiz">Quiz</option><option value="assignment">Assignment</option><option value="project">Project</option></select></div>
+                                </div>
+                                <div class="mb-3"><label class="form-label">Content *</label><textarea name="content" class="form-control" rows="5" required></textarea></div>
+                                <div class="mb-3"><label class="form-label">Video URL <span class="badge bg-warning text-dark">Optional</span></label><input type="url" name="video_url" class="form-control" placeholder="https://youtube.com/embed/..."><small class="form-text text-muted">Video playback currently disabled. Use documents above for course materials.</small></div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Estimated Minutes</label><input type="number" name="estimated_minutes" class="form-control" value="30"></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Template Doc ID</label><input type="text" name="template_doc_id" class="form-control"></div>
+                                </div>
+                                <div class="form-check mb-3"><input type="checkbox" name="is_free_preview" class="form-check-input" id="preview"><label class="form-check-label" for="preview">Free preview</label></div>
+                                <div class="form-check mb-3"><input type="checkbox" name="requires_previous_quiz_pass" class="form-check-input" id="prevquiz" checked><label class="form-check-label" for="prevquiz">Require previous chapter completion</label></div>
+                                <button type="submit" class="btn btn-primary">Add Chapter</button>
+                            </form>
+                        </div>
+
+                        <!-- Assignment Tab -->
+                        <div class="tab-pane fade" id="assignment" role="tabpanel">
+                            <form method="post" action="{% url 'lms:admin_add_assignment' course.slug %}">
+                                {% csrf_token %}
+                                <div class="mb-3"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" required></div>
+                                <div class="mb-3"><label class="form-label">Description *</label><textarea name="description" class="form-control" rows="4" required></textarea></div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="assignment_type" class="form-select"><option value="individual">Individual</option><option value="group">Group</option></select></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Total Points</label><input type="number" name="total_points" class="form-control" value="100"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Due Date *</label><input type="datetime-local" name="due_date" class="form-control" required></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Soft Deadline</label><input type="datetime-local" name="soft_deadline" class="form-control"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Late Penalty %</label><input type="number" name="late_penalty_percent" class="form-control" value="10"></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Max File Size MB</label><input type="number" name="max_file_size_mb" class="form-control" value="50"></div>
+                                </div>
+                                <div class="mb-3"><label class="form-label">Rubric JSON</label><textarea name="rubric" class="form-control" rows="4">{"criteria": []}</textarea></div>
+                                <div class="form-check mb-3"><input type="checkbox" name="enable_plagiarism_check" class="form-check-input" id="plag"><label class="form-check-label" for="plag">Enable plagiarism check</label></div>
+                                <button type="submit" class="btn btn-primary">Add Assignment</button>
+                            </form>
+                        </div>
+
+                        <!-- Quiz Tab -->
+                        <div class="tab-pane fade" id="quiz" role="tabpanel">
+                            <form method="post" action="{% url 'lms:admin_add_quiz' course.slug %}">
+                                {% csrf_token %}
+                                <div class="mb-3"><label class="form-label">Chapter *</label><select name="chapter_id" class="form-select" required><option value="">-- select chapter --</option>{% for chapter in chapters %}<option value="{{ chapter.id }}">Chapter {{ chapter.order }}: {{ chapter.title }}</option>{% endfor %}</select></div>
+                                <div class="mb-3"><label class="form-label">Quiz Title</label><input type="text" name="title" class="form-control"></div>
+                                <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3"><label class="form-label">Pass Score</label><input type="number" name="pass_score" class="form-control" value="70"></div>
+                                    <div class="col-md-4 mb-3"><label class="form-label">Time Limit Minutes</label><input type="number" name="time_limit_minutes" class="form-control"></div>
+                                    <div class="col-md-4 mb-3"><label class="form-label">Attempts</label><input type="number" name="attempts_allowed" class="form-control" value="1"></div>
+                                </div>
+                                <div class="form-check mb-2"><input type="checkbox" name="shuffle_questions" class="form-check-input" id="shuffle"><label class="form-check-label" for="shuffle">Shuffle questions</label></div>
+                                <div class="form-check mb-3"><input type="checkbox" name="show_answers_after_submit" class="form-check-input" id="answers" checked><label class="form-check-label" for="answers">Show answers after submit</label></div>
+                                <button type="submit" class="btn btn-primary">Create Quiz & Add Questions</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-secondary">Back to Manage Course</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

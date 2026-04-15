@@ -1,0 +1,125 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Help Center - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Help Center</h1>
+        <p class="lead">How can we help you today?</p>
+    </div>
+    
+    <!-- Search -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg" placeholder="Search for help topics...">
+                <button class="btn btn-primary btn-lg"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Topics Grid -->
+    <div class="row mb-5">
+        {% for topic in topics %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="display-1 mb-3">{{ topic.icon }}</div>
+                        <h5 class="card-title">{{ topic.title }}</h5>
+                        <a href="{% url 'lms:help_topic' topic.slug %}" class="btn btn-outline-primary mt-2">Browse Articles</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h5>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I enroll in a course?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Browse the Courses page, select a course you're interested in, and click the "Enroll" button. 
+                            If the course requires approval, you'll be notified once your enrollment is approved.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            How do I access my certificate?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Once you complete all course requirements, a certificate will be automatically generated. 
+                            You can view and download it from your Dashboard under "My Certificates".
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            What is the quiz pass requirement?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Quizzes are for performance appraisal only. They help you assess your understanding 
+                            but do not affect your final grade. However, you may need to pass quizzes to unlock 
+                            subsequent chapters.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            How do I contact my instructor?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            You can message your instructor through the course discussion forum or use the 
+                            contact form in your dashboard. Instructors typically respond within 24-48 hours.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            Can I retake quizzes?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, you can retake quizzes up to the allowed number of attempts set by your instructor. 
+                            If you don't pass, you'll have the option to retake.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Support -->
+    <div class="card mt-4 bg-light">
+        <div class="card-body text-center">
+            <h5>Still need help?</h5>
+            <p>Contact our support team for assistance with any issues.</p>
+            <a href="{% url 'lms:create_support_ticket' %}" class="btn btn-primary">
+                <i class="fas fa-headset me-2"></i>Create Support Ticket
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

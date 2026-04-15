@@ -1,0 +1,5 @@
+{% extends "lms/base.html" %}
+{% block title %}Delete Question{% endblock %}
+{% block content %}
+<div class="container py-5"><div class="row justify-content-center"><div class="col-md-6"><div class="card border-danger"><div class="card-header bg-danger text-white">Delete Question</div><div class="card-body"><p>Delete this question?</p><blockquote class="blockquote"><small>{{ question.text }}</small></blockquote><form method="post">{% csrf_token %}<button class="btn btn-danger" type="submit">Yes, delete</button> <a class="btn btn-outline-secondary" href="{% url 'lms:admin_add_quiz_questions' quiz.id %}">Cancel</a></form></div></div></div></div></div>
+{% endblock %}

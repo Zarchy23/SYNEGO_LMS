@@ -1,0 +1,118 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Register - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4 border-0">
+                    <h3 class="mb-0"><i class="fas fa-user-plus me-2"></i>Create Your Account</h3>
+                    <p class="mb-0 mt-2">Join Synego Institute and start your learning journey</p>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" name="first_name" id="first_name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" name="last_name" id="last_name" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input type="text" name="username" id="username" class="form-control" required>
+                            <small class="text-muted">This will be your unique identifier for login</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" name="email" id="email" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" name="phone_number" id="phone_number" class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="course_id" class="form-label">Interested Course (Optional)</label>
+                            <select name="course_id" id="course_id" class="form-select">
+                                <option value="">Select a course you're interested in</option>
+                                {% for course in courses %}
+                                    <option value="{{ course.id }}">{{ course.code }} - {{ course.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Why do you want to join? (Optional)</label>
+                            <textarea name="reason" id="reason" class="form-control" rows="3" placeholder="Tell us about your learning goals..."></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" name="password" id="password" class="form-control" required>
+                                <small class="text-muted">Minimum 8 characters</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password *</label>
+                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="fas fa-paper-plane me-2"></i>Register
+                        </button>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'lms:login' %}" class="text-decoration-none fw-bold">Login Here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Registration Process:</strong> After registration, your account will be reviewed by an admin. You will receive an email once your account is approved.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password validation
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('confirm_password');
+    
+    function validatePassword() {
+        if (password.value !== confirm.value) {
+            confirm.setCustomValidity("Passwords don't match");
+        } else {
+            confirm.setCustomValidity('');
+        }
+    }
+    
+    password.onchange = validatePassword;
+    confirm.onkeyup = validatePassword;
+</script>
+{% endblock %}

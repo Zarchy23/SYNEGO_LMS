@@ -1,0 +1,99 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Certificate - {{ certificate.course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Certificate Card -->
+            <div class="card shadow-lg border-0" id="certificateCard">
+                <div class="card-body p-5 text-center" style="background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); border: 10px solid #2c3e50;">
+                    <!-- Institute Logo/Name -->
+                    <div class="mb-4">
+                        <h1 class="display-4 fw-bold text-primary">Synego</h1>
+                        <p class="text-muted">Training Institute</p>
+                    </div>
+                    
+                    <!-- Certificate Title -->
+                    <div class="mb-4">
+                        <h2 class="text-uppercase">Certificate of Completion</h2>
+                        <div class="border-bottom border-2 border-primary mx-auto" style="width: 100px;"></div>
+                    </div>
+                    
+                    <!-- Certificate Body -->
+                    <div class="mb-4">
+                        <p class="lead">This is to certify that</p>
+                        <h3 class="display-6 fw-bold">{{ certificate.student.get_full_name }}</h3>
+                        <p class="lead">has successfully completed the course</p>
+                        <h4 class="fw-bold">{{ certificate.course.title }}</h4>
+                        {% if certificate.final_grade %}
+                            <p class="mt-3">with a final grade of <strong>{{ certificate.final_grade }}%</strong></p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Date and Signature -->
+                    <div class="row mt-5 pt-4">
+                        <div class="col-6 text-start">
+                            <p><strong>Date Issued:</strong><br>
+                            {{ certificate.issued_at|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p><strong>Certificate ID:</strong><br>
+                            {{ certificate.certificate_id }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-6 text-start">
+                            <div class="border-top border-2 w-75">
+                                <small class="text-muted">Director's Signature</small>
+                            </div>
+                        </div>
+                        <div class="col-6 text-end">
+                            {% if certificate.qr_code %}
+                                <img src="{{ certificate.qr_code.url }}" alt="QR Code" style="width: 80px;">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+                <a href="{% url 'lms:download_certificate' certificate.certificate_id %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+            </div>
+            
+            <!-- Verification Info -->
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Verify this certificate:</strong>
+                Visit <a href="{{ certificate.verification_url }}">{{ certificate.verification_url }}</a> 
+                and enter the certificate ID: <strong>{{ certificate.certificate_id }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .navbar, footer, .btn, .alert {
+            display: none !important;
+        }
+        #certificateCard {
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        body {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+</style>
+{% endblock %}

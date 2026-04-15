@@ -1,0 +1,16 @@
+{% extends "lms/base.html" %}
+{% block title %}Edit Question{% endblock %}
+{% block content %}
+<div class="container py-4"><div class="row justify-content-center"><div class="col-lg-8"><div class="card"><div class="card-header bg-primary text-white">Edit Question</div><div class="card-body">
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">Question Text</label><textarea name="question_text" class="form-control" rows="3" required>{{ question.text }}</textarea></div>
+<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="question_type" class="form-select"><option value="mcq" {% if question.question_type == 'mcq' %}selected{% endif %}>Multiple Choice</option><option value="tf" {% if question.question_type == 'tf' %}selected{% endif %}>True/False</option><option value="short" {% if question.question_type == 'short' %}selected{% endif %}>Short Answer</option></select></div><div class="col-md-6 mb-3"><label class="form-label">Points</label><input type="number" name="points" class="form-control" value="{{ question.points }}"></div></div>
+<div class="mb-3"><label class="form-label">Options (for MCQ)</label>
+<input class="form-control mb-2" name="options[]" value="{{ question.options.0 }}">
+<input class="form-control mb-2" name="options[]" value="{{ question.options.1 }}">
+<input class="form-control mb-2" name="options[]" value="{{ question.options.2 }}">
+<input class="form-control" name="options[]" value="{{ question.options.3 }}"></div>
+<div class="mb-3"><label class="form-label">Correct Answer</label><input name="correct_answer" class="form-control" value="{{ question.correct_answer }}" required></div>
+<button class="btn btn-primary" type="submit">Save Changes</button> <a class="btn btn-outline-secondary" href="{% url 'lms:admin_add_quiz_questions' quiz.id %}">Cancel</a>
+</form></div></div></div></div></div>
+{% endblock %}

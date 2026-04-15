@@ -1,0 +1,30 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Registration Submitted{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4 text-success">
+                        <i class="fas fa-check-circle fa-4x"></i>
+                    </div>
+                    <h2 class="mb-3">Registration Submitted</h2>
+                    <p class="lead text-muted mb-4">Your account is pending approval. We have sent a confirmation email and will notify you once your account is activated.</p>
+                    <div class="alert alert-info text-start">
+                        <strong>What happens next:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Your application will be reviewed by the admissions team.</li>
+                            <li>Once approved, you will receive login instructions by email.</li>
+                            <li>Typical approval time is 1-2 business days.</li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'lms:index' %}" class="btn btn-primary mt-3">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% extends "lms/base.html" %}
+{% block title %}Delete Quiz{% endblock %}
+{% block content %}
+<div class="container py-5"><div class="row justify-content-center"><div class="col-md-6"><div class="card border-danger"><div class="card-header bg-danger text-white">Delete Quiz</div><div class="card-body"><p>Delete quiz <strong>{{ quiz.title }}</strong> from chapter <strong>{{ chapter.title }}</strong>?</p><form method="post">{% csrf_token %}<button class="btn btn-danger" type="submit">Yes, delete</button> <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Cancel</a></form></div></div></div></div></div>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "lms/base.html" %}
+
+{% block title %}{{ assignment.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' course.slug %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item active">{{ assignment.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0">{{ assignment.title }}</h3>
+                    <div class="mt-2">
+                        <span class="badge bg-secondary">{{ assignment.get_assignment_type_display }}</span>
+                        <span class="badge {% if assignment.is_overdue %}bg-danger{% else %}bg-warning{% endif %}">
+                            Due: {{ assignment.due_date|date:"M d, Y H:i" }}
+                        </span>
+                        {% if assignment.soft_deadline %}
+                            <span class="badge bg-info">Late deadline: {{ assignment.soft_deadline|date:"M d, Y H:i" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5>Description</h5>
+                    <p>{{ assignment.description|linebreaks }}</p>
+                    
+                    {% if assignment.rubric.criteria %}
+                        <h5 class="mt-4">Grading Rubric</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Criteria</th>
+                                        <th>Max Score</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for criterion in assignment.rubric.criteria %}
+                                        <tr>
+                                            <td>{{ criterion.name }}</td>
+                                            <td>{{ criterion.max_score }}</td>
+                                            <td>{{ criterion.description|default:"-" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr class="table-active">
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>{{ assignment.total_points }}</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Submission Section -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Your Submission</h5>
+                </div>
+                <div class="card-body">
+                    {% if submission.status == 'graded' %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Graded!</strong> You received {{ submission.grade }}%
+                        </div>
+                        {% if submission.feedback %}
+                            <h6>Feedback:</h6>
+                            <p>{{ submission.feedback }}</p>
+                        {% endif %}
+                        <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Submission
+                        </a>
+                        
+                    {% elif submission.status == 'submitted' %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-hourglass-half me-2"></i>
+                            <strong>Submitted!</strong> Waiting for grading.
+                        </div>
+                        <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Submission
+                        </a>
+                        
+                    {% elif submission.status == 'returned' %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-undo me-2"></i>
+                            <strong>Returned for Revision</strong>
+                            <hr>
+                            {{ submission.feedback|truncatewords:30 }}
+                        </div>
+                        <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Update your submission</label>
+                                <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}">
+                                <small class="text-muted">Max file size: {{ assignment.max_file_size_mb }}MB</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sync-alt me-2"></i>Resubmit
+                            </button>
+                        </form>
+                        
+                    {% else %}
+                        <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% if assignment.enable_plagiarism_check %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Plagiarism check is enabled for this assignment.
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Upload File</label>
+                                <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}" required>
+                                <small class="text-muted">Allowed: {{ assignment.allowed_file_types }} | Max: {{ assignment.max_file_size_mb }}MB</small>
+                            </div>
+                            
+                            {% if assignment.chapter.template_doc_id %}
+                                <div class="mb-3">
+                                    <label class="form-label">Or use Google Doc</label>
+                                    <input type="text" name="google_doc_id" class="form-control" placeholder="Enter Google Doc ID">
+                                    <a href="{% url 'lms:create_google_doc' assignment.id %}" class="btn btn-sm btn-outline-danger mt-2" target="_blank">
+                                        <i class="fab fa-google me-1"></i>Create from Template
+                                    </a>
+                                </div>
+                            {% endif %}
+                            
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Assignment Info -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Assignment Info</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <strong>Due Date:</strong> {{ assignment.due_date|date:"M d, Y H:i" }}
+                        </li>
+                        {% if assignment.soft_deadline %}
+                            <li class="mb-2">
+                                <i class="fas fa-calendar-week me-2"></i>
+                                <strong>Late Deadline:</strong> {{ assignment.soft_deadline|date:"M d, Y H:i" }}
+                            </li>
+                        {% endif %}
+                        <li class="mb-2">
+                            <i class="fas fa-gavel me-2"></i>
+                            <strong>Late Penalty:</strong> {{ assignment.late_penalty_percent }}% per day (max 50%)
+                        </li>
+                        <li>
+                            <i class="fas fa-file-alt me-2"></i>
+                            <strong>Total Points:</strong> {{ assignment.total_points }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

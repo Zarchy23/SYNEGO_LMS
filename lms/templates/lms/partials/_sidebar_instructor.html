@@ -1,0 +1,52 @@
+<!-- Instructor Sidebar -->
+<aside class="dashboard-sidebar">
+    <div class="text-center mb-3">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+        {% else %}
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 80px; height: 80px;">
+                <i class="fas fa-chalkboard fa-3x"></i>
+            </div>
+        {% endif %}
+        <h6 class="mb-1">{{ user.get_full_name|default:user.username }}</h6>
+        <small class="text-muted">👨‍🏫 Instructor</small>
+    </div>
+    <hr>
+    <div class="nav flex-column">
+        <a href="{% url 'lms:instructor_dashboard' %}" class="nav-link {% if active_page == 'instructor_dashboard' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+        <a href="{% url 'lms:course_list' %}" class="nav-link {% if active_page == 'my_courses' %}active{% endif %}">
+            <i class="fas fa-chalkboard me-2"></i> My Courses
+            {% if my_courses %}<span class="badge bg-info ms-auto">{{ my_courses }}</span>{% endif %}
+        </a>
+        <a href="{% url 'lms:instructor_assignments' %}" class="nav-link {% if active_page == 'instructor_assignments' %}active{% endif %}">
+            <i class="fas fa-tasks me-2"></i> Assignments
+        </a>
+        <a href="{% url 'lms:instructor_assignments' %}" class="nav-link">
+            <i class="fas fa-inbox me-2"></i> Pending Submissions
+            {% if pending_submissions %}<span class="badge bg-warning ms-auto">{{ pending_submissions }}</span>{% endif %}
+        </a>
+        <a href="#" class="nav-link">
+            <i class="fas fa-chart-bar me-2"></i> Analytics
+        </a>
+        <a href="#" class="nav-link">
+            <i class="fas fa-users me-2"></i> My Students
+        </a>
+        <a href="{% url 'lms:sync_google_classroom' %}" class="nav-link {% if active_page == 'sync_google_classroom' %}active{% endif %}">
+            <i class="fab fa-google me-2"></i> Google Classroom
+        </a>
+        <hr>
+        <a href="{% url 'lms:profile' %}" class="nav-link {% if active_page == 'profile' %}active{% endif %}">
+            <i class="fas fa-user me-2"></i> Profile
+        </a>
+        <a href="{% url 'lms:notification_list' %}" class="nav-link {% if active_page == 'notification_list' %}active{% endif %}">
+            <i class="fas fa-bell me-2"></i> Notifications
+            {% if unread_notifications %}<span class="badge bg-danger ms-auto">{{ unread_notifications }}</span>{% endif %}
+        </a>
+        <hr>
+        <a href="{% url 'lms:logout' %}" class="nav-link text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+    </div>
+</aside>

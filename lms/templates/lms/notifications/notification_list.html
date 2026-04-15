@@ -1,0 +1,103 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Notifications - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-bell me-2"></i>Notifications
+                </h1>
+                <a href="{% url 'lms:mark_all_notifications_read' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-check-double me-1"></i>Mark all as read
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="list-group list-group-flush">
+                    {% for notification in page_obj %}
+                        <div class="list-group-item {% if not notification.is_read %}list-group-item-primary{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="mb-1">
+                                        {% if notification.notification_type == 'success' %}
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                        {% elif notification.notification_type == 'warning' %}
+                                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                        {% elif notification.notification_type == 'error' %}
+                                            <i class="fas fa-times-circle text-danger me-2"></i>
+                                        {% elif notification.notification_type == 'grade' %}
+                                            <i class="fas fa-star text-info me-2"></i>
+                                        {% elif notification.notification_type == 'certificate' %}
+                                            <i class="fas fa-certificate text-success me-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-info-circle text-primary me-2"></i>
+                                        {% endif %}
+                                        <strong>{{ notification.title }}</strong>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                    <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                                </div>
+                                {% if not notification.is_read %}
+                                    <button class="btn btn-sm btn-link mark-read" data-id="{{ notification.id }}">
+                                        Mark read
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="list-group-item text-center py-5">
+                            <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                            <p class="mb-0">No notifications yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mark notification as read via AJAX
+    document.querySelectorAll('.mark-read').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.dataset.id;
+            fetch('{% url "lms:api_mark_notification_read" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ notification_id: notificationId })
+            }).then(() => {
+                location.reload();
+            });
+        });
+    });
+</script>
+{% endblock %}

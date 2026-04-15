@@ -1,0 +1,143 @@
+{% extends "lms/base.html" %}
+
+{% block title %}All Courses - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold">Our Courses</h1>
+            <p class="lead">Discover a wide range of professional training programs across multiple departments</p>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Department</label>
+                            <select name="department" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Departments</option>
+                                {% for dept in departments %}
+                                    <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ dept.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Difficulty</label>
+                            <select name="difficulty" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Levels</option>
+                                <option value="beginner" {% if selected_difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                                <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                                <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control" placeholder="Search courses..." value="{{ search_query }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <a href="{% url 'lms:course_list' %}" class="btn btn-outline-secondary w-100">Clear</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Grid -->
+    <div class="row">
+        {% for course in page_obj %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card course-card h-100">
+                    {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="fas fa-graduation-cap fa-4x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ course.department.name }}</span>
+                            <span class="badge {% if course.difficulty == 'beginner' %}bg-success{% elif course.difficulty == 'intermediate' %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ course.get_difficulty_display }}
+                            </span>
+                        </div>
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text text-muted">{{ course.description|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <i class="fas fa-clock text-muted me-1"></i>
+                                <small class="text-muted">{{ course.duration }}</small>
+                            </div>
+                            <div>
+                                <i class="fas fa-users text-muted me-1"></i>
+                                <small class="text-muted">{{ course.total_students_enrolled }} students</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <a href="{% url 'lms:course_detail' course.slug %}" class="btn btn-primary w-100">
+                            View Course <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h3>No courses found</h3>
+                <p class="text-muted">Try adjusting your search or filter criteria.</p>
+                <a href="{% url 'lms:course_list' %}" class="btn btn-primary">View All Courses</a>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "lms/base.html" %}
+
+{% block title %}{{ course.title }} - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Course Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'lms:course_list' %}">Courses</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'lms:department_detail' course.department.slug %}">{{ course.department.name }}</a></li>
+                    <li class="breadcrumb-item active">{{ course.title }}</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 fw-bold">{{ course.title }}</h1>
+            <p class="lead">{{ course.description }}</p>
+            <div class="d-flex flex-wrap gap-3 mb-3">
+                <span class="badge bg-primary">{{ course.department.name }}</span>
+                <span class="badge {% if course.difficulty == 'beginner' %}bg-success{% elif course.difficulty == 'intermediate' %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ course.get_difficulty_display }}
+                </span>
+                <span><i class="fas fa-clock text-muted me-1"></i> {{ course.duration }}</span>
+                <span><i class="fas fa-book text-muted me-1"></i> {{ total_chapters }} chapters</span>
+                <span><i class="fas fa-users text-muted me-1"></i> {{ course.total_students_enrolled }} students enrolled</span>
+            </div>
+            {% if user.is_authenticated %}
+                {% if user.role == 'admin' or user.role == 'instructor' or user.role == 'dept_head' %}
+                    {% if user.role == 'admin' or user.is_superuser or user.department_id == course.department_id %}
+                        <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-dark btn-sm mb-2">
+                            <i class="fas fa-tools me-2"></i>Manage Materials
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-lg-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'admin' or user.is_superuser %}
+                            <div class="mb-3">
+                                <i class="fas fa-tools fa-3x text-primary"></i>
+                                <h5 class="mt-2">Admin Access</h5>
+                                <p class="text-muted small">You can view and manage course materials without enrollment.</p>
+                                <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-dark w-100 mt-2">
+                                    <i class="fas fa-tools me-2"></i>Manage Materials
+                                </a>
+                            </div>
+                        {% elif is_enrolled %}
+                            <div class="mb-3">
+                                <i class="fas fa-check-circle fa-3x text-success"></i>
+                                <h5 class="mt-2">You are enrolled!</h5>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ enrollment.progress_percent|default:0 }}%">
+                                        {{ enrollment.progress_percent|default:0|floatformat:0 }}%
+                                    </div>
+                                </div>
+                                <a href="{% url 'lms:course_detail' course.slug %}#chapters" class="btn btn-primary w-100">
+                                    <i class="fas fa-play me-2"></i>Continue Learning
+                                </a>
+                                <a href="{% url 'lms:unenroll_course' course.slug %}" class="btn btn-outline-danger w-100 mt-2" onclick="return confirm('Are you sure you want to unenroll?')">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Unenroll
+                                </a>
+                            </div>
+                        {% elif has_pending_request %}
+                            <div class="mb-3">
+                                <i class="fas fa-hourglass-half fa-3x text-warning"></i>
+                                <h5 class="mt-2">Pending Approval</h5>
+                                <p class="text-muted small">Your enrollment request is being reviewed.</p>
+                            </div>
+                        {% else %}
+                            <div class="mb-3">
+                                <i class="fas fa-lock fa-3x text-muted"></i>
+                                <h5 class="mt-2">Enroll to Start Learning</h5>
+                                <form method="post" action="{% url 'lms:enroll_course' course.slug %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Enroll Now
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="mb-3">
+                            <i class="fas fa-sign-in-alt fa-3x text-muted"></i>
+                            <h5 class="mt-2">Login to Access Course</h5>
+                            <a href="{% url 'lms:login' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Learning Objectives -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>What You'll Learn</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ course.learning_objectives|linebreaks }}</p>
+                    {% if course.prerequisites %}
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Prerequisites:</strong> {{ course.prerequisites }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Curriculum -->
+    <div class="row mb-4" id="chapters">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Course Curriculum</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for chapter in chapters %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            {% if chapter.chapter_type == 'video' %}
+                                                <i class="fas fa-video fa-2x text-primary"></i>
+                                            {% elif chapter.chapter_type == 'reading' %}
+                                                <i class="fas fa-book fa-2x text-success"></i>
+                                            {% elif chapter.chapter_type == 'quiz' %}
+                                                <i class="fas fa-question-circle fa-2x text-warning"></i>
+                                            {% else %}
+                                                <i class="fas fa-file-alt fa-2x text-info"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Chapter {{ chapter.order }}: {{ chapter.title }}</h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>{{ chapter.estimated_minutes }} min
+                                                {% if chapter.is_free_preview %}
+                                                    <span class="badge bg-info ms-2">Free Preview</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        {% if user.is_authenticated %}
+                                            {% if user.role == 'admin' or user.is_superuser %}
+                                                <a href="{% url 'lms:chapter_detail' course.slug chapter.id %}" class="btn btn-sm btn-outline-dark">
+                                                    <i class="fas fa-eye"></i> Open Material
+                                                </a>
+                                            {% elif is_enrolled %}
+                                                <a href="{% url 'lms:chapter_detail' course.slug chapter.id %}" class="btn btn-sm btn-outline-primary">
+                                                    {% if chapter.is_completed %}
+                                                        <i class="fas fa-check-circle text-success"></i> Completed
+                                                    {% else %}
+                                                        <i class="fas fa-play"></i> Start
+                                                    {% endif %}
+                                                </a>
+                                            {% elif chapter.is_free_preview %}
+                                                <a href="{% url 'lms:chapter_detail' course.slug chapter.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> Preview
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-sm btn-secondary" disabled>
+                                                    <i class="fas fa-lock"></i> Enroll to Access
+                                                </button>
+                                            {% endif %}
+                                        {% else %}
+                                            <button class="btn btn-sm btn-secondary" disabled>
+                                                <i class="fas fa-sign-in-alt"></i> Login to Access
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructor Info -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>About This Course</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Course Features</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i> {{ total_chapters }} comprehensive chapters</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Practical hands-on exercises</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Certificate upon completion</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Lifetime access to materials</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Grading Components</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-pen me-2"></i> Assignments: {{ course.assignment_weight }}%</li>
+                                <li><i class="fas fa-project-diagram me-2"></i> Projects: {{ course.project_weight }}%</li>
+                                <li><i class="fas fa-question-circle me-2"></i> Quizzes: Performance appraisal only</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

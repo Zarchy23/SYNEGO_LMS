@@ -1,0 +1,118 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Getting Started - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-4">
+                <a href="{% url 'lms:help_center' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Help Center
+                </a>
+            </div>
+
+            <h1 class="mb-3">🚀 Getting Started</h1>
+            <p class="lead">Welcome to Synego Institute! Follow these steps to start your learning journey.</p>
+
+            <!-- Steps -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Step 1: Create Your Account</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Click <strong>Register</strong> on the homepage</li>
+                        <li>Fill in your personal details and create a password</li>
+                        <li>Check your email for verification link</li>
+                        <li>Click the link to activate your account</li>
+                        <li>Wait for admin approval before enrolling in courses</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Step 2: Log In</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Go to the <strong>Login</strong> page</li>
+                        <li>Enter your email and password</li>
+                        <li>Click <strong>Sign In</strong></li>
+                        <li>You'll be directed to your <strong>Student Dashboard</strong></li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Step 3: Browse & Enroll in Courses</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Click <strong>Browse Courses</strong> from your dashboard</li>
+                        <li>Explore available courses by department or difficulty</li>
+                        <li>Click a course to see details, prerequisites, and learning outcomes</li>
+                        <li>Click <strong>Enroll</strong> to request enrollment</li>
+                        <li>Await instructor approval (usually within 24 hours)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Step 4: Start Learning</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Once enrolled, your course appears on your dashboard</li>
+                        <li>Click <strong>Open</strong> to access course materials</li>
+                        <li>Work through chapters, complete quizzes, and submit assignments</li>
+                        <li>Track your progress in the <strong>My Progress</strong> section</li>
+                        <li>Complete all coursework to earn your certificate</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="alert alert-info mb-4">
+                <h5><i class="fas fa-lightbulb me-2"></i>Tips for Success</h5>
+                <ul class="mb-0">
+                    <li>Set aside regular study time each week</li>
+                    <li>Read the course syllabus carefully</li>
+                    <li>Submit assignments before the deadline</li>
+                    <li>Reach out to instructors if you need help</li>
+                    <li>Check notifications regularly for updates</li>
+                </ul>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="alert alert-secondary">
+                <i class="fas fa-question-circle me-2"></i>
+                <strong>Stuck?</strong> <a href="{% url 'lms:create_support_ticket' %}" class="alert-link">Create a support ticket</a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Related Topics</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'lms:help_topic' 'courses' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-book me-2"></i> Courses & Enrollment
+                    </a>
+                    <a href="{% url 'lms:help_topic' 'assignments' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tasks me-2"></i> Assignments
+                    </a>
+                    <a href="{% url 'lms:help_topic' 'certificates' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-certificate me-2"></i> Certificates
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Quiz: {{ quiz.chapter.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Quiz Header -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ quiz.title }}</h4>
+                    <p class="mb-0 small">{{ course.title }} - Chapter {{ chapter.order }}: {{ chapter.title }}</p>
+                </div>
+                <div class="card-body">
+                    {% if quiz.description %}
+                        <p>{{ quiz.description }}</p>
+                        <hr>
+                    {% endif %}
+                    
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <i class="fas fa-question-circle me-1"></i> {{ questions.count }} questions
+                            </div>
+                            <div class="col-md-4">
+                                <i class="fas fa-star me-1"></i> Pass: {{ quiz.pass_score }}%
+                            </div>
+                            <div class="col-md-4">
+                                <i class="fas fa-redo me-1"></i> Attempts: {{ quiz.attempts_allowed }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quiz Form -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" id="quizForm">
+                        {% csrf_token %}
+                        
+                        {% for question in questions %}
+                            <div class="quiz-question mb-4 p-3 border rounded">
+                                <h6 class="mb-3">
+                                    Question {{ forloop.counter }}:
+                                    {{ question.text }}
+                                    <span class="text-muted small">({{ question.points }} point{{ question.points|pluralize }})</span>
+                                </h6>
+                                
+                                {% if question.question_type == 'mcq' %}
+                                    {% for option in question.options %}
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" 
+                                                   id="q{{ question.id }}_{{ forloop.counter }}" 
+                                                   value="{{ option }}" required>
+                                            <label class="form-check-label" for="q{{ question.id }}_{{ forloop.counter }}">
+                                                {{ option }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                {% elif question.question_type == 'tf' %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="question_{{ question.id }}" 
+                                               id="q{{ question.id }}_true" value="True" required>
+                                        <label class="form-check-label" for="q{{ question.id }}_true">True</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="question_{{ question.id }}" 
+                                               id="q{{ question.id }}_false" value="False">
+                                        <label class="form-check-label" for="q{{ question.id }}_false">False</label>
+                                    </div>
+                                    
+                                {% elif question.question_type == 'short' %}
+                                    <input type="text" class="form-control" 
+                                           name="question_{{ question.id }}" 
+                                           placeholder="Type your answer here..." required>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'lms:chapter_detail' course.slug chapter.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Chapter
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Quiz
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Timer functionality if time limit exists
+    {% if quiz.time_limit_minutes %}
+        let timeLeft = {{ quiz.time_limit_minutes }} * 60;
+        const timerElement = document.createElement('div');
+        timerElement.className = 'alert alert-warning text-center';
+        timerElement.innerHTML = '<i class="fas fa-hourglass-half me-2"></i>Time remaining: <span id="timer">' + formatTime(timeLeft) + '</span>';
+        document.querySelector('.quiz-question').before(timerElement);
+        
+        const timerInterval = setInterval(function() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('quizForm').submit();
+            } else {
+                timeLeft--;
+                document.getElementById('timer').innerText = formatTime(timeLeft);
+            }
+        }, 1000);
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+        }
+    {% endif %}
+</script>
+{% endblock %}

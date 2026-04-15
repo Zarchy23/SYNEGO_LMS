@@ -1,0 +1,100 @@
+{% extends "lms/base.html" %}
+
+{% block title %}{{ chapter.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' course.slug %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item active">Chapter {{ chapter.order }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-1">Chapter {{ chapter.order }}: {{ chapter.title }}</h1>
+            <p class="text-muted mb-0">
+                <span class="text-capitalize">{{ chapter.chapter_type }}</span>
+                <span class="mx-2">|</span>
+                {{ chapter.estimated_minutes }} minutes
+                {% if chapter.is_free_preview %}
+                    <span class="badge bg-info ms-2">Free Preview</span>
+                {% endif %}
+                {% if is_admin_access %}
+                    <span class="badge bg-dark ms-2">Admin Access</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            {% if user.is_authenticated %}
+                {% if user.role == 'admin' or user.is_superuser %}
+                    <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-dark btn-sm">Manage Materials</a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'lms:course_detail' course.slug %}#chapters" class="btn btn-outline-secondary btn-sm">Back to Curriculum</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            {% if chapter_video_embed_url %}
+                <div class="ratio ratio-16x9 mb-4">
+                    <iframe
+                        src="{{ chapter_video_embed_url }}"
+                        title="{{ chapter.title }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            {% elif chapter.video_url %}
+                <div class="alert alert-info mb-4">
+                    This video cannot be embedded here.
+                    <a href="{{ chapter.video_url }}" target="_blank" rel="noopener">Watch on YouTube/Vimeo</a>
+                </div>
+            {% endif %}
+
+            <div class="chapter-content">
+                {{ chapter_content_html|safe }}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between gap-2">
+        <div class="d-flex gap-2">
+            {% if prev_chapter %}
+                <a href="{% url 'lms:chapter_detail' course.slug prev_chapter.id %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Previous Chapter
+                </a>
+            {% endif %}
+            {% if next_chapter %}
+                <a href="{% url 'lms:chapter_detail' course.slug next_chapter.id %}" class="btn btn-outline-primary">
+                    Next Chapter<i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if quiz %}
+                {% if is_admin_access %}
+                    <a href="{% url 'lms:admin_add_quiz_questions' quiz.id %}" class="btn btn-outline-dark">
+                        <i class="fas fa-question-circle me-2"></i>Manage Quiz Questions
+                    </a>
+                {% else %}
+                    <a href="{% url 'lms:take_quiz' quiz.id %}" class="btn btn-warning">
+                        <i class="fas fa-question-circle me-2"></i>Take Quiz
+                    </a>
+                {% endif %}
+            {% endif %}
+
+            {% if enrollment and not is_admin_access %}
+                <a href="{% url 'lms:mark_chapter_complete' course.slug chapter.id %}" class="btn btn-success">
+                    <i class="fas fa-check me-2"></i>Mark Complete
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

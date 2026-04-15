@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Synego Training Institute - Quality education for tomorrow's leaders">
+    <title>Synego Institute | {% block title %}Page{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        :root {
+            --primary-color: #1f3a5d;
+            --secondary-color: #2f80ed;
+            --accent-color: #17a2b8;
+            --bg-light: #f4f7fb;
+            --bg-dark: #1d2833;
+            --text-muted: #6c7a91;
+            --surface: #ffffff;
+            --surface-alt: #f9fbff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: #1f2835;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            padding: 0.9rem 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            font-size: 1.45rem;
+        }
+
+        .navbar-brand span {
+            color: var(--secondary-color);
+        }
+
+        .navbar-nav .nav-link {
+            color: #e9edf5;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: #ffffff;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #1f69db;
+            border-color: #1f69db;
+        }
+
+        .btn-outline-white {
+            color: white;
+            border-color: rgba(255,255,255,0.75);
+        }
+
+        .btn-outline-white:hover {
+            color: white;
+            background-color: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.9);
+        }
+
+        .hero-section {
+            background-image:
+                linear-gradient(120deg, rgba(16, 33, 57, 0.82), rgba(28, 69, 120, 0.72)),
+                url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 90px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 85% 25%, rgba(255,255,255,0.2), rgba(255,255,255,0) 36%);
+            pointer-events: none;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            right: -120px;
+            bottom: -70px;
+            width: 320px;
+            height: 320px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            max-width: 560px;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.8rem, 2.8vw, 4.2rem);
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text p {
+            max-width: 680px;
+            color: rgba(255,255,255,0.85);
+            font-size: 1.05rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .hero-card {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            color: white;
+            padding: 24px;
+            min-height: 150px;
+        }
+
+        .hero-card .icon {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            padding: 70px 0;
+        }
+
+        .section-title {
+            margin-bottom: 2rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            line-height: 1.1;
+            font-weight: 700;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            max-width: 700px;
+        }
+
+        .feature-card,
+        .stat-card,
+        .course-card {
+            border: 1px solid rgba(46, 68, 99, 0.12);
+            border-radius: 18px;
+            background: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover,
+        .stat-card:hover,
+        .course-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 40px rgba(31, 58, 93, 0.08);
+        }
+
+        .feature-card {
+            padding: 28px;
+            min-height: 220px;
+        }
+
+        .feature-card .icon {
+            font-size: 1.6rem;
+            color: var(--secondary-color);
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            padding: 28px;
+        }
+
+        .stat-card h3 {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-card .card-img-top {
+            height: 230px;
+            object-fit: cover;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
+        }
+
+        .course-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .course-card .badge {
+            font-size: 0.8rem;
+            letter-spacing: 0.02em;
+        }
+
+        .departments-list {
+            gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .department-chip {
+            padding: 18px 20px;
+            border-radius: 16px;
+            background: #ffffff;
+            border: 1px solid rgba(46, 68, 99, 0.12);
+            transition: transform 0.3s ease;
+        }
+
+        .department-chip:hover {
+            transform: translateY(-4px);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #2f80ed 0%, #17a2b8 100%);
+            color: white;
+            padding: 70px 0;
+            border-radius: 24px;
+        }
+
+        .alert {
+            border-radius: 14px;
+        }
+
+        .dashboard-layout {
+            display: block;
+        }
+
+        .dashboard-sidebar {
+            position: fixed;
+            top: 96px;
+            left: 16px;
+            width: 260px;
+            max-height: calc(100vh - 112px);
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid rgba(46, 68, 99, 0.12);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 12px 30px rgba(31, 58, 93, 0.08);
+            z-index: 1020;
+        }
+
+        .dashboard-sidebar .nav-link {
+            color: #314763;
+            border-radius: 10px;
+            padding: 0.55rem 0.7rem;
+            margin-bottom: 0.2rem;
+            font-weight: 500;
+        }
+
+        .dashboard-sidebar .nav-link:hover,
+        .dashboard-sidebar .nav-link.active {
+            background: rgba(47, 128, 237, 0.12);
+            color: #1f3a5d;
+        }
+
+        .dashboard-main {
+            margin-left: 284px;
+            width: calc(100% - 284px);
+        }
+
+        @media (max-width: 991px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .hero-section::after {
+                display: none;
+            }
+
+            .dashboard-sidebar {
+                position: static;
+                top: auto;
+                left: auto;
+                width: 100%;
+                max-height: none;
+                margin-bottom: 1rem;
+            }
+
+            .dashboard-main {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+        @media (max-width: 575px) {
+            .hero-section {
+                padding-top: 70px;
+                padding-bottom: 60px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'lms:index' %}">
+                🏫 Synego <span>Institute</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lms:course_list' %}"><i class="fas fa-book me-1"></i> Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lms:department_list' %}"><i class="fas fa-building me-1"></i> Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lms:about' %}"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lms:contact' %}"><i class="fas fa-envelope me-1"></i> Contact</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>{{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'lms:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'lms:student_dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'lms:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lms:login' %}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-primary rounded-pill px-4 py-2" href="{% url 'lms:register' %}"><i class="fas fa-user-plus me-2"></i>Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.SynegoConfig = {
+            csrfToken: '{{ csrf_token }}',
+            userId: '{{ user.id }}',
+            isAuthenticated: {% if user.is_authenticated %}true{% else %}false{% endif %}
+        };
+
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

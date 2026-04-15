@@ -1,0 +1,13 @@
+{% extends "lms/base.html" %}
+{% block title %}Edit Quiz{% endblock %}
+{% block content %}
+<div class="container py-4"><div class="row justify-content-center"><div class="col-lg-8"><div class="card"><div class="card-header bg-primary text-white">Edit Quiz - {{ course.title }}</div><div class="card-body">
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" value="{{ quiz.title }}" required></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3">{{ quiz.description }}</textarea></div>
+<div class="row"><div class="col-md-4 mb-3"><label class="form-label">Pass Score</label><input type="number" name="pass_score" class="form-control" value="{{ quiz.pass_score }}"></div><div class="col-md-4 mb-3"><label class="form-label">Time Limit Minutes</label><input type="number" name="time_limit_minutes" class="form-control" value="{{ quiz.time_limit_minutes }}"></div><div class="col-md-4 mb-3"><label class="form-label">Attempts</label><input type="number" name="attempts_allowed" class="form-control" value="{{ quiz.attempts_allowed }}"></div></div>
+<div class="form-check mb-2"><input type="checkbox" name="shuffle_questions" class="form-check-input" id="shuffle" {% if quiz.shuffle_questions %}checked{% endif %}><label class="form-check-label" for="shuffle">Shuffle questions</label></div>
+<div class="form-check mb-3"><input type="checkbox" name="show_answers_after_submit" class="form-check-input" id="show" {% if quiz.show_answers_after_submit %}checked{% endif %}><label class="form-check-label" for="show">Show answers after submit</label></div>
+<button class="btn btn-primary" type="submit">Save Changes</button> <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Cancel</a>
+</form></div></div></div></div></div>
+{% endblock %}

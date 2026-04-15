@@ -1,0 +1,188 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Assignment Analytics - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'lms:instructor_dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'lms:instructor_assignments' %}">Assignments</a></li>
+                    <li class="breadcrumb-item active">{{ assignment.title }}</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-0">{{ assignment.title }}</h1>
+            <p class="text-muted">{{ assignment.course.title }}</p>
+        </div>
+        <a href="{% url 'lms:submission_list' assignment.id %}" class="btn btn-primary">
+            <i class="fas fa-inbox me-2"></i>View Submissions
+        </a>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ submissions_count }}</h3>
+                    <p class="text-muted">Total Submissions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ avg_grade|floatformat:1 }}%</h3>
+                    <p class="text-muted">Average Grade</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ min_grade|floatformat:1 }}%</h3>
+                    <p class="text-muted">Lowest Grade</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ max_grade|floatformat:1 }}%</h3>
+                    <p class="text-muted">Highest Grade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Grade Distribution Chart -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Grade Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="gradeChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Summary -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Statistics Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Total Points Possible</th>
+                                <td>{{ assignment.total_points }}</td>
+                            </tr>
+                            <tr>
+                                <th>Mean Grade</th>
+                                <td>{{ avg_grade|floatformat:1 }}%</td>
+                            </tr>
+                            <tr>
+                                <th>Median Grade</th>
+                                <td>{{ median_grade|floatformat:1 }}%</td>
+                            </tr>
+                            <tr>
+                                <th>Standard Deviation</th>
+                                <td>{{ std_dev|floatformat:1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Pass Rate</th>
+                                <td>{{ pass_rate|floatformat:1 }}%</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Grade Distribution Details -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Grade Breakdown</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center mb-3">
+                    <div class="border rounded p-3">
+                        <h4 class="text-success">{{ grade_distribution.90_100|default:0 }}</h4>
+                        <small>90-100% (Excellent)</small>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-3">
+                    <div class="border rounded p-3">
+                        <h4 class="text-info">{{ grade_distribution.80_89|default:0 }}</h4>
+                        <small>80-89% (Very Good)</small>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-3">
+                    <div class="border rounded p-3">
+                        <h4 class="text-primary">{{ grade_distribution.70_79|default:0 }}</h4>
+                        <small>70-79% (Good)</small>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-3">
+                    <div class="border rounded p-3">
+                        <h4 class="text-warning">{{ grade_distribution.60_69|default:0 }}</h4>
+                        <small>60-69% (Satisfactory)</small>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-3">
+                    <div class="border rounded p-3">
+                        <h4 class="text-danger">{{ grade_distribution.below_60|default:0 }}</h4>
+                        <small>Below 60% (Needs Improvement)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Grade Distribution Chart
+    const ctx = document.getElementById('gradeChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['90-100%', '80-89%', '70-79%', '60-69%', 'Below 60%'],
+            datasets: [{
+                label: 'Number of Students',
+                data: [
+                    {{ grade_distribution.90_100|default:0 }},
+                    {{ grade_distribution.80_89|default:0 }},
+                    {{ grade_distribution.70_79|default:0 }},
+                    {{ grade_distribution.60_69|default:0 }},
+                    {{ grade_distribution.below_60|default:0 }}
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#17a2b8',
+                    '#007bff',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

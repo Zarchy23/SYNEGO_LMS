@@ -1,0 +1,122 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Edit Chapter - {{ chapter.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Chapter</h4>
+                    <p class="mb-0 small">{{ chapter.course.title }} - Chapter {{ chapter.order }}</p>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Chapter Title *</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{ chapter.title }}" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="order" class="form-label">Order Number *</label>
+                                <input type="number" name="order" id="order" class="form-control" value="{{ chapter.order }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="chapter_type" class="form-label">Chapter Type *</label>
+                                <select name="chapter_type" id="chapter_type" class="form-select" required>
+                                    <option value="lesson" {% if chapter.chapter_type == 'lesson' %}selected{% endif %}>Video Lesson</option>
+                                    <option value="reading" {% if chapter.chapter_type == 'reading' %}selected{% endif %}>Reading Material</option>
+                                    <option value="quiz" {% if chapter.chapter_type == 'quiz' %}selected{% endif %}>Quiz Only</option>
+                                    <option value="assignment" {% if chapter.chapter_type == 'assignment' %}selected{% endif %}>Assignment</option>
+                                    <option value="project" {% if chapter.chapter_type == 'project' %}selected{% endif %}>Project</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="video_url" class="form-label">Video URL</label>
+                            <input type="url" name="video_url" id="video_url" class="form-control" value="{{ chapter.video_url }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Chapter Content *</label>
+                            <textarea name="content" id="content" class="form-control" rows="10" required>{{ chapter.content }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="estimated_minutes" class="form-label">Estimated Minutes *</label>
+                                <input type="number" name="estimated_minutes" id="estimated_minutes" class="form-control" value="{{ chapter.estimated_minutes }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="template_doc_id" class="form-label">Google Doc Template ID</label>
+                                <input type="text" name="template_doc_id" id="template_doc_id" class="form-control" value="{{ chapter.template_doc_id }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_free_preview" id="is_free_preview" class="form-check-input" {% if chapter.is_free_preview %}checked{% endif %}>
+                                    <label for="is_free_preview" class="form-check-label">Free Preview</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="requires_previous_quiz_pass" id="requires_previous_quiz_pass" class="form-check-input" {% if chapter.requires_previous_quiz_pass %}checked{% endif %}>
+                                    <label for="requires_previous_quiz_pass" class="form-check-label">Require previous quiz pass</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lms:manage_course' chapter.course.slug %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Quiz Management Section (if this chapter has a quiz) -->
+            {% if chapter.quiz %}
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Quiz Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>This chapter has an associated quiz.</p>
+                        <a href="{% url 'lms:edit_quiz' chapter.quiz.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Quiz
+                        </a>
+                        <a href="{% url 'lms:add_quiz_questions' chapter.quiz.id %}" class="btn btn-outline-success">
+                            <i class="fas fa-plus me-2"></i>Manage Questions
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card mt-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add Quiz</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Add a quiz to this chapter for student assessment.</p>
+                        <a href="{% url 'lms:create_quiz' chapter.course.slug %}?chapter_id={{ chapter.id }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Quiz
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

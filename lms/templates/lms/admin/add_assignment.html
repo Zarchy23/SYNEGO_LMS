@@ -1,0 +1,16 @@
+{% extends "lms/base.html" %}
+{% block title %}Add Assignment{% endblock %}
+{% block content %}
+<div class="container py-4"><div class="row justify-content-center"><div class="col-lg-8"><div class="card"><div class="card-header bg-primary text-white">Add Assignment - {{ course.title }}</div><div class="card-body">
+<form method="post">{% csrf_token %}
+<div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" required></div>
+<div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4" required></textarea></div>
+<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Chapter (optional)</label><select name="chapter_id" class="form-select"><option value="">No chapter</option>{% for c in chapters %}<option value="{{ c.id }}">{{ c.order }}. {{ c.title }}</option>{% endfor %}</select></div><div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="assignment_type" class="form-select">{% for v,l in assignment_types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div></div>
+<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Due Date</label><input type="datetime-local" name="due_date" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Soft Deadline</label><input type="datetime-local" name="soft_deadline" class="form-control"></div></div>
+<div class="row"><div class="col-md-4 mb-3"><label class="form-label">Late Penalty %</label><input type="number" name="late_penalty_percent" class="form-control" value="10"></div><div class="col-md-4 mb-3"><label class="form-label">Total Points</label><input type="number" name="total_points" class="form-control" value="100"></div><div class="col-md-4 mb-3"><label class="form-label">Max File Size MB</label><input type="number" name="max_file_size_mb" class="form-control" value="50"></div></div>
+<div class="mb-3"><label class="form-label">Allowed File Types</label><input name="allowed_file_types" class="form-control" value=".pdf,.doc,.docx,.txt"></div>
+<div class="mb-3"><label class="form-label">Rubric JSON</label><textarea name="rubric" class="form-control" rows="4">{"criteria": []}</textarea></div>
+<div class="form-check mb-3"><input type="checkbox" name="enable_plagiarism_check" class="form-check-input" id="plag"><label class="form-check-label" for="plag">Enable plagiarism check</label></div>
+<button class="btn btn-primary" type="submit">Save Assignment</button> <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Cancel</a>
+</form></div></div></div></div></div>
+{% endblock %}

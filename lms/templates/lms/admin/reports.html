@@ -1,0 +1,210 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Admin Reports - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_reports' %}
+
+    <div class="dashboard-main">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1">Reports & Analytics</h2>
+                        <p class="text-muted mb-0">Generate and download comprehensive institution reports</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Type Selection -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Select Report Type</h5>
+                        <div class="row">
+                            <div class="col-md-6 col-lg-3 mb-3">
+                                <a href="?type=enrollment" class="report-card {% if report_type == 'enrollment' %}active{% endif %}">
+                                    <div class="text-center">
+                                        <i class="fas fa-graduation-cap fa-2x mb-2 text-primary"></i>
+                                        <h6>Enrollment Report</h6>
+                                        <small class="text-muted">Track student enrollments by course</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3 mb-3">
+                                <a href="?type=completion" class="report-card {% if report_type == 'completion' %}active{% endif %}">
+                                    <div class="text-center">
+                                        <i class="fas fa-certificate fa-2x mb-2 text-success"></i>
+                                        <h6>Completion Report</h6>
+                                        <small class="text-muted">View certificate issuances</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3 mb-3">
+                                <a href="?type=quiz" class="report-card {% if report_type == 'quiz' %}active{% endif %}">
+                                    <div class="text-center">
+                                        <i class="fas fa-poll fa-2x mb-2 text-info"></i>
+                                        <h6>Quiz Performance</h6>
+                                        <small class="text-muted">Analysis of quiz results</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-lg-3 mb-3">
+                                <a href="?type=assignment" class="report-card {% if report_type == 'assignment' %}active{% endif %}">
+                                    <div class="text-center">
+                                        <i class="fas fa-tasks fa-2x mb-2 text-warning"></i>
+                                        <h6>Assignment Report</h6>
+                                        <small class="text-muted">Submission and grading data</small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Data -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            {% for choice_val, choice_label in report_choices %}
+                                {% if choice_val == report_type %}{{ choice_label }}{% endif %}
+                            {% endfor %}
+                        </h5>
+                        <a href="{% url 'lms:download_report' report_type %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download me-2"></i>Download CSV
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if data %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            {% if report_type == 'enrollment' %}
+                                                <th>Course Title</th>
+                                                <th>Department</th>
+                                                <th class="text-center">Total Enrollments</th>
+                                                <th class="text-center">Completed</th>
+                                            {% elif report_type == 'completion' %}
+                                                <th>Course Title</th>
+                                                <th>Month</th>
+                                                <th class="text-center">Certificates Issued</th>
+                                            {% elif report_type == 'quiz' %}
+                                                <th>Quiz Title</th>
+                                                <th>Average Score</th>
+                                                <th>Attempts</th>
+                                            {% elif report_type == 'assignment' %}
+                                                <th>Assignment Title</th>
+                                                <th>Course</th>
+                                                <th class="text-center">Submissions</th>
+                                                <th class="text-center">Graded</th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in data %}
+                                            <tr>
+                                                {% if report_type == 'enrollment' %}
+                                                    <td><strong>{{ row.course__title }}</strong></td>
+                                                    <td>{{ row.course__department__name }}</td>
+                                                    <td class="text-center"><span class="badge bg-primary">{{ row.count }}</span></td>
+                                                    <td class="text-center"><span class="badge bg-success">{{ row.completed }}</span></td>
+                                                {% elif report_type == 'completion' %}
+                                                    <td><strong>{{ row.course__title }}</strong></td>
+                                                    <td>{{ row.month }}</td>
+                                                    <td class="text-center"><span class="badge bg-success">{{ row.count }}</span></td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No data available for this report type.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                        <h3 class="mb-1">{{ total_active_students }}</h3>
+                        <p class="text-muted mb-0">Active Students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-graduation-cap fa-2x text-success mb-2"></i>
+                        <h3 class="mb-1">{{ total_enrolled }}</h3>
+                        <p class="text-muted mb-0">Total Enrollments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-certificate fa-2x text-info mb-2"></i>
+                        <h3 class="mb-1">{{ total_certificates }}</h3>
+                        <p class="text-muted mb-0">Certificates Issued</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-2x text-warning mb-2"></i>
+                        <h3 class="mb-1">{{ total_courses }}</h3>
+                        <p class="text-muted mb-0">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.report-card {
+    display: block;
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    border-color: #2f80ed;
+    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.1);
+    transform: translateY(-2px);
+}
+
+.report-card.active {
+    border-color: #2f80ed;
+    background-color: rgba(47, 128, 237, 0.05);
+}
+
+.report-card h6 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %}

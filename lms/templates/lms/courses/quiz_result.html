@@ -1,0 +1,115 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Quiz Results - {{ quiz.chapter.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Result Card -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %} text-white text-center py-4">
+                    <h2 class="mb-0">
+                        {% if attempt.passed %}
+                            <i class="fas fa-check-circle me-2"></i>Quiz Passed!
+                        {% else %}
+                            <i class="fas fa-times-circle me-2"></i>Quiz Failed
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h1 class="display-1 fw-bold">{{ attempt.score|floatformat:0 }}%</h1>
+                        <div class="progress mx-auto" style="height: 10px; max-width: 300px;">
+                            <div class="progress-bar {% if attempt.passed %}bg-success{% else %}bg-danger{% endif %}" 
+                                 role="progressbar" style="width: {{ attempt.score }}%"></div>
+                        </div>
+                        <p class="mt-3 text-muted">
+                            Pass mark: {{ quiz.pass_score }}% | 
+                            You scored {{ attempt.score|floatformat:0 }}%
+                        </p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h3>{{ quiz.questions.count }}</h3>
+                                <small class="text-muted">Total Questions</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h3>{{ quiz.attempts_allowed }}</h3>
+                                <small class="text-muted">Attempts Allowed</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h3>{{ attempts_used|default:1 }}</h3>
+                                <small class="text-muted">Attempts Used</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white text-center p-4">
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'lms:chapter_detail' quiz.chapter.course.slug quiz.chapter.id %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Chapter
+                        </a>
+                        {% if not attempt.passed and can_retake %}
+                            <a href="{% url 'lms:retake_quiz' quiz.id %}" class="btn btn-warning">
+                                <i class="fas fa-redo me-2"></i>Retake Quiz
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'lms:course_detail' quiz.chapter.course.slug %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-book me-2"></i>Course Overview
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Answers -->
+            {% if quiz.show_answers_after_submit %}
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Detailed Answers</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for question in quiz.questions.all %}
+                            <div class="mb-4 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">Question {{ forloop.counter }}: {{ question.text }}</h6>
+                                    {% with user_answer=attempt.answers|get_item:question.id|stringformat:"s" %}
+                                        {% if user_answer == question.correct_answer %}
+                                            <span class="badge bg-success"><i class="fas fa-check"></i> Correct</span>
+                                        {% else %}
+                                            <span class="badge bg-danger"><i class="fas fa-times"></i> Incorrect</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Your Answer:</small>
+                                        <p class="mb-0">{{ attempt.answers|get_item:question.id|default:"Not answered" }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Correct Answer:</small>
+                                        <p class="mb-0 text-success">{{ question.correct_answer }}</p>
+                                    </div>
+                                </div>
+                                {% if question.explanation %}
+                                    <div class="alert alert-info mt-2 mb-0">
+                                        <small><i class="fas fa-info-circle me-1"></i> {{ question.explanation }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

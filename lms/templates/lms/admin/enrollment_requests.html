@@ -1,0 +1,101 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Enrollment Requests - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0"><i class="fas fa-user-clock me-2"></i>Enrollment Requests</h1>
+        <a href="{% url 'lms:admin_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Department</th>
+                            <th>Requested</th>
+                            <th>Reason</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                        <tr>
+                            <td>
+                                <strong>{{ req.student.get_full_name|default:req.student.username }}</strong><br>
+                                <small class="text-muted">{{ req.student.email }}</small>
+                            </td>
+                            <td>{{ req.course.title }}</td>
+                            <td>{{ req.course.department.name }}</td>
+                            <td>{{ req.requested_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                {% if req.reason %}
+                                    <span title="{{ req.reason }}">{{ req.reason|truncatechars:70 }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="request_id" value="{{ req.id }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </button>
+                                    </form>
+
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ req.id }}">
+                                        <i class="fas fa-times me-1"></i>Reject
+                                    </button>
+                                </div>
+
+                                <div class="modal fade" id="rejectModal{{ req.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Reject Request</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    <p class="mb-2">Reject enrollment request for <strong>{{ req.student.username }}</strong>?</p>
+                                                    <input type="hidden" name="request_id" value="{{ req.id }}">
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <label for="notes{{ req.id }}" class="form-label">Reason/Notes (optional)</label>
+                                                    <textarea class="form-control" id="notes{{ req.id }}" name="notes" rows="3" placeholder="Add a note for this rejection..."></textarea>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Reject Request</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-0">No pending enrollment requests.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
