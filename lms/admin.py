@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count, Avg
 from .models import (
-    User, Department, Course, Chapter, ChapterMaterial, Quiz, Question, QuizAttempt,
+    User, Department, Course, Chapter, Quiz, Question, QuizAttempt,
     Assignment, Submission, Enrollment, EnrollmentRequest, Certificate,
     CourseReview, Notification, SystemLog, StudentProgress
 )
@@ -399,41 +399,6 @@ class StudentProgressAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Progress', {'fields': ('student', 'course', 'completed_chapters', 'quiz_passes', 'overall_percent', 'last_activity')}),
     )
-
-# -------------------------------------------------------------------
-# Chapter Material (Documents) Admin
-# -------------------------------------------------------------------
-@admin.register(ChapterMaterial)
-class ChapterMaterialAdmin(admin.ModelAdmin):
-    list_display = ('title', 'chapter', 'material_type', 'get_icon', 'order', 'created_at')
-    list_filter = ('material_type', 'chapter__course__department', 'created_at')
-    search_fields = ('title', 'description', 'chapter__title')
-    readonly_fields = ('created_at', 'updated_at', 'get_file_icon')
-    ordering = ('chapter', 'order')
-    
-    fieldsets = (
-        ('Basic Information', {'fields': ('chapter', 'material_type', 'title', 'description', 'order')}),
-        ('Document', {'fields': ('file', 'get_file_icon'), 'description': 'Upload PDF, PowerPoint, or Excel files'}),
-        ('Video (Optional)', {'fields': ('video_url',)}),
-        ('Timestamps', {'fields': ('created_at', 'updated_at')}),
-    )
-    
-    def get_icon(self, obj):
-        """Display icon for file type"""
-        return format_html('<i class="{}"></i>', obj.icon_class)
-    get_icon.short_description = 'Type'
-    
-    def get_file_icon(self, obj):
-        """Display file type information"""
-        if obj.file:
-            return format_html(
-                '<i class="{}"></i> {} ({} bytes)',
-                obj.icon_class,
-                obj.file.name.split('/')[-1],
-                obj.file.size
-            )
-        return '-'
-    get_file_icon.short_description = 'File'
 
 # -------------------------------------------------------------------
 # Dashboard Statistics (Custom Admin View)

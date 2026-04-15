@@ -83,11 +83,6 @@ urlpatterns = [
          views.mark_chapter_complete, 
          name='mark_chapter_complete'),
     
-    # Course Materials
-    path('materials/<int:material_id>/download/', 
-         views.download_material, 
-         name='download_material'),
-    
     # Quiz Views
     path('quiz/<int:quiz_id>/', views.take_quiz, name='take_quiz'),
     path('quiz/<int:quiz_id>/result/', views.quiz_result, name='quiz_result'),
@@ -185,7 +180,6 @@ urlpatterns = [
      # Course Material Management (Admin)
      path('admin-panel/course/<slug:course_slug>/manage/', views.manage_course, name='manage_course'),
      path('admin-panel/course/<slug:course_slug>/add-material/', views.add_course_material, name='add_course_material'),
-     path('admin-panel/course/<slug:course_slug>/add-document/', views.admin_add_material, name='admin_add_material'),
      path('admin-panel/course/<slug:course_slug>/add-chapter/', views.admin_add_chapter, name='admin_add_chapter'),
      path('admin-panel/course/<slug:course_slug>/add-assignment/', views.admin_add_assignment, name='admin_add_assignment'),
      path('admin-panel/course/<slug:course_slug>/add-quiz/', views.admin_add_quiz, name='admin_add_quiz'),

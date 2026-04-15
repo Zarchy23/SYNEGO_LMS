@@ -1,15 +1,136 @@
 {% extends "lms/base.html" %}
 {% block title %}Add Chapter{% endblock %}
 {% block content %}
-<div class="container py-4"><div class="row justify-content-center"><div class="col-lg-8"><div class="card"><div class="card-header bg-primary text-white">Add Chapter - {{ course.title }}</div><div class="card-body">
-<form method="post">{% csrf_token %}
-<div class="mb-3"><label class="form-label">Title</label><input name="title" class="form-control" required></div>
-<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Order</label><input type="number" name="order" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="chapter_type" class="form-select">{% for v,l in chapter_types %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div></div>
-<div class="mb-3"><label class="form-label">Video URL</label><input type="url" name="video_url" class="form-control"></div>
-<div class="mb-3"><label class="form-label">Content</label><textarea name="content" class="form-control" rows="6" required></textarea></div>
-<div class="row"><div class="col-md-6 mb-3"><label class="form-label">Estimated Minutes</label><input type="number" name="estimated_minutes" class="form-control" value="30"></div><div class="col-md-6 mb-3"><label class="form-label">Template Doc ID</label><input name="template_doc_id" class="form-control"></div></div>
-<div class="form-check mb-2"><input type="checkbox" name="is_free_preview" class="form-check-input" id="free"><label class="form-check-label" for="free">Free preview</label></div>
-<div class="form-check mb-3"><input type="checkbox" name="requires_previous_quiz_pass" class="form-check-input" id="req" checked><label class="form-check-label" for="req">Requires previous completion</label></div>
-<button class="btn btn-primary" type="submit">Save Chapter</button> <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">Cancel</a>
-</form></div></div></div></div></div>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Add Chapter - {{ course.title }}</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Basic Information Section -->
+            <div class="mb-4">
+              <h6 class="text-secondary mb-3"><i class="fas fa-info-circle"></i> Basic Information</h6>
+              
+              <div class="mb-3">
+                <label class="form-label fw-bold">Chapter Title</label>
+                <input name="title" class="form-control" placeholder="e.g., Introduction to Python Basics" required>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold">Chapter Order</label>
+                  <input type="number" name="order" class="form-control" value="1" required min="1">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold">Chapter Type</label>
+                  <select name="chapter_type" class="form-select">
+                    {% for v,l in chapter_types %}
+                      <option value="{{ v }}">{{ l }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold">Estimated Duration</label>
+                  <div class="input-group">
+                    <input type="number" name="estimated_minutes" class="form-control" value="30" min="1">
+                    <span class="input-group-text">minutes</span>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold">Template Doc ID</label>
+                  <input name="template_doc_id" class="form-control" placeholder="Optional Google Doc ID">
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Document Upload Section (PRIMARY) -->
+            <div class="mb-4 p-3 bg-light rounded border-2" style="border-color: #007bff !important;">
+              <h6 class="text-primary mb-3"><i class="fas fa-file-upload"></i> Course Materials (Learning Documents)</h6>
+              <p class="text-muted small mb-3">Upload PDF, PowerPoint, or Excel files for learners to download and study</p>
+              
+              <div class="mb-3">
+                <label class="form-label fw-bold">Upload Document</label>
+                <input type="file" name="document_file" class="form-control" accept=".pdf,.pptx,.ppt,.xlsx,.xls" 
+                       placeholder="Select a PDF, PowerPoint, or Excel file">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle"></i> Supported formats: PDF, PowerPoint (.pptx, .ppt), Excel (.xlsx, .xls)
+                </small>
+              </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="mb-4">
+              <h6 class="text-secondary mb-3"><i class="fas fa-align-left"></i> Lesson Content</h6>
+              
+              <div class="mb-3">
+                <label class="form-label fw-bold">Content (HTML/Text)</label>
+                <textarea name="content" class="form-control" rows="6" placeholder="Add lesson notes, learning objectives, or additional context" required></textarea>
+                <small class="text-muted">You can use HTML formatting if needed</small>
+              </div>
+            </div>
+
+            <!-- Video Section (OPTIONAL) -->
+            <div class="mb-4 p-3 bg-light rounded opacity-75">
+              <h6 class="text-secondary mb-3"><i class="fas fa-video"></i> Video URL (Optional)</h6>
+              <p class="text-muted small mb-3">Add YouTube, Vimeo, or other video links if available</p>
+              
+              <div class="mb-3">
+                <label class="form-label">Video URL <span class="badge bg-secondary ms-2">Optional</span></label>
+                <input type="url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." disabled title="Video uploads are currently disabled">
+                <small class="text-muted">
+                  <i class="fas fa-exclamation-triangle"></i> Video streaming is not yet available. Please focus on uploading documents for now.
+                </small>
+              </div>
+            </div>
+
+            <!-- Access Control Section -->
+            <div class="mb-4">
+              <h6 class="text-secondary mb-3"><i class="fas fa-lock"></i> Access Control</h6>
+              
+              <div class="form-check mb-2">
+                <input type="checkbox" name="is_free_preview" class="form-check-input" id="free">
+                <label class="form-check-label" for="free">
+                  <strong>Free Preview</strong> - Allow preview access without enrollment
+                </label>
+              </div>
+
+              <div class="form-check mb-3">
+                <input type="checkbox" name="requires_previous_quiz_pass" class="form-check-input" id="req" checked>
+                <label class="form-check-label" for="req">
+                  <strong>Require Completion</strong> - Learner must complete previous chapter to access this
+                </label>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="mb-3">
+              <button class="btn btn-primary" type="submit">
+                <i class="fas fa-save"></i> Save Chapter
+              </button>
+              <a class="btn btn-outline-secondary" href="{% url 'lms:manage_course' course.slug %}">
+                <i class="fas fa-times"></i> Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .border-2 {
+    border-width: 2px !important;
+  }
+</style>
 {% endblock %}

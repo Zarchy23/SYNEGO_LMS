@@ -767,15 +767,6 @@ def course_detail(request, slug):
     # Get chapters
     chapters = course.chapters.all().order_by('order')
     
-    # Get course materials (documents) if user is enrolled or is admin
-    materials = []
-    if is_enrolled or request.user.role in ['admin', 'instructor'] or request.user.is_superuser:
-        from lms.models import ChapterMaterial
-        materials = ChapterMaterial.objects.filter(
-            chapter__course=course,
-            material_type='document'
-        ).order_by('order')
-    
     # Check if there's a pending enrollment request
     has_pending_request = False
     if request.user.is_authenticated:
@@ -786,7 +777,6 @@ def course_detail(request, slug):
     context = {
         'course': course,
         'chapters': chapters,
-        'materials': materials,
         'is_enrolled': is_enrolled,
         'enrollment': enrollment,
         'has_pending_request': has_pending_request,
@@ -1429,114 +1419,29 @@ def add_course_material(request, course_slug):
 
 
 @admin_required
-@admin_required
-def admin_add_material(request, course_slug):
-    """Admin view to add course materials (documents) to a course."""
-    from lms.models import ChapterMaterial
-    
-    course = get_object_or_404(Course, slug=course_slug)
-    
-    # Check permission - only admin or course instructor
-    if request.user.role == 'instructor' and course.instructor != request.user:
-        if course.department != request.user.department:
-            messages.error(request, "You can only add materials to courses in your department.")
-            return redirect('lms:course_detail', slug=course.slug)
-
-    if request.method == 'POST':
-        title = request.POST.get('title', '').strip()
-        description = request.POST.get('description', '').strip()
-        order = int(request.POST.get('order', 0))
-        file = request.FILES.get('file')
-        
-        if not title:
-            messages.error(request, "Document title is required.")
-            return redirect('lms:add_course_material', course_slug=course.slug)
-        
-        if not file:
-            messages.error(request, "Document file is required.")
-            return redirect('lms:add_course_material', course_slug=course.slug)
-        
-        try:
-            # Create material for the course (not tied to a specific chapter yet)
-            material = ChapterMaterial.objects.create(
-                chapter=course.chapters.first() if course.chapters.exists() else None,
-                material_type='document',
-                title=title,
-                description=description,
-                file=file,
-                order=order,
-            )
-            log_action(request.user, 'create', material, request)
-            messages.success(request, f"Document '{title}' uploaded successfully. Learners can now download it.")
-            
-        except Exception as e:
-            messages.error(request, f"Error uploading document: {str(e)}")
-        
-        return redirect('lms:add_course_material', course_slug=course.slug)
-
-    chapters = course.chapters.all().order_by('order')
-    documents = ChapterMaterial.objects.filter(
-        material_type='document',
-        chapter__course=course
-    ).order_by('order')
-    
-    context = {
-        'course': course,
-        'chapters': chapters,
-        'documents': documents,
-    }
-    return render(request, 'lms/admin/add_course_material.html', context)
-
-
-def download_material(request, material_id):
-    """Download course material (document) for learners."""
-    from django.http import FileResponse
-    from lms.models import ChapterMaterial
-    import os
-    
-    material = get_object_or_404(ChapterMaterial, id=material_id, material_type='document')
-    
-    # Check if user is enrolled in the course
-    if request.user.is_authenticated and request.user.role == 'learner':
-        enrollment = Enrollment.objects.filter(
-            student=request.user,
-            course=material.chapter.course if material.chapter else None,
-            status='active'
-        ).first()
-        
-        if not enrollment:
-            messages.error(request, "You are not enrolled in this course.")
-            return redirect('lms:course_detail', slug=material.chapter.course.slug if material.chapter else '')
-    else:
-        return redirect('lms:login')
-    
-    if material.file:
-        try:
-            file_path = material.file.path
-            if os.path.exists(file_path):
-                return FileResponse(
-                    open(file_path, 'rb'),
-                    as_attachment=True,
-                    filename=os.path.basename(file_path)
-                )
-        except Exception as e:
-            messages.error(request, f"Error downloading file: {str(e)}")
-    
-    return redirect('lms:course_detail', slug=material.chapter.course.slug if material.chapter else '')
-
-
-@admin_required
 def admin_add_chapter(request, course_slug):
     """Admin view to add a chapter to a course."""
     course = get_object_or_404(Course, slug=course_slug)
 
     if request.method == 'POST':
+        # Handle file upload - documents are primary
+        document_file = None
+        if 'document_file' in request.FILES:
+            uploaded_file = request.FILES['document_file']
+            # Validate file extension
+            allowed_extensions = ('.pdf', '.pptx', '.ppt', '.xlsx', '.xls')
+            if not any(uploaded_file.name.lower().endswith(ext) for ext in allowed_extensions):
+                messages.error(request, "Only PDF, PowerPoint (.pptx, .ppt), and Excel (.xlsx, .xls) files are allowed.")
+                return redirect('lms:admin_add_chapter', course_slug=course.slug)
+            document_file = uploaded_file
+        
         chapter = Chapter.objects.create(
             course=course,
             title=request.POST.get('title', '').strip(),
             order=int(request.POST.get('order', 1)),
             chapter_type=request.POST.get('chapter_type', 'lesson'),
-            video_url=request.POST.get('video_url', '').strip(),
+            document_file=document_file,
+            video_url=request.POST.get('video_url', '').strip(),  # Optional
             content=request.POST.get('content', ''),
             estimated_minutes=int(request.POST.get('estimated_minutes', 30)),
             template_doc_id=request.POST.get('template_doc_id', '').strip(),
@@ -1719,12 +1624,28 @@ def admin_edit_chapter(request, chapter_id):
         chapter.title = request.POST.get('title', '').strip()
         chapter.order = int(request.POST.get('order', 1))
         chapter.chapter_type = request.POST.get('chapter_type', chapter.chapter_type)
-        chapter.video_url = request.POST.get('video_url', '').strip()
         chapter.content = request.POST.get('content', '')
         chapter.estimated_minutes = int(request.POST.get('estimated_minutes', 30))
         chapter.template_doc_id = request.POST.get('template_doc_id', '').strip()
         chapter.is_free_preview = request.POST.get('is_free_preview') == 'on'
         chapter.requires_previous_quiz_pass = request.POST.get('requires_previous_quiz_pass') == 'on'
+        
+        # Handle document file upload
+        if 'document_file' in request.FILES:
+            uploaded_file = request.FILES['document_file']
+            # Validate file extension
+            allowed_extensions = ('.pdf', '.pptx', '.ppt', '.xlsx', '.xls')
+            if not any(uploaded_file.name.lower().endswith(ext) for ext in allowed_extensions):
+                messages.error(request, "Only PDF, PowerPoint (.pptx, .ppt), and Excel (.xlsx, .xls) files are allowed.")
+                return redirect('lms:admin_edit_chapter', chapter_id=chapter.id)
+            # Delete old file if exists
+            if chapter.document_file:
+                chapter.document_file.delete()
+            chapter.document_file = uploaded_file
+        
+        # Video URL is optional
+        chapter.video_url = request.POST.get('video_url', '').strip()
+        
         chapter.save()
 
         log_action(request.user, 'update', chapter, request)

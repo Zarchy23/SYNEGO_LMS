@@ -379,7 +379,7 @@ class Course(models.Model):
 # -------------------------------------------------------------------
 class Chapter(models.Model):
     CHAPTER_TYPE_CHOICES = (
-        ('lesson', 'Video Lesson'),
+        ('lesson', 'Lesson with Documents'),
         ('reading', 'Reading Material'),
         ('quiz', 'Quiz Only'),
         ('assignment', 'Assignment'),
@@ -391,8 +391,16 @@ class Chapter(models.Model):
     order = models.PositiveIntegerField(help_text="Order in the course")
     chapter_type = models.CharField(max_length=20, choices=CHAPTER_TYPE_CHOICES, default='lesson')
     
+    # Documents - Primary content
+    document_file = models.FileField(
+        upload_to='chapter_documents/%Y/%m/%d/', 
+        blank=True, 
+        null=True,
+        help_text="Upload PDF, PowerPoint, or Excel documents"
+    )
+    
     # Content
-    video_url = models.URLField(blank=True, help_text="YouTube/Vimeo or self-hosted video URL")
+    video_url = models.URLField(blank=True, help_text="YouTube/Vimeo or self-hosted video URL (optional)")
     content = models.TextField(help_text="HTML or markdown content for the lesson")
     content_html = models.TextField(blank=True, help_text="Rendered HTML content")
     
@@ -434,80 +442,6 @@ class Chapter(models.Model):
         return Chapter.objects.filter(
             course=self.course, order__lt=self.order
         ).order_by('-order').first()
-
-
-# -------------------------------------------------------------------
-# Chapter Materials (Documents: PDFs, PowerPoint, Excel)
-# -------------------------------------------------------------------
-class ChapterMaterial(models.Model):
-    MATERIAL_TYPE_CHOICES = (
-        ('document', 'Document (PDF, PowerPoint, Excel)'),
-        ('video', 'Video'),
-    )
-    
-    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='materials')
-    material_type = models.CharField(max_length=20, choices=MATERIAL_TYPE_CHOICES, default='document')
-    title = models.CharField(max_length=200, help_text="Title of the material")
-    description = models.TextField(blank=True, help_text="Description of the material")
-    
-    # Document storage
-    file = models.FileField(
-        upload_to='chapter_materials/',
-        blank=True,
-        validators=[FileExtensionValidator(
-            allowed_extensions=['pdf', 'pptx', 'ppt', 'xlsx', 'xls', 'doc', 'docx']
-        )],
-        help_text="Upload PDF, PowerPoint, or Excel files"
-    )
-    
-    # Video URL (optional)
-    video_url = models.URLField(
-        blank=True,
-        help_text="YouTube/Vimeo or self-hosted video URL (optional)"
-    )
-    
-    # Display order
-    order = models.PositiveIntegerField(default=0, help_text="Order of display")
-    
-    # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['chapter', 'order', 'id']
-        indexes = [
-            models.Index(fields=['chapter', 'order']),
-            models.Index(fields=['material_type']),
-        ]
-    
-    def __str__(self):
-        return f"{self.chapter.title} - {self.title}"
-    
-    @property
-    def file_extension(self):
-        """Get the file extension"""
-        if self.file:
-            return self.file.name.split('.')[-1].lower()
-        return None
-    
-    @property
-    def icon_class(self):
-        """Get Font Awesome icon class based on file type"""
-        if not self.file:
-            return 'fas fa-file'
-        
-        ext_icons = {
-            'pdf': 'fas fa-file-pdf',
-            'pptx': 'fas fa-file-powerpoint',
-            'ppt': 'fas fa-file-powerpoint',
-            'xlsx': 'fas fa-file-excel',
-            'xls': 'fas fa-file-excel',
-            'doc': 'fas fa-file-word',
-            'docx': 'fas fa-file-word',
-        }
-        
-        ext = self.file_extension
-        return ext_icons.get(ext, 'fas fa-file')
 
 
 # -------------------------------------------------------------------
