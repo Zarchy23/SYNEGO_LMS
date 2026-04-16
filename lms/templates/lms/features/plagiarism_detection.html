@@ -1,0 +1,103 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Plagiarism Detection - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plagiarism-content { padding: 20px; }
+    .plagiarism-header {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .submission-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+    }
+    .similarity-score {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 1.1em;
+    }
+    .score-low { background: #d4edda; color: #155724; }
+    .score-medium { background: #fff3cd; color: #856404; }
+    .score-high { background: #ffe5e5; color: #d32f2f; }
+    .source-item {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid plagiarism-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="plagiarism-header">
+        <h1>🔍 Plagiarism Detection (Turnitin)</h1>
+        <p>Check submissions for originality and academic integrity</p>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <button class="btn btn-primary">Scan All Submissions</button>
+    </div>
+    
+    <div class="submission-item">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+            <div>
+                <strong>John Davis - Assignment 5</strong>
+                <small class="d-block text-muted">Submitted Dec 15, 2025</small>
+            </div>
+            <span class="similarity-score score-low">8%</span>
+        </div>
+        <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Excellent! Very low similarity score indicates original work.</p>
+        <button class="btn btn-sm btn-outline-primary">View Report</button>
+        <button class="btn btn-sm btn-outline-secondary">View Submission</button>
+    </div>
+    
+    <div class="submission-item">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+            <div>
+                <strong>Sarah Chen - Assignment 5</strong>
+                <small class="d-block text-muted">Submitted Dec 15, 2025</small>
+            </div>
+            <span class="similarity-score score-medium">32%</span>
+        </div>
+        <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Moderate similarity. Check if sources are properly cited.</p>
+        <strong style="display: block; margin: 10px 0;">Matched Sources:</strong>
+        <div class="source-item">
+            <span style="color: #666;">📖</span> "Introduction to Python" - Chapter 3 (28% match)
+        </div>
+        <button class="btn btn-sm btn-outline-primary">View Report</button>
+        <button class="btn btn-sm btn-outline-secondary">View Submission</button>
+    </div>
+    
+    <div class="submission-item">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+            <div>
+                <strong>Michael Park - Assignment 5</strong>
+                <small class="d-block text-muted">Submitted Dec 15, 2025</small>
+            </div>
+            <span class="similarity-score score-high">67%</span>
+        </div>
+        <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">High similarity detected! Review immediately.</p>
+        <strong style="display: block; margin: 10px 0; color: #d32f2f;">Risk: Possible Academic Integrity Issue</strong>
+        <strong style="display: block; margin: 10px 0;">Matched Sources:</strong>
+        <div class="source-item">
+            <span style="color: #666;">🔗</span> Student submission "michael.park@2023" (64% match)
+        </div>
+        <button class="btn btn-sm btn-warning">⚠️ Flag for Review</button>
+        <button class="btn btn-sm btn-outline-primary">View Report</button>
+    </div>
+</div>
+{% endblock %}

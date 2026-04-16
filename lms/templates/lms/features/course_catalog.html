@@ -1,0 +1,122 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Course Catalog - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .catalog-content { padding: 20px; }
+    .catalog-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .course-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+    }
+    .course-card:hover { transform: translateY(-5px); }
+    .course-image {
+        height: 150px;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5em;
+    }
+    .course-body { padding: 20px; }
+    .course-title { font-weight: 700; margin-bottom: 8px; }
+    .course-meta { font-size: 0.9em; color: #999; margin-bottom: 12px; }
+    .course-stats { display: flex; gap: 15px; font-size: 0.85em; color: #666; margin: 12px 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid catalog-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="catalog-header">
+        <h1>📚 Course Catalog</h1>
+        <p>Browse and enroll in available courses</p>
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+        <input type="text" class="form-control" placeholder="Search courses..." style="flex: 1;">
+        <select class="form-select" style="max-width: 150px;">
+            <option>All Levels</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+        </select>
+        <select class="form-select" style="max-width: 150px;">
+            <option>All Categories</option>
+            <option>Programming</option>
+            <option>Data Science</option>
+            <option>Web Development</option>
+        </select>
+    </div>
+    
+    <div class="course-grid">
+        <div class="course-card">
+            <div class="course-image">🐍</div>
+            <div class="course-body">
+                <div class="course-title">Python Fundamentals</div>
+                <div class="course-meta">Beginner • 6 weeks</div>
+                <div class="course-stats">
+                    <span>⭐ 4.8 (234)</span>
+                    <span>👥 1,204 students</span>
+                </div>
+                <button class="btn btn-sm btn-primary w-100">Enroll</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">🌐</div>
+            <div class="course-body">
+                <div class="course-title">Web Development</div>
+                <div class="course-meta">Intermediate • 8 weeks</div>
+                <div class="course-stats">
+                    <span>⭐ 4.7 (189)</span>
+                    <span>👥 856 students</span>
+                </div>
+                <button class="btn btn-sm btn-primary w-100">Enroll</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">📊</div>
+            <div class="course-body">
+                <div class="course-title">Data Science 101</div>
+                <div class="course-meta">Intermediate • 10 weeks</div>
+                <div class="course-stats">
+                    <span>⭐ 4.9 (312)</span>
+                    <span>👥 1,456 students</span>
+                </div>
+                <button class="btn btn-sm btn-primary w-100">Enroll</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">🤖</div>
+            <div class="course-body">
+                <div class="course-title">Machine Learning</div>
+                <div class="course-meta">Advanced • 12 weeks</div>
+                <div class="course-stats">
+                    <span>⭐ 4.6 (145)</span>
+                    <span>👥 423 students</span>
+                </div>
+                <button class="btn btn-sm btn-primary w-100">Enroll</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

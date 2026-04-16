@@ -43,10 +43,10 @@
                                 <input type="tel" name="phone_number" id="phone_number" class="form-control">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="department_id" class="form-label">Department</label>
-                                <select name="department_id" id="department_id" class="form-select">
-                                    <option value="">Select Department</option>
-                                    {% for dept in departments %}
+                                <label for="module_id" class="form-label">Module</label>
+                                <select name="module_id" id="module_id" class="form-select">
+                                    <option value="">Select Module</option>
+                                    {% for dept in modules %}
                                         <option value="{{ dept.id }}">{{ dept.name }}</option>
                                     {% endfor %}
                                 </select>

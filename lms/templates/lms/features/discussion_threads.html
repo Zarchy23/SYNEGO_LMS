@@ -1,0 +1,133 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Learner Discussion Threads - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .discussion-content { padding: 20px; }
+    .discussion-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .thread-list { display: grid; gap: 15px; }
+    .thread-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 4px solid #f5576c;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .thread-item:hover { transform: translateX(5px); }
+    .thread-title { font-weight: 700; font-size: 1.05em; margin-bottom: 8px; }
+    .thread-meta { color: #999; font-size: 0.9em; display: flex; gap: 20px; }
+    .thread-preview { color: #666; margin-top: 10px; font-size: 0.9em; }
+    .reply-count {
+        display: inline-block;
+        background: #f5576c;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid discussion-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="discussion-header">
+        <h1>💬 Discussion Threads</h1>
+        <p>Connect with classmates and instructors</p>
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+        <input type="text" class="form-control" placeholder="Search discussions..." style="flex: 1;">
+        <select class="form-select" style="max-width: 150px;">
+            <option>All Threads</option>
+            <option>Replied</option>
+            <option>Unanswered</option>
+            <option>My Posts</option>
+        </select>
+        <button class="btn btn-primary">+ New Thread</button>
+    </div>
+    
+    <div class="thread-list">
+        <div class="thread-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div class="thread-title">How to approach the final project?</div>
+                    <div class="thread-meta">
+                        <span>Started by Sarah Johnson</span>
+                        <span>3 days ago</span>
+                    </div>
+                    <div class="thread-preview">I'm a bit confused about the requirements. Can someone break down what's expected in each section...?</div>
+                </div>
+                <div class="reply-count">12 replies</div>
+            </div>
+        </div>
+        
+        <div class="thread-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div class="thread-title">Assignment 5 - Question about edge cases</div>
+                    <div class="thread-meta">
+                        <span>Started by Michael Chen</span>
+                        <span>2 days ago</span>
+                    </div>
+                    <div class="thread-preview">Should we handle null inputs in the function? The specification doesn't explicitly say...?</div>
+                </div>
+                <div class="reply-count">8 replies</div>
+            </div>
+        </div>
+        
+        <div class="thread-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div class="thread-title">Study group for Quiz 2</div>
+                    <div class="thread-meta">
+                        <span>Started by Emma Wilson</span>
+                        <span>1 day ago</span>
+                    </div>
+                    <div class="thread-preview">Interested in forming a study group? I'm planning to study Chapters 3-4 this weekend...</div>
+                </div>
+                <div class="reply-count">5 replies</div>
+            </div>
+        </div>
+        
+        <div class="thread-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div class="thread-title">Great resources for learning Lambda functions</div>
+                    <div class="thread-meta">
+                        <span>Started by Alex Rodriguez</span>
+                        <span>5 days ago</span>
+                    </div>
+                    <div class="thread-preview">Found this awesome tutorial that explains lambda functions really well. Sharing the link for anyone interested...</div>
+                </div>
+                <div class="reply-count">24 replies</div>
+            </div>
+        </div>
+        
+        <div class="thread-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <div class="thread-title">Can't get the code to run - Python error</div>
+                    <div class="thread-meta">
+                        <span>Started by Jordan Lee</span>
+                        <span>6 hours ago</span>
+                    </div>
+                    <div class="thread-preview">I keep getting an IndentationError. Not sure what I'm doing wrong. I attached a screenshot...</div>
+                </div>
+                <div class="reply-count">2 replies</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Create Assignment - {{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='instructor_dashboard' %}
+
+    <div class="dashboard-main" style="padding: 0; margin: 0;">
+        <div class="assignment-form-container" style="padding: 40px;">
+            <h1>Create Assignment{% if course %} for {{ course.name }}{% endif %}</h1>
+            
+            <form method="POST" class="assignment-form" style="max-width: 800px; margin: 30px 0;">
+                {% csrf_token %}
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="course_slug" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Select Course</label>
+                    <select id="course_slug" name="course_slug" required onchange="loadChapters(this.value)" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                        <option value="">-- Select a course --</option>
+                        {% for inst_course in instructor_courses %}
+                            <option value="{{ inst_course.slug }}" {% if course.slug == inst_course.slug %}selected{% endif %}>{{ inst_course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="title" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Assignment Title</label>
+                    <input type="text" id="title" name="title" required style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="description" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Description</label>
+                    <textarea id="description" name="description" rows="6" required style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;"></textarea>
+                </div>
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="chapter_id" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Chapter (Optional)</label>
+                        <div class="custom-select-wrapper">
+                            <select id="chapter_id" name="chapter_id" class="custom-select">
+                                <option value="">-- Select a chapter --</option>
+                                {% for chapter in chapters %}
+                                    <option value="{{ chapter.id }}">{{ chapter.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="custom-arrow">▼</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignment_type" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Assignment Type</label>
+                        <div class="custom-select-wrapper">
+                            <select id="assignment_type" name="assignment_type" class="custom-select">
+                                {% for value, label in assignment_types %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="custom-arrow">▼</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="due_date" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Due Date</label>
+                        <input type="datetime-local" id="due_date" name="due_date" required style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="soft_deadline" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Soft Deadline (Optional)</label>
+                        <input type="datetime-local" id="soft_deadline" name="soft_deadline" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="total_points" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Total Points</label>
+                        <input type="number" id="total_points" name="total_points" value="100" min="1" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="late_penalty_percent" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Late Penalty (%)</label>
+                        <input type="number" id="late_penalty_percent" name="late_penalty_percent" value="10" min="0" max="100" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="max_file_size_mb" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Max File Size (MB)</label>
+                        <input type="number" id="max_file_size_mb" name="max_file_size_mb" value="50" min="1" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file_preset" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">File Type Preset</label>
+                        <div class="custom-select-wrapper">
+                            <select id="file_preset" name="file_preset" onchange="updateFileTypes(this)" class="custom-select">
+                                <option value="">-- Select Preset --</option>
+                                {% for preset_name, preset_types in file_type_presets.items %}
+                                    <option value="{{ preset_types }}">{{ preset_name|title }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="custom-arrow">▼</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="allowed_file_types" style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Allowed File Types</label>
+                    <input type="text" id="allowed_file_types" name="allowed_file_types" value=".pdf,.doc,.docx,.txt" style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 4px; font-size: 14px; color: #333;">
+                    <small style="color: #666; display: block; margin-top: 6px;">Comma-separated list (e.g., .pdf,.doc,.docx)</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 500; color: #333; cursor: pointer;">
+                        <input type="checkbox" id="enable_plagiarism_check" name="enable_plagiarism_check" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span>Enable Plagiarism Check</span>
+                    </label>
+                </div>
+
+                <div class="form-actions" style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" style="padding: 14px 28px; background-color: #333; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        Create Assignment
+                    </button>
+                    <a href="{% url 'lms:instructor_assignments' %}" style="padding: 14px 28px; background-color: #666; color: white; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: 600; display: inline-block; transition: all 0.3s ease;">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .assignment-form-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .assignment-form-container h1 {
+        color: #333;
+        margin: 0 0 20px 0;
+        font-size: 28px;
+        font-weight: 600;
+    }
+
+    .form-group small {
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* Custom Dropdown Styling */
+    .custom-dropdown-wrapper {
+        position: relative;
+        display: block;
+    }
+
+    .dropdown-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #333;
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-toggle:hover {
+        background-color: #f5f5f5;
+    }
+
+    .dropdown-toggle:focus,
+    .dropdown-toggle.active {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .dropdown-value {
+        flex: 1;
+    }
+
+    .dropdown-arrow {
+        font-size: 12px;
+        color: #333;
+    }
+
+    .dropdown-toggle.active .dropdown-arrow {
+        transform: rotate(180deg);
+        transition: transform 0.2s ease;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        border: 2px solid #333;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-menu.open {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 12px;
+        color: #000;
+        background-color: white;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+
+    .dropdown-item.selected {
+        background-color: #667eea;
+        color: white;
+        font-weight: 600;
+    }
+
+    button[type="submit"] {
+        transition: all 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #000 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    a[href*="instructor_assignments"] {
+        transition: all 0.3s ease;
+    }
+
+    a[href*="instructor_assignments"]:hover {
+        background-color: #555 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #999;
+    }
+</style>
+
+<script>
+function loadChapters(courseSlug) {
+    const chapterSelect = document.getElementById('chapter_id');
+    
+    if (!courseSlug) {
+        chapterSelect.innerHTML = '<option value="">-- Select a chapter --</option>';
+        chapterSelect.disabled = true;
+        return;
+    }
+    
+    fetch(`/api/course/${courseSlug}/chapters/`)
+        .then(response => response.json())
+        .then(data => {
+            chapterSelect.innerHTML = '<option value="">-- Select a chapter --</option>';
+            if (data.chapters && data.chapters.length > 0) {
+                data.chapters.forEach(chapter => {
+                    const option = document.createElement('option');
+                    option.value = chapter.id;
+                    option.textContent = chapter.title;
+                    chapterSelect.appendChild(option);
+                });
+                chapterSelect.disabled = false;
+            } else {
+                chapterSelect.innerHTML = '<option value="">No chapters available</option>';
+                chapterSelect.disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading chapters:', error);
+            chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
+            chapterSelect.disabled = true;
+        });
+}
+
+function updateFileTypes(selectElement) {
+    const fileTypesInput = document.getElementById('allowed_file_types');
+    if (selectElement.value) {
+        fileTypesInput.value = selectElement.value;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courseSelect = document.getElementById('course_slug');
+    if (courseSelect && courseSelect.value) {
+        loadChapters(courseSelect.value);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Direct Messaging - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .messaging-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; height: calc(100vh - 200px); }
+    .messaging-sidebar { background: white; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .messaging-main { background: white; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .contacts-list { flex: 1; overflow-y: auto; }
+    .contact-item {
+        padding: 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        transition: background 0.2s;
+    }
+    .contact-item:hover { background: #f8f9fa; }
+    .contact-item.active { background: #e8f4f8; border-left: 4px solid #17a2b8; }
+    .contact-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+    .contact-info { flex: 1; }
+    .contact-name { font-weight: 600; font-size: 0.95em; }
+    .contact-preview { font-size: 0.85em; color: #999; }
+    .msg-header { padding: 15px; border-bottom: 1px solid #eee; background: #f8f9fa; }
+    .msg-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .msg-item { margin-bottom: 15px; display: flex; gap: 10px; }
+    .msg-item.sent { justify-content: flex-end; }
+    .msg-bubble {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        word-wrap: break-word;
+    }
+    .msg-item:not(.sent) .msg-bubble { background: #e8f4f8; color: #333; }
+    .msg-item.sent .msg-bubble { background: #667eea; color: white; }
+    .msg-footer { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; }
+    .msg-input { flex: 1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 20px;">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 20px; height: calc(100vh - 250px); margin-top: 20px;">
+        <!-- Contacts Sidebar -->
+        <div class="messaging-sidebar">
+            <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                <input type="text" class="form-control" placeholder="Search contacts..." style="border-radius: 20px; font-size: 0.9em;">
+            </div>
+            <div class="contacts-list">
+                <div class="contact-item active">
+                    <div class="contact-avatar" style="background: #667eea;">SJ</div>
+                    <div class="contact-info">
+                        <div class="contact-name">Sarah Johnson</div>
+                        <div class="contact-preview">Last message: 5 mins ago</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-avatar" style="background: #f093fb;">JW</div>
+                    <div class="contact-info">
+                        <div class="contact-name">Prof. Wilson</div>
+                        <div class="contact-preview">Looks good! Thanks...</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-avatar" style="background: #1abc9c;">MC</div>
+                    <div class="contact-info">
+                        <div class="contact-name">Study Group</div>
+                        <div class="contact-preview">Can we reschedule?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="messaging-main">
+            <div class="msg-header">
+                <div style="font-weight: 700; margin-bottom: 4px;">Sarah Johnson</div>
+                <small style="color: #999;">Active now</small>
+            </div>
+            
+            <div class="msg-body">
+                <div class="msg-item">
+                    <div class="msg-bubble">Hey! How's the project going?</div>
+                </div>
+                <div class="msg-item sent">
+                    <div class="msg-bubble">Hi Sarah! Making good progress, should be done by tomorrow</div>
+                </div>
+                <div class="msg-item">
+                    <div class="msg-bubble">That's great! Let me know if you need any feedback</div>
+                </div>
+                <div class="msg-item">
+                    <div class="msg-bubble">I can review it for you if needed 👍</div>
+                </div>
+                <div class="msg-item sent">
+                    <div class="msg-bubble">Thanks! I'll send it over when it's ready</div>
+                </div>
+            </div>
+            
+            <div class="msg-footer">
+                <input type="text" class="form-control msg-input" placeholder="Type a message..." style="border-radius: 20px;">
+                <button class="btn btn-primary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                    📤
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

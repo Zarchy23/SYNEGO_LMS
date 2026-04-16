@@ -25,13 +25,14 @@
 
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="chapter" role="tabpanel">
-                            <form method="post" action="{% url 'lms:admin_add_chapter' course.slug %}">
+                            <form method="post" action="{% url 'lms:admin_add_chapter' course.slug %}" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="mb-3"><label class="form-label">Chapter Title *</label><input type="text" name="title" class="form-control" required></div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3"><label class="form-label">Order *</label><input type="number" name="order" class="form-control" required></div>
                                     <div class="col-md-6 mb-3"><label class="form-label">Type</label><select name="chapter_type" class="form-select"><option value="lesson">Lesson</option><option value="reading">Reading</option><option value="quiz">Quiz</option><option value="assignment">Assignment</option><option value="project">Project</option></select></div>
                                 </div>
+                                <div class="mb-3"><label class="form-label">Document File (PDF, PPTX, XLSX)</label><input type="file" name="document_file" class="form-control" accept=".pdf,.pptx,.ppt,.xlsx,.xls"></div>
                                 <div class="mb-3"><label class="form-label">Video URL</label><input type="url" name="video_url" class="form-control"></div>
                                 <div class="mb-3"><label class="form-label">Content *</label><textarea name="content" class="form-control" rows="5" required></textarea></div>
                                 <div class="row">
@@ -45,7 +46,7 @@
                         </div>
 
                         <div class="tab-pane fade" id="assignment" role="tabpanel">
-                            <form method="post" action="{% url 'lms:admin_add_assignment' course.slug %}">
+                            <form method="post" action="{% url 'lms:admin_add_assignment' course.slug %}" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="mb-3"><label class="form-label">Title *</label><input type="text" name="title" class="form-control" required></div>
                                 <div class="mb-3"><label class="form-label">Description *</label><textarea name="description" class="form-control" rows="4" required></textarea></div>
@@ -68,7 +69,7 @@
                         </div>
 
                         <div class="tab-pane fade" id="quiz" role="tabpanel">
-                            <form method="post" action="{% url 'lms:admin_add_quiz' course.slug %}">
+                            <form method="post" action="{% url 'lms:admin_add_quiz' course.slug %}" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="mb-3"><label class="form-label">Chapter *</label><select name="chapter_id" class="form-select" required><option value="">-- select chapter --</option>{% for chapter in chapters %}<option value="{{ chapter.id }}">Chapter {{ chapter.order }}: {{ chapter.title }}</option>{% endfor %}</select></div>
                                 <div class="mb-3"><label class="form-label">Quiz Title</label><input type="text" name="title" class="form-control"></div>

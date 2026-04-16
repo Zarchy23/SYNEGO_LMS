@@ -1,0 +1,133 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Course Builder - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .builder-content { padding: 20px; }
+    .builder-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .section-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid #667eea;
+    }
+    .section-info { flex: 1; }
+    .section-name { font-weight: 700; margin-bottom: 5px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; display: block; }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid builder-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="builder-header">
+        <h1>🔨 Course Builder</h1>
+        <p>Create and structure courses with chapters and lessons</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">📖 Course Outline</h3>
+            
+            <div class="section-item">
+                <div class="section-info">
+                    <div class="section-name">📌 Getting Started</div>
+                    <small class="text-muted">Chapter 1 · 4 lessons</small>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+            
+            <div class="section-item">
+                <div class="section-info">
+                    <div class="section-name">📌 Fundamentals</div>
+                    <small class="text-muted">Chapter 2 · 6 lessons</small>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+            
+            <div class="section-item">
+                <div class="section-info">
+                    <div class="section-name">📌 Advanced Topics</div>
+                    <small class="text-muted">Chapter 3 · 5 lessons</small>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+            
+            <button class="btn btn-primary" style="margin-top: 15px;">Add Chapter</button>
+        </div>
+        
+        <div class="col-lg-4">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                <h5>➕ Add Lesson</h5>
+                <form>
+                    <div class="form-group">
+                        <label>Lesson Title</label>
+                        <input type="text" class="form-control" placeholder="Enter lesson title">
+                    </div>
+                    <div class="form-group">
+                        <label>Chapter</label>
+                        <select class="form-control">
+                            <option>Select chapter...</option>
+                            <option>Getting Started</option>
+                            <option>Fundamentals</option>
+                            <option>Advanced Topics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select class="form-control">
+                            <option>Video</option>
+                            <option>Text</option>
+                            <option>Quiz</option>
+                            <option>Assignment</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100">Add Lesson</button>
+                </form>
+            </div>
+            
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <h5>📊 Course Stats</h5>
+                <hr>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Lessons</span>
+                        <strong>15</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Quizzes</span>
+                        <strong>8</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Total Assignments</span>
+                        <strong>5</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

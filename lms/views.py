@@ -26,7 +26,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.files.base import ContentFile
 
 from .models import (
-    User, Department, Course, Chapter, Quiz, Question, QuizAttempt,
+    User, Module, Course, Chapter, Quiz, Question, QuizAttempt,
     Assignment, Submission, Enrollment, EnrollmentRequest, Certificate,
     CourseReview, Notification, SystemLog, StudentProgress
 )
@@ -158,7 +158,7 @@ def admin_required(view_func):
     return user_passes_test(lambda u: u.is_authenticated and (u.role == 'admin' or u.is_superuser))(view_func)
 
 def instructor_required(view_func):
-    return user_passes_test(lambda u: u.is_authenticated and u.role in ['admin', 'instructor', 'dept_head'])(view_func)
+    return user_passes_test(lambda u: u.is_authenticated and u.role in ['admin', 'instructor', 'module_head'])(view_func)
 
 def learner_required(view_func):
     return user_passes_test(lambda u: u.is_authenticated and u.role == 'learner')(view_func)
@@ -170,16 +170,16 @@ def learner_required(view_func):
 def index(request):
     """Landing page"""
     featured_courses = Course.objects.filter(status='published', is_active=True)[:6]
-    departments = Department.objects.filter(status='active')[:7]
+    modules = Module.objects.filter(status='active')[:7]
     stats = {
         'total_students': User.objects.filter(role='learner', is_approved=True).count(),
         'total_courses': Course.objects.filter(status='published').count(),
         'total_instructors': User.objects.filter(role='instructor').count(),
-        'total_departments': Department.objects.filter(status='active').count(),
+        'total_modules': Module.objects.filter(status='active').count(),
     }
     context = {
         'featured_courses': featured_courses,
-        'departments': departments,
+        'modules': modules,
         'stats': stats,
     }
     return render(request, 'lms/index.html', context)
@@ -204,13 +204,39 @@ def contact(request):
         return redirect('lms:contact')
     return render(request, 'lms/contact.html')
 
+
+def featured_courses(request):
+    """Featured courses landing page with brutalism design"""
+    from django.db.models import Count
+    
+    # Get featured/published courses with enrollment count
+    courses = Course.objects.filter(
+        is_published=True
+    ).annotate(
+        enrollment_count=Count('enrollment')
+    ).order_by('-created_at')[:12]
+    
+    # Get statistics
+    total_courses = Course.objects.filter(is_published=True).count()
+    total_students = User.objects.filter(role='student').count()
+    total_modules = Module.objects.count()
+    
+    context = {
+        'featured_courses': courses,
+        'total_courses': total_courses,
+        'featured_users': total_students,
+        'total_modules': total_modules,
+    }
+    
+    return render(request, 'lms/landing.html', context)
+
 # -------------------------------------------------------------------
 # Authentication Views
 # -------------------------------------------------------------------
 
 class CustomLoginView(LoginView):
     template_name = 'lms/registration/login.html'
-    redirect_authenticated_user = True
+    redirect_authenticated_user = False
     
     def form_valid(self, form):
         """Record successful login attempt"""
@@ -230,8 +256,8 @@ class CustomLoginView(LoginView):
             return redirect('lms:admin_dashboard')
         elif self.request.user.role == 'instructor':
             return redirect('lms:instructor_dashboard')
-        elif self.request.user.role == 'dept_head':
-            return redirect('lms:department_head_dashboard')
+        elif self.request.user.role == 'module_head':
+            return redirect('lms:module_head_dashboard')
         else:
             return redirect('lms:student_dashboard')
     
@@ -310,7 +336,7 @@ def self_register(request):
         
         # Notify admins and instructors
         approvers = User.objects.filter(
-            Q(role='admin') | Q(role='approver') | Q(role='dept_head')
+            Q(role='admin') | Q(role='approver') | Q(role='module_head')
         )
         approval_url = request.build_absolute_uri(reverse('lms:approve_registration', args=[token]))
         
@@ -504,11 +530,11 @@ def student_dashboard(request):
 @login_required
 def instructor_dashboard(request):
     """Instructor dashboard"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
+    if request.user.role not in ['instructor', 'admin', 'module_head']:
         return redirect('lms:student_dashboard')
     
     # Courses taught by this instructor
-    courses = Course.objects.filter(department=request.user.department, is_active=True)
+    courses = Course.objects.filter(department=request.user.module, is_active=True)
     
     # Statistics
     total_students = Enrollment.objects.filter(course__in=courses, status='active').count()
@@ -548,6 +574,7 @@ def instructor_dashboard(request):
         'pending_submissions': pending_submissions,
         'recent_submissions': recent_submissions,
         'course_stats': course_stats,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/instructor/instructor_dashboard.html', context)
 
@@ -562,7 +589,7 @@ def admin_dashboard(request):
     total_students = User.objects.filter(role='learner').count()
     total_instructors = User.objects.filter(role='instructor').count()
     total_courses = Course.objects.count()
-    total_departments = Department.objects.count()
+    total_departments = Module.objects.count()
     pending_approvals = EnrollmentRequest.objects.filter(status='pending').count()
     pending_submissions = Submission.objects.filter(status='submitted').count()
     
@@ -596,44 +623,47 @@ def admin_dashboard(request):
         'recent_logs': recent_logs,
         'manageable_courses': manageable_courses,
         'monthly_data': monthly_data[::-1],
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/admin_dashboard.html', context)
 
 @login_required
-def department_head_dashboard(request):
-    """Department head dashboard"""
-    if request.user.role != 'dept_head' or not request.user.department:
+def module_head_dashboard(request):
+    """Module head dashboard"""
+    if request.user.role != 'module_head' or not request.user.module:
         return redirect('lms:student_dashboard')
     
-    department = request.user.department
-    courses = department.courses.filter(is_active=True)
-    instructors = department.members.filter(role='instructor')
-    students = department.members.filter(role='learner', is_approved=True)
+    module = request.user.module
+    courses = module.courses.filter(is_active=True)
+    instructors = module.members.filter(role='instructor')
+    students = module.members.filter(role='learner', is_approved=True)
     
     context = {
-        'department': department,
+        'module': module,
         'courses': courses,
         'instructors': instructors,
         'students': students,
         'total_courses': courses.count(),
         'total_instructors': instructors.count(),
         'total_students': students.count(),
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
-    return render(request, 'lms/department_head_dashboard.html', context)
+    return render(request, 'lms/module_head_dashboard.html', context)
 
 # -------------------------------------------------------------------
-# Department Views
+# Module Views
 # -------------------------------------------------------------------
 
-def department_list(request):
-    """List all departments"""
-    departments = Department.objects.filter(status='active')
-    return render(request, 'lms/departments/department_list.html', {'departments': departments})
+def module_list(request):
+    """List all modules"""
+    modules = Module.objects.filter(status='active')
+    return render(request, 'lms/modules/module_list.html', {'modules': modules})
 
-def department_detail(request, slug):
-    """Department detail page"""
-    department = get_object_or_404(Department, slug=slug, status='active')
-    courses = list(department.courses.filter(status='published', is_active=True).order_by('title'))
+
+def module_detail(request, slug):
+    """Module detail page"""
+    module = get_object_or_404(Module, slug=slug, status='active')
+    courses = list(module.courses.filter(status='published', is_active=True).order_by('title'))
 
     level_map = {
         'beginner': 'Certificate / Short Course',
@@ -644,7 +674,7 @@ def department_detail(request, slug):
         course.programme_level = level_map.get(course.difficulty, course.get_difficulty_display())
 
     sample_curriculum = []
-    if not courses and 'civil' in department.name.lower():
+    if not courses and 'civil' in module.name.lower():
         sample_curriculum = [
             {
                 'programme': 'Engineering Surveying',
@@ -678,8 +708,8 @@ def department_detail(request, slug):
             },
         ]
 
-    return render(request, 'lms/departments/department_detail.html', {
-        'department': department,
+    return render(request, 'lms/modules/module_detail.html', {
+        'module': module,
         'courses': courses,
         'sample_curriculum': sample_curriculum,
         'total_programmes': len(courses) + len(sample_curriculum),
@@ -694,13 +724,13 @@ def course_list(request):
     courses = Course.objects.filter(status='published', is_active=True).select_related('department')
     
     # Filtering
-    department_param = request.GET.get('department')
-    if department_param:
-        # Handle both department ID and slug
-        if department_param.isdigit():
-            courses = courses.filter(department_id=department_param)
+    module_param = request.GET.get('module')
+    if module_param:
+        # Handle both module ID and slug
+        if module_param.isdigit():
+            courses = courses.filter(department_id=module_param)
         else:
-            courses = courses.filter(department__slug=department_param)
+            courses = courses.filter(department__slug=module_param)
     
     difficulty = request.GET.get('difficulty')
     if difficulty:
@@ -715,12 +745,12 @@ def course_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    departments = Department.objects.filter(status='active')
+    departments = Module.objects.filter(status='active')
     
     context = {
         'page_obj': page_obj,
-        'departments': departments,
-        'selected_department': department_param,
+        'modules': departments,
+        'selected_module': module_param,
         'selected_difficulty': difficulty,
         'search_query': search,
     }
@@ -1091,7 +1121,7 @@ def submit_assignment(request, assignment_id):
         
         # Notify instructors
         instructors = User.objects.filter(
-            Q(role='instructor', department=course.department) |
+            Q(role='instructor', department=course.module) |
             Q(role='admin')
         )
         grade_url = request.build_absolute_uri(reverse('lms:grade_submission', args=[submission.id]))
@@ -1142,13 +1172,10 @@ def edit_submission(request, submission_id):
 # Grading Views (Instructor)
 # -------------------------------------------------------------------
 
-@login_required
+@instructor_required
 def instructor_assignments(request):
     """List all assignments for instructor"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
-    courses = Course.objects.filter(department=request.user.department, is_active=True)
+    courses = Course.objects.filter(department=request.user.module, is_active=True)
     assignments = Assignment.objects.filter(course__in=courses).select_related('course')
     
     context = {
@@ -1157,12 +1184,9 @@ def instructor_assignments(request):
     }
     return render(request, 'lms/instructor/assignments_list.html', context)
 
-@login_required
+@instructor_required
 def submission_list(request, assignment_id):
     """List all submissions for an assignment"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
     assignment = get_object_or_404(Assignment, id=assignment_id)
     submissions = assignment.submissions.select_related('student').all()
     
@@ -1172,12 +1196,9 @@ def submission_list(request, assignment_id):
     }
     return render(request, 'lms/instructor/submission_list.html', context)
 
-@login_required
+@instructor_required
 def grade_submission(request, submission_id):
     """Grade a submission"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
     submission = get_object_or_404(Submission, id=submission_id)
     
     if request.method == 'POST':
@@ -1223,12 +1244,9 @@ def grade_submission(request, submission_id):
     }
     return render(request, 'lms/instructor/grade_submission.html', context)
 
-@login_required
+@instructor_required
 def return_submission(request, submission_id):
     """Return a submission for revision"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
     submission = get_object_or_404(Submission, id=submission_id)
     
     submission.status = 'returned'
@@ -1246,10 +1264,10 @@ def return_submission(request, submission_id):
     messages.success(request, "Submission returned to student for revision.")
     return redirect('lms:submission_list', assignment_id=submission.assignment.id)
 
-@login_required
+@instructor_required
 def assignment_analytics(request, assignment_id):
     """View analytics for an assignment"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
+    if request.user.role not in ['instructor', 'admin', 'module_head']:
         return redirect('lms:student_dashboard')
     
     assignment = get_object_or_404(Assignment, id=assignment_id)
@@ -1283,14 +1301,45 @@ def assignment_analytics(request, assignment_id):
 # -------------------------------------------------------------------
 
 @login_required
-def create_assignment(request, course_slug):
+def api_course_chapters(request, course_slug):
+    """API endpoint to fetch chapters for a course"""
+    try:
+        course = get_object_or_404(Course, slug=course_slug)
+        
+        # Check if user is an instructor in this course's department
+        if request.user.role not in ['instructor', 'admin', 'module_head']:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+        if request.user.role in ['instructor', 'module_head'] and course.department != request.user.module:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+        chapters = course.chapters.all().values('id', 'title', 'order')
+        return JsonResponse({
+            'success': True,
+            'chapters': list(chapters)
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@instructor_required
+def create_assignment(request, course_slug=None):
     """Create a new assignment"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
+    # Get all courses in the instructor's module
+    instructor_courses = Course.objects.filter(department=request.user.module, is_active=True)
     
-    course = get_object_or_404(Course, slug=course_slug)
+    # Get selected course (from POST or URL parameter)
+    selected_course_slug = request.POST.get('course_slug') or course_slug
     
-    if request.method == 'POST':
+    if not selected_course_slug and instructor_courses.exists():
+        selected_course_slug = instructor_courses.first().slug
+    
+    # Get the course object
+    if selected_course_slug:
+        course = get_object_or_404(Course, slug=selected_course_slug, department=request.user.module)
+    else:
+        course = None
+    
+    if request.method == 'POST' and course:
         assignment = Assignment.objects.create(
             course=course,
             chapter_id=request.POST.get('chapter_id') or None,
@@ -1311,19 +1360,36 @@ def create_assignment(request, course_slug):
         messages.success(request, f"Assignment '{assignment.title}' created successfully!")
         return redirect('lms:instructor_assignments')
     
-    chapters = course.chapters.all()
+    chapters = course.chapters.all() if course else []
+    
+    # Define assignment type choices
+    assignment_types = [
+        ('individual', 'Individual Assignment'),
+        ('group', 'Group Assignment'),
+    ]
+    
+    # Define file type presets
+    file_type_presets = {
+        'documents': '.pdf,.doc,.docx,.txt,.rtf',
+        'images': '.jpg,.jpeg,.png,.gif,.webp',
+        'media': '.mp4,.mkv,.avi,.mov,.webm,.mp3,.wav',
+        'code': '.py,.java,.js,.cpp,.c,.html,.css,.txt',
+        'spreadsheet': '.xlsx,.xls,.csv,.ods',
+        'all': '.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mkv,.avi,.mov,.zip,.rar',
+    }
+    
     context = {
         'course': course,
+        'instructor_courses': instructor_courses,
         'chapters': chapters,
+        'assignment_types': assignment_types,
+        'file_type_presets': file_type_presets,
     }
     return render(request, 'lms/instructor/assignment_form.html', context)
 
-@login_required
+@instructor_required
 def edit_assignment(request, assignment_id):
     """Edit an existing assignment"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
     assignment = get_object_or_404(Assignment, id=assignment_id)
     
     if request.method == 'POST':
@@ -1345,12 +1411,9 @@ def edit_assignment(request, assignment_id):
     context = {'assignment': assignment}
     return render(request, 'lms/instructor/assignment_form.html', context)
 
-@login_required
+@instructor_required
 def delete_assignment(request, assignment_id):
     """Delete an assignment"""
-    if request.user.role not in ['instructor', 'admin', 'dept_head']:
-        return redirect('lms:student_dashboard')
-    
     assignment = get_object_or_404(Assignment, id=assignment_id)
     assignment.delete()
     
@@ -1371,16 +1434,12 @@ def _redirect_course_management(course_slug):
         return redirect('lms:course_detail', slug=course_slug)
 
 
-@login_required
+@instructor_required
 def manage_course(request, course_slug):
     """Course management hub for admin/instructor/department head."""
     course = get_object_or_404(Course, slug=course_slug)
 
-    if request.user.role not in ['admin', 'instructor', 'dept_head'] and not request.user.is_superuser:
-        messages.error(request, "You don't have permission to manage this course.")
-        return redirect('lms:course_detail', slug=course.slug)
-
-    if request.user.role in ['instructor', 'dept_head'] and course.department != request.user.department:
+    if request.user.role in ['instructor', 'module_head'] and course.department != request.user.module:
         messages.error(request, "You can only manage courses in your department.")
         return redirect('lms:course_detail', slug=course.slug)
 
@@ -1397,17 +1456,13 @@ def manage_course(request, course_slug):
     return render(request, 'lms/admin/manage_course.html', context)
 
 
-@login_required
+@instructor_required
 def add_course_material(request, course_slug):
     """Add material (chapter, assignment, quiz) to a course."""
     course = get_object_or_404(Course, slug=course_slug)
 
-    if request.user.role not in ['admin', 'instructor', 'dept_head'] and not request.user.is_superuser:
-        messages.error(request, "You don't have permission to add course materials.")
-        return redirect('lms:course_detail', slug=course.slug)
-
-    if request.user.role in ['instructor', 'dept_head'] and course.department != request.user.department:
-        messages.error(request, "You can only add materials to courses in your department.")
+    if request.user.role in ['instructor', 'module_head'] and course.department != request.user.module:
+        messages.error(request, "You can only add materials to courses in your module.")
         return redirect('lms:course_detail', slug=course.slug)
 
     chapters = course.chapters.all().order_by('order')
@@ -1869,6 +1924,7 @@ def admin_users(request):
         'role_filter': role,
         'status_filter': status,
         'role_choices': User.ROLE_CHOICES,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/user_management.html', context)
 
@@ -1881,7 +1937,7 @@ def admin_add_student(request):
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         phone_number = request.POST.get('phone_number')
-        department_id = request.POST.get('department_id')
+        module_id = request.POST.get('module_id')
         course_ids = request.POST.getlist('course_ids')
         
         # Generate random password
@@ -1898,7 +1954,7 @@ def admin_add_student(request):
             is_approved=True,
             is_active=True,
             temp_password=temp_password,
-            department_id=department_id or None
+            department_id=module_id or None
         )
         
         # Generate approval token for password setup
@@ -1934,12 +1990,13 @@ def admin_add_student(request):
         messages.success(request, f"Student {username} added successfully. Credentials emailed.")
         return redirect('lms:admin_users')
     
-    departments = Department.objects.filter(status='active')
+    departments = Module.objects.filter(status='active')
     courses = Course.objects.filter(status='published', is_active=True)
     
     context = {
-        'departments': departments,
+        'modules': departments,
         'courses': courses,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/add_student.html', context)
 
@@ -1962,7 +2019,7 @@ def admin_enrollment_requests(request):
         
         return redirect('lms:admin_enrollment_requests')
     
-    context = {'requests': requests}
+    context = {'requests': requests, 'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0}
     return render(request, 'lms/admin/enrollment_requests.html', context)
 
 @admin_required
@@ -2007,6 +2064,7 @@ def admin_reports(request):
         'total_enrolled': total_enrolled,
         'total_certificates': total_certificates,
         'total_courses': total_courses,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/reports.html', context)
 
@@ -2019,7 +2077,7 @@ def download_report(request, report_type):
     writer = csv.writer(response)
     
     if report_type == 'enrollment':
-        writer.writerow(['Course', 'Department', 'Total Enrollments', 'Completed'])
+        writer.writerow(['Course', 'Module', 'Total Enrollments', 'Completed'])
         data = Enrollment.objects.select_related('course').values(
             'course__title', 'course__department__name'
         ).annotate(
@@ -2068,6 +2126,7 @@ def admin_system_logs(request):
         'selected_action': action,
         'selected_object_type': object_type,
         'selected_user': user_id,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/system_logs.html', context)
 
@@ -2084,7 +2143,7 @@ def admin_edit_user(request, user_id):
         edit_user.last_name = request.POST.get('last_name')
         edit_user.phone_number = request.POST.get('phone_number')
         edit_user.role = request.POST.get('role')
-        edit_user.department_id = request.POST.get('department_id') or None
+        edit_user.module_id = request.POST.get('module_id') or None
         edit_user.is_approved = request.POST.get('is_approved') == 'on'
         edit_user.is_active = request.POST.get('is_active') == 'on'
         
@@ -2094,11 +2153,12 @@ def admin_edit_user(request, user_id):
         messages.success(request, f"User {edit_user.username} updated successfully.")
         return redirect('lms:admin_users')
     
-    departments = Department.objects.filter(status='active')
+    departments = Module.objects.filter(status='active')
     context = {
         'edit_user': edit_user,
-        'departments': departments,
+        'modules': departments,
         'role_choices': User.ROLE_CHOICES,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
     return render(request, 'lms/admin/edit_user.html', context)
 
@@ -2115,23 +2175,24 @@ def admin_delete_user(request, user_id):
         messages.success(request, f"User {username} deleted successfully.")
         return redirect('lms:admin_users')
     
-    return render(request, 'lms/admin/confirm_delete_user.html', {'user': delete_user})
+    return render(request, 'lms/admin/confirm_delete_user.html', {'user': delete_user, 'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0})
 
 
 @admin_required
-def admin_departments(request):
-    """Manage departments"""
-    departments = Department.objects.all().order_by('name')
+def admin_modules(request):
+    """Manage modules"""
+    modules = Module.objects.all().order_by('name')
     
     context = {
-        'departments': departments,
+        'modules': modules,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0,
     }
-    return render(request, 'lms/admin/departments.html', context)
+    return render(request, 'lms/admin/modules.html', context)
 
 
 @admin_required
-def admin_add_department(request):
-    """Add a new department"""
+def admin_add_module(request):
+    """Add a new module"""
     if request.method == 'POST':
         name = request.POST.get('name')
         code = request.POST.get('code')
@@ -2146,7 +2207,7 @@ def admin_add_department(request):
         min_instructors = request.POST.get('min_instructors', 1)
         max_capacity = request.POST.get('max_capacity', 100)
         
-        department = Department.objects.create(
+        module = Module.objects.create(
             name=name,
             code=code,
             description=description,
@@ -2161,41 +2222,41 @@ def admin_add_department(request):
             max_capacity=max_capacity
         )
         
-        log_action(request.user, 'create', department, request)
-        messages.success(request, f"Department {name} created successfully.")
-        return redirect('lms:admin_departments')
+        log_action(request.user, 'create', module, request)
+        messages.success(request, f"Module {name} created successfully.")
+        return redirect('lms:admin_modules')
     
-    return render(request, 'lms/admin/add_department.html')
+    return render(request, 'lms/admin/add_module.html', {'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0})
 
 
 @admin_required
-def admin_edit_department(request, dept_id):
-    """Edit a department"""
-    department = get_object_or_404(Department, id=dept_id)
+def admin_edit_module(request, module_id):
+    """Edit a module"""
+    module = get_object_or_404(Module, id=module_id)
     
     if request.method == 'POST':
-        department.name = request.POST.get('name')
-        department.code = request.POST.get('code')
-        department.description = request.POST.get('description')
-        department.mission = request.POST.get('mission')
-        department.vision = request.POST.get('vision')
-        department.infrastructure = request.POST.get('infrastructure')
-        department.resources = request.POST.get('resources')
-        department.contact_email = request.POST.get('contact_email')
-        department.contact_phone = request.POST.get('contact_phone')
-        department.office_location = request.POST.get('office_location')
-        department.min_instructors = request.POST.get('min_instructors', 1)
-        department.max_capacity = request.POST.get('max_capacity', 100)
-        department.status = request.POST.get('status')
+        module.name = request.POST.get('name')
+        module.code = request.POST.get('code')
+        module.description = request.POST.get('description')
+        module.mission = request.POST.get('mission')
+        module.vision = request.POST.get('vision')
+        module.infrastructure = request.POST.get('infrastructure')
+        module.resources = request.POST.get('resources')
+        module.contact_email = request.POST.get('contact_email')
+        module.contact_phone = request.POST.get('contact_phone')
+        module.office_location = request.POST.get('office_location')
+        module.min_instructors = request.POST.get('min_instructors', 1)
+        module.max_capacity = request.POST.get('max_capacity', 100)
+        module.status = request.POST.get('status')
         
-        department.save()
+        module.save()
         
-        log_action(request.user, 'update', department, request)
-        messages.success(request, f"Department {department.name} updated successfully.")
-        return redirect('lms:admin_departments')
+        log_action(request.user, 'update', module, request)
+        messages.success(request, f"Module {module.name} updated successfully.")
+        return redirect('lms:admin_modules')
     
-    context = {'department': department}
-    return render(request, 'lms/admin/edit_department.html', context)
+    context = {'module': module, 'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0}
+    return render(request, 'lms/admin/edit_module.html', context)
 
 
 @admin_required
@@ -2216,8 +2277,26 @@ def admin_process_request(request, request_id):
         
         return redirect('lms:admin_enrollment_requests')
     
-    context = {'request_obj': enrollment_request}
+    context = {'request_obj': enrollment_request, 'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0}
     return render(request, 'lms/admin/process_request.html', context)
+
+
+@admin_required
+def download_bulk_enroll_template(request):
+    """Download CSV template for bulk enrollment"""
+    import csv
+    from django.http import HttpResponse
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="bulk_enrollment_template.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['email', 'username', 'first_name', 'last_name'])
+    writer.writerow(['student1@example.com', 'student1', 'John', 'Doe'])
+    writer.writerow(['student2@example.com', 'student2', 'Jane', 'Smith'])
+    writer.writerow(['student3@example.com', 'student3', 'Bob', 'Johnson'])
+    
+    return response
 
 
 @admin_required
@@ -2285,7 +2364,7 @@ def bulk_enroll_students(request):
         return redirect('lms:admin_users')
     
     courses = Course.objects.filter(status='published', is_active=True)
-    context = {'courses': courses}
+    context = {'courses': courses, 'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0}
     return render(request, 'lms/admin/bulk_enroll.html', context)
 
 
@@ -2308,7 +2387,7 @@ def bulk_upload_courses(request):
         
         for row in reader:
             try:
-                department = Department.objects.get(code=row.get('department_code'))
+                department = Module.objects.get(code=row.get('department_code'))
                 
                 course = Course.objects.create(
                     department=department,
@@ -2330,7 +2409,7 @@ def bulk_upload_courses(request):
         
         return redirect('lms:course_list')
     
-    return render(request, 'lms/admin/bulk_upload_courses.html')
+    return render(request, 'lms/admin/bulk_upload_courses.html', {'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0})
 
 # -------------------------------------------------------------------
 # Certificate Views
@@ -2417,7 +2496,7 @@ def turnitin_report(request, submission_id):
 # Progress & Grades Views
 # -------------------------------------------------------------------
 
-@login_required
+@learner_required
 def my_progress(request):
     """View overall progress"""
     enrollments = request.user.enrollments.filter(status='active').select_related('course')
@@ -2428,7 +2507,7 @@ def my_progress(request):
     context = {'enrollments': enrollments}
     return render(request, 'lms/student/my_progress.html', context)
 
-@login_required
+@learner_required
 def course_progress(request, course_slug):
     """View progress for a specific course"""
     course = get_object_or_404(Course, slug=course_slug)
@@ -2447,7 +2526,7 @@ def course_progress(request, course_slug):
     }
     return render(request, 'lms/student/course_progress.html', context)
 
-@login_required
+@learner_required
 def my_grades(request):
     """View all grades"""
     submissions = Submission.objects.filter(
@@ -2459,7 +2538,7 @@ def my_grades(request):
     context = {'submissions': submissions}
     return render(request, 'lms/student/my_grades.html', context)
 
-@login_required
+@learner_required
 def course_grades(request, course_slug):
     """View grades for a specific course"""
     course = get_object_or_404(Course, slug=course_slug)
@@ -2524,7 +2603,7 @@ def search(request):
         status='published', is_active=True
     )
     
-    departments = Department.objects.filter(
+    departments = Module.objects.filter(
         Q(name__icontains=query) | Q(description__icontains=query),
         status='active'
     )
@@ -2537,7 +2616,7 @@ def search(request):
     context = {
         'query': query,
         'courses': courses,
-        'departments': departments,
+        'modules': departments,
         'users': users,
     }
     return render(request, 'lms/search.html', context)
@@ -2645,6 +2724,189 @@ def create_support_ticket(request):
         return redirect('lms:help_center')
     
     return render(request, 'lms/help/create_ticket.html')
+
+# -------------------------------------------------------------------
+# System Settings & Enterprise Features Dashboard
+# -------------------------------------------------------------------
+
+@login_required
+@admin_required
+def admin_system_settings(request):
+    """System settings and enterprise features dashboard"""
+    from django.urls import reverse
+    
+    # Organize all enterprise features by category
+    features = {
+        'ai_administration': {
+            'title': 'AI Administration',
+            'icon': '🤖',
+            'description': 'Manage AI models, configuration, and performance',
+            'items': [
+                {
+                    'name': 'AI Models',
+                    'url': reverse('lms:ai_models'),
+                    'description': 'Manage AI models and deployment',
+                    'icon': '🧠'
+                },
+                {
+                    'name': 'AI Configuration',
+                    'url': reverse('lms:ai_config'),
+                    'description': 'Configure prediction models and adaptation',
+                    'icon': '⚙️'
+                },
+                {
+                    'name': 'AI Performance',
+                    'url': reverse('lms:ai_performance'),
+                    'description': 'Monitor AI model performance metrics',
+                    'icon': '📊'
+                },
+            ]
+        },
+        'blockchain': {
+            'title': 'Blockchain & Credentials',
+            'icon': '⛓️',
+            'description': 'Manage smart contracts and credential registry',
+            'items': [
+                {
+                    'name': 'Smart Contracts',
+                    'url': reverse('lms:smart_contracts'),
+                    'description': 'Deploy and manage blockchain contracts',
+                    'icon': '📜'
+                },
+                {
+                    'name': 'Contract Registry',
+                    'url': reverse('lms:contract_registry'),
+                    'description': 'View certificate and badge contracts',
+                    'icon': '📋'
+                },
+            ]
+        },
+        'integrations': {
+            'title': 'Integrations & API',
+            'icon': '🔌',
+            'description': 'Manage third-party integrations and webhooks',
+            'items': [
+                {
+                    'name': 'API Management',
+                    'url': reverse('lms:api_management'),
+                    'description': 'Configure and manage APIs',
+                    'icon': '🔑'
+                },
+                {
+                    'name': 'Third-Party Services',
+                    'url': reverse('lms:third_party_services'),
+                    'description': 'Configure external integrations',
+                    'icon': '🔗'
+                },
+                {
+                    'name': 'Webhooks',
+                    'url': reverse('lms:webhooks'),
+                    'description': 'Manage webhook endpoints',
+                    'icon': '🪝'
+                },
+            ]
+        },
+        'security': {
+            'title': 'Security & Compliance',
+            'icon': '🔒',
+            'description': 'Manage authentication, encryption, and audit logs',
+            'items': [
+                {
+                    'name': 'Authentication',
+                    'url': reverse('lms:authentication'),
+                    'description': 'Configure authentication methods',
+                    'icon': '🔐'
+                },
+                {
+                    'name': 'Encryption Keys',
+                    'url': reverse('lms:encryption'),
+                    'description': 'Manage encryption keys and certificates',
+                    'icon': '🔑'
+                },
+                {
+                    'name': 'Audit Trail',
+                    'url': reverse('lms:audit_trail'),
+                    'description': 'View system audit logs',
+                    'icon': '📝'
+                },
+                {
+                    'name': 'Compliance',
+                    'url': reverse('lms:compliance'),
+                    'description': 'Manage compliance policies',
+                    'icon': '✅'
+                },
+            ]
+        },
+        'system_config': {
+            'title': 'System Configuration',
+            'icon': '⚙️',
+            'description': 'Configure email, storage, themes, and plugins',
+            'items': [
+                {
+                    'name': 'Email Configuration',
+                    'url': reverse('lms:email_config'),
+                    'description': 'Configure email settings',
+                    'icon': '📧'
+                },
+                {
+                    'name': 'Storage & Backup',
+                    'url': reverse('lms:storage_backup'),
+                    'description': 'Configure storage and backup',
+                    'icon': '💾'
+                },
+                {
+                    'name': 'Theme Customization',
+                    'url': reverse('lms:theme'),
+                    'description': 'Customize system theme',
+                    'icon': '🎨'
+                },
+                {
+                    'name': 'Plugins',
+                    'url': reverse('lms:plugins'),
+                    'description': 'Manage installed plugins',
+                    'icon': '🧩'
+                },
+                {
+                    'name': 'Licenses',
+                    'url': reverse('lms:licenses'),
+                    'description': 'Manage software licenses',
+                    'icon': '📜'
+                },
+            ]
+        },
+        'analytics': {
+            'title': 'Analytics & Reporting',
+            'icon': '📊',
+            'description': 'Configure business intelligence and reports',
+            'items': [
+                {
+                    'name': 'BI Integration',
+                    'url': reverse('lms:bi_integration'),
+                    'description': 'Configure BI tools integration',
+                    'icon': '💡'
+                },
+                {
+                    'name': 'Report Scheduling',
+                    'url': reverse('lms:report_scheduling'),
+                    'description': 'Schedule automated reports',
+                    'icon': '📅'
+                },
+                {
+                    'name': 'System Health',
+                    'url': reverse('lms:system_health'),
+                    'description': 'Monitor system health metrics',
+                    'icon': '❤️'
+                },
+            ]
+        },
+    }
+    
+    context = {
+        'features': features,
+        'unread_notifications': request.user.notifications.filter(is_read=False).count() if request.user.is_authenticated else 0
+    }
+    
+    return render(request, 'lms/admin/system_settings.html', context)
 
 # -------------------------------------------------------------------
 # Error Handlers

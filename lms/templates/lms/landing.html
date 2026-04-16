@@ -1,0 +1,252 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Synego Training Institute - Learn Professional Skills{% endblock %}
+
+{% block content %}
+<!-- Brutalism Hero Section -->
+<div class="brutalism-hero">
+    <div class="brutalism-header">
+        <h1 class="brutalist-title">FEATURED<br>COURSES</h1>
+        <div class="brutalist-line"></div>
+    </div>
+    
+    <div class="brutalist-subtitle">
+        <p>Master industry-relevant skills with expert-led courses from Synego Training Institute</p>
+    </div>
+</div>
+
+<div class="brutalism-container">
+    <div class="brutalist-grid">
+        {% for course in featured_courses %}
+        <div class="brutalist-card">
+            <div class="brutalist-number">{{ forloop.counter|stringformat:"02d" }}</div>
+            <h3>{{ course.title }}</h3>
+            <p>{{ course.description|truncatewords:15 }}</p>
+            <div class="brutalist-tags">
+                <span>{{ course.difficulty }}</span>
+                <span>{{ course.estimated_hours|add:"h" }}</span>
+                {% if course.department %}
+                    <span>{{ course.department.name }}</span>
+                {% endif %}
+            </div>
+            <a href="{% url 'lms:course_detail' course.slug %}" class="brutalist-link">ENROLL →</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Call-to-Action Section -->
+<div class="brutalism-cta">
+    <div class="brutalism-cta-content">
+        <h2>READY TO START?</h2>
+        <p>Join thousands of students already transforming their careers</p>
+        <div class="brutalism-cta-buttons">
+            <a href="{% url 'lms:course_list' %}" class="brutalism-btn-primary">EXPLORE ALL COURSES</a>
+            <a href="#contact" class="brutalism-btn-secondary">CONTACT US</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.brutalism-hero {
+    background: #f5f5f0;
+    padding: 80px 40px;
+    border-top: 4px solid #000;
+    border-bottom: 4px solid #000;
+}
+
+.brutalism-header {
+    margin-bottom: 40px;
+}
+
+.brutalist-title {
+    font-size: 4.5rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+}
+
+.brutalist-line {
+    width: 120px;
+    height: 4px;
+    background: #000;
+    margin-bottom: 20px;
+}
+
+.brutalism-subtitle {
+    max-width: 600px;
+    font-size: 1.25rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.brutalism-container {
+    background: white;
+    padding: 60px 40px;
+}
+
+.brutalist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.brutalist-card {
+    border: 2px solid #000;
+    padding: 32px;
+    background: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.brutalist-card:hover {
+    transform: translate(4px, -4px);
+    box-shadow: -8px 8px 0 #000;
+}
+
+.brutalist-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #ddd;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.brutalist-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.3;
+}
+
+.brutalist-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.brutalist-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.brutalist-tags span {
+    background: #f0f0f0;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #ddd;
+}
+
+.brutalist-link {
+    display: inline-block;
+    font-weight: 700;
+    text-decoration: none;
+    color: #000;
+    border-bottom: 2px solid #000;
+    padding-bottom: 4px;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.brutalist-link:hover {
+    background: #000;
+    color: white;
+    padding: 4px 8px;
+    margin-left: -4px;
+}
+
+.brutalism-cta {
+    background: #1a1a1a;
+    color: white;
+    padding: 80px 40px;
+    text-align: center;
+    border-top: 4px solid #000;
+    border-bottom: 4px solid #000;
+}
+
+.brutalism-cta-content h2 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.brutalism-cta-content p {
+    font-size: 1.25rem;
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+.brutalism-cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.brutalism-btn-primary {
+    background: white;
+    color: #000;
+    border: 2px solid white;
+    padding: 14px 32px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+.brutalism-btn-primary:hover {
+    background: transparent;
+    transform: translate(-2px, -2px);
+    box-shadow: 2px 2px 0 white;
+}
+
+.brutalism-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 14px 32px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+.brutalism-btn-secondary:hover {
+    background: white;
+    color: #000;
+    transform: translate(-2px, -2px);
+}
+
+@media (max-width: 768px) {
+    .brutalist-title {
+        font-size: 2.5rem;
+    }
+    
+    .brutalism-cta-content h2 {
+        font-size: 2rem;
+    }
+    
+    .brutalism-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}

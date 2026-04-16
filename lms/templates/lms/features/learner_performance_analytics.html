@@ -1,0 +1,171 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Student Performance Analytics - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .performance-content { padding: 20px; }
+    .performance-header {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .score-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    .score-value { font-size: 2.5em; font-weight: 700; color: #fa709a; margin: 10px 0; }
+    .score-label { color: #666; }
+    .comparison-item {
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chart-placeholder {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid performance-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="performance-header">
+        <h1>📊 My Performance Analytics</h1>
+        <p>Detailed insights into your learning progress and performance</p>
+    </div>
+    
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-lg-3">
+            <div class="score-card">
+                <div class="score-label">Overall GPA</div>
+                <div class="score-value">3.82</div>
+                <div class="badge bg-success" style="margin-top: 10px;">Good Standing</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="score-card">
+                <div class="score-label">Course Average</div>
+                <div class="score-value">87.3%</div>
+                <div class="badge bg-success" style="margin-top: 10px;">Above Average</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="score-card">
+                <div class="score-label">Completion Rate</div>
+                <div class="score-value">94.2%</div>
+                <div class="badge bg-success" style="margin-top: 10px;">Excellent</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="score-card">
+                <div class="score-label">Learning Velocity</div>
+                <div class="score-value">+8.5%</div>
+                <div class="badge bg-info" style="margin-top: 10px;">This Month</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Performance Trend</h3>
+            <div class="chart-placeholder">
+                📈 Performance Trend Chart - Ready for Chart.js Integration
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>Course Grades</h3>
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <div class="comparison-item">
+                    <span>Python Programming</span>
+                    <strong>92/100</strong>
+                </div>
+                <div class="comparison-item">
+                    <span>Web Development</span>
+                    <strong>85/100</strong>
+                </div>
+                <div class="comparison-item">
+                    <span>Data Science</span>
+                    <strong>88/100</strong>
+                </div>
+                <div class="comparison-item">
+                    <span>Advanced Algorithms</span>
+                    <strong>79/100</strong>
+                </div>
+                <div class="comparison-item">
+                    <span>Machine Learning</span>
+                    <strong>86/100</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <h3>Assessment Breakdown</h3>
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Quizzes</span>
+                        <strong>89/100</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 89%; background: #fa709a;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Assignments</span>
+                        <strong>91/100</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 91%; background: #fa709a;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Final Exam</span>
+                        <strong>84/100</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 84%; background: #fa709a;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Participation</span>
+                        <strong>95/100</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 95%; background: #fa709a;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

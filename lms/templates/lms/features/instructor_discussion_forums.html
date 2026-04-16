@@ -1,0 +1,100 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Discussion Forums - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .forum-content { padding: 20px; }
+    .forum-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .forum-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+    .forum-title { font-weight: 700; font-size: 1.05em; margin-bottom: 8px; }
+    .forum-meta {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9em;
+        color: #666;
+        margin: 10px 0;
+    }
+    .post-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+    .post-author { font-weight: 600; margin-bottom: 5px; }
+    .post-content { margin: 8px 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid forum-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="forum-header">
+        <h1>💬 Discussion Forums</h1>
+        <p>Manage course discussions and student forums</p>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <button class="btn btn-primary">Create Forum</button>
+    </div>
+    
+    <div class="forum-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="forum-title">General Discussion</div>
+                <div class="forum-meta">
+                    <span>📝 24 posts</span>
+                    <span>👥 18 participants</span>
+                    <span>⏱️ Last: 2 hours ago</span>
+                </div>
+                <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">General course-related discussions and announcements.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary">Manage</button>
+        </div>
+    </div>
+    
+    <div class="forum-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="forum-title">Assignment Help</div>
+                <div class="forum-meta">
+                    <span>📝 12 posts</span>
+                    <span>👥 8 participants</span>
+                    <span>⏱️ Last: 30 mins ago</span>
+                </div>
+                <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Students can ask for help and clarification on assignments.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary">Manage</button>
+        </div>
+    </div>
+    
+    <div class="forum-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="forum-title">Technical Issues</div>
+                <div class="forum-meta">
+                    <span>📝 7 posts</span>
+                    <span>👥 6 participants</span>
+                    <span>⏱️ Last: 1 day ago</span>
+                </div>
+                <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Report technical issues and troubleshooting.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary">Manage</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

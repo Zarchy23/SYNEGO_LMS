@@ -1,0 +1,243 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Module Head Dashboard - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='dept_dashboard' %}
+
+    <div class="dashboard-main">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h2 class="mb-2">Welcome back, {{ user.first_name|default:user.username }}! 🏛️</h2>
+                    <p class="mb-0">Module administration and oversight dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-book fa-2x text-success mb-2"></i>
+                    <h3>{{ dept_courses_count|default:0 }}</h3>
+                    <p class="text-muted">Module Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-chalkboard fa-2x text-success mb-2"></i>
+                    <h3>{{ dept_instructors_count|default:0 }}</h3>
+                    <p class="text-muted">Instructors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-users fa-2x text-success mb-2"></i>
+                    <h3>{{ dept_students_count|default:0 }}</h3>
+                    <p class="text-muted">Module Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                    <h3>{{ pending_enrollments|default:0 }}</h3>
+                    <p class="text-muted">Pending Enrollments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Module Courses -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-book me-2"></i>Module Courses</h5>
+                </div>
+                <div class="card-body">
+                    {% for course in dept_courses %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <strong>{{ course.title }}</strong>
+                                <span class="text-muted">{{ course.enrollments.count }} students</span>
+                            </div>
+                            <small class="text-muted d-block">Instructor: {{ course.instructor.get_full_name }}</small>
+                            <div class="d-flex justify-content-between small mt-2">
+                                <a href="{% url 'lms:manage_course' course.slug %}">Manage</a>
+                                <a href="{% url 'lms:course_detail' course.slug %}">View</a>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% empty %}
+                        <p class="text-muted text-center py-3">No courses in your module yet.</p>
+                    {% endfor %}
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{% url 'lms:course_list' %}" class="btn btn-outline-primary w-100">View All Courses</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Requests -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-inbox me-2"></i>Pending Enrollment Requests</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for request in pending_enrollments_list %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ request.student.get_full_name }}</h6>
+                                        <small class="text-muted">{{ request.course.title }}</small>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-success">Approve</button>
+                                        <button type="button" class="btn btn-sm btn-danger">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="list-group-item text-center py-4">
+                                <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                                <p class="mb-0">No pending requests.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'lms:admin_users' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-users me-2"></i>Manage Staff
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'lms:admin_enrollment_requests' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-clipboard-list me-2"></i>Enrollment Requests
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'lms:admin_reports' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-chart-bar me-2"></i>View Reports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'lms:admin_modules' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise Features Tabs -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#course-quality" role="tab">
+                        <i class="fas fa-star me-2"></i>Course Quality
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#staff-mgmt" role="tab">
+                        <i class="fas fa-chalkboard me-2"></i>Staff Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#budget" role="tab">
+                        <i class="fas fa-chart-pie me-2"></i>Budget & Resources
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#approvals" role="tab">
+                        <i class="fas fa-check-circle me-2"></i>Approvals
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#insights" role="tab">
+                        <i class="fas fa-layer-group me-2"></i>Insights
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Course Quality Tab -->
+                <div id="course-quality" class="tab-pane fade show active" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            {% include "lms/features/dept_head_course_quality.html" %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Management Tab -->
+                <div id="staff-mgmt" class="tab-pane fade" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            {% include "lms/features/dept_head_staff_management.html" %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget & Resources Tab -->
+                <div id="budget" class="tab-pane fade" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            {% include "lms/features/dept_head_budget_resources.html" %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approvals Tab -->
+                <div id="approvals" class="tab-pane fade" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            {% include "lms/features/dept_head_approvals.html" %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights Tab -->
+                <div id="insights" class="tab-pane fade" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            {% include "lms/features/dept_head_insights.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+{% endblock %}

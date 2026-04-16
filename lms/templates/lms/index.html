@@ -263,12 +263,12 @@
             <form class="hero-search" method="get" action="{% url 'lms:course_list' %}">
                 <div class="row g-2 align-items-end">
                     <div class="col-md-6">
-                        <input type="text" name="q" class="form-control" placeholder="Search departments or courses...">
+                        <input type="text" name="q" class="form-control" placeholder="Search modules or courses...">
                     </div>
                     <div class="col-md-4">
-                        <select class="form-select" name="department">
-                            <option value="">All departments</option>
-                            {% for dept in departments %}
+                        <select class="form-select" name="module">
+                            <option value="">All modules</option>
+                            {% for dept in modules %}
                                 <option value="{{ dept.slug }}">{{ dept.name }}</option>
                             {% endfor %}
                         </select>
@@ -282,7 +282,7 @@
 
         <div class="hero-buttons">
             <a href="{% url 'lms:course_list' %}" class="hero-btn hero-btn-primary">Explore Courses</a>
-            <a href="{% url 'lms:department_list' %}" class="hero-btn hero-btn-secondary">Browse Departments</a>
+            <a href="{% url 'lms:module_list' %}" class="hero-btn hero-btn-secondary">Browse Modules</a>
         </div>
 
         <div class="scroll-indicator">
@@ -311,7 +311,7 @@
                 <h6 class="text-white">Quick Links</h6>
                 <ul class="list-unstyled">
                     <li><a href="{% url 'lms:course_list' %}" class="text-white-50">Courses</a></li>
-                    <li><a href="{% url 'lms:department_list' %}" class="text-white-50">Departments</a></li>
+                    <li><a href="{% url 'lms:module_list' %}" class="text-white-50">Modules</a></li>
                     <li><a href="{% url 'lms:about' %}" class="text-white-50">About Us</a></li>
                     <li><a href="{% url 'lms:contact' %}" class="text-white-50">Contact</a></li>
                 </ul>

@@ -1,0 +1,138 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Module Approvals - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .approvals-content { padding: 20px; }
+    .approvals-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .approval-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .request-item {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin: 8px 0;
+    }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid approvals-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="approvals-header">
+        <h1>✅ Module Approvals</h1>
+        <p>Review and approve pending requests</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📊 Approval Summary</h4>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); text-align: center;">
+            <div style="font-size: 2em; font-weight: 700; color: #667eea;">12</div>
+            <div style="color: #999; margin-top: 5px;">Pending Requests</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); text-align: center;">
+            <div style="font-size: 2em; font-weight: 700; color: #28a745;">43</div>
+            <div style="color: #999; margin-top: 5px;">Approved This Month</div>
+        </div>
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); text-align: center;">
+            <div style="font-size: 2em; font-weight: 700; color: #dc3545;">5</div>
+            <div style="color: #999; margin-top: 5px;">Rejected This Month</div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">⏳ Pending Approvals</h4>
+    
+    <div class="approval-card">
+        <div class="request-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">Course Curriculum Update</strong>
+                    <div style="font-size: 0.9em; color: #999;">Submitted by: Dr. Sarah Wilson • 2 days ago</div>
+                </div>
+                <span class="status-badge status-pending">PENDING</span>
+            </div>
+            <p style="margin: 12px 0; color: #666;">Request to update Python course curriculum to include latest frameworks and best practices.</p>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="btn btn-sm btn-success">Approve</button>
+                <button class="btn btn-sm btn-warning">Request Changes</button>
+                <button class="btn btn-sm btn-danger">Reject</button>
+                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+            </div>
+        </div>
+        
+        <div class="request-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">Budget Allocation - Lab Equipment</strong>
+                    <div style="font-size: 0.9em; color: #999;">Submitted by: Prof. Michael Chen • 3 days ago</div>
+                </div>
+                <span class="status-badge status-pending">PENDING</span>
+            </div>
+            <p style="margin: 12px 0; color: #666;">Request for $15,000 budget allocation for lab equipment upgrades.</p>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="btn btn-sm btn-success">Approve</button>
+                <button class="btn btn-sm btn-warning">Request Changes</button>
+                <button class="btn btn-sm btn-danger">Reject</button>
+                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+            </div>
+        </div>
+        
+        <div class="request-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">New Instructor Hiring</strong>
+                    <div style="font-size: 0.9em; color: #999;">Submitted by: Module Chair • 5 days ago</div>
+                </div>
+                <span class="status-badge status-pending">PENDING</span>
+            </div>
+            <p style="margin: 12px 0; color: #666;">Approval for hiring 2 new adjunct instructors for the Spring semester.</p>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="btn btn-sm btn-success">Approve</button>
+                <button class="btn btn-sm btn-warning">Request Changes</button>
+                <button class="btn btn-sm btn-danger">Reject</button>
+                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+            </div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">✅ Recently Approved</h4>
+    
+    <div class="approval-card">
+        <div class="request-item">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">Canvas Integration Setup</strong>
+                    <div style="font-size: 0.9em; color: #999;">Approved: 1 day ago</div>
+                </div>
+                <span class="status-badge status-approved">APPROVED</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

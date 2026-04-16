@@ -1,0 +1,171 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}AI Teaching Tools - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ai-tools-content { padding: 20px; }
+    .ai-tools-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .tool-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #667eea;
+    }
+    .tool-card:hover { box-shadow: 0 5px 25px rgba(0,0,0,0.12); }
+    .feature-list { 
+        list-style: none; 
+        padding: 0; 
+    }
+    .feature-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+    .feature-list li:before {
+        content: "✓";
+        color: #667eea;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 1.1em;
+    }
+    .form-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; display: block; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='instructor_ai_tools' %}
+    
+    <div class="dashboard-main">
+    <div class="ai-tools-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="ai-tools-header">
+        <h1>🤖 AI Teaching Tools</h1>
+        <p>Generate Questions • Adaptive Learning • AI Essay Scoring</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="tool-card">
+                <h3>✨ Generate Quiz Questions</h3>
+                <p class="text-muted">Use AI to automatically generate quiz questions based on your course content.</p>
+                
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Select Course</label>
+                        <select>
+                            <option>Select a course...</option>
+                            <option>Introduction to Python</option>
+                            <option>Web Development 101</option>
+                            <option>Data Science Basics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Chapter/Module</label>
+                        <select>
+                            <option>Select chapter...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Questions</label>
+                        <input type="number" value="10" min="1" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <div>
+                            <input type="checkbox" checked> Multiple Choice
+                            <input type="checkbox" style="margin-left: 20px;"> Short Answer
+                            <input type="checkbox" style="margin-left: 20px;"> Essay
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg">Generate Questions</button>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <h3>🎯 Adaptive Learning Configuration</h3>
+                <p class="text-muted">Configure adaptive learning paths based on student performance and learning styles.</p>
+                
+                <div class="form-section">
+                    <div class="form-group">
+                        <label style="font-weight: 700;">Enable Adaptive Learning</label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Automatically adjust difficulty based on student responses</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Learning Path Strategy</label>
+                        <select>
+                            <option>Mastery-based progression</option>
+                            <option>Time-based progression</option>
+                            <option>Hybrid approach</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty Adjustment Range</label>
+                        <input type="range" min="0.5" max="2.0" value="1.0" style="width: 100%;">
+                        <small class="text-muted">0.5x (Easier) to 2.0x (Harder)</small>
+                    </div>
+                    <button class="btn btn-success">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="tool-card">
+                <h5>📊 AI Capabilities</h5>
+                <ul class="feature-list">
+                    <li>Bloom's taxonomy aligned questions</li>
+                    <li>Automatic difficulty calibration</li>
+                    <li>Multi-language support</li>
+                    <li>Question bank management</li>
+                    <li>Performance analytics</li>
+                </ul>
+            </div>
+            
+            <div class="tool-card">
+                <h5>📈 Recent Activity</h5>
+                <div style="font-size: 0.9em;">
+                    <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <strong>25 questions generated</strong><br>
+                        <small class="text-muted">Python Course - Today</small>
+                    </div>
+                    <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <strong>12 essays scored</strong><br>
+                        <small class="text-muted">Web Dev - Yesterday</small>
+                    </div>
+                    <div style="padding: 10px 0;">
+                        <strong>3 adaptive paths created</strong><br>
+                        <small class="text-muted">Data Science - 2 days ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,326 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}Course Modules - {{ course.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .module-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .module-card:hover {
+        box-shadow: 0 4px 12px rgba(31, 58, 93, 0.1);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .module-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .module-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .module-badge {
+        background: var(--secondary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .module-badge.completed {
+        background: #27ae60;
+    }
+
+    .module-badge.in-progress {
+        background: #f39c12;
+    }
+
+    .module-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .module-description {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .progress-bar-container {
+        margin-bottom: 1rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .progress {
+        height: 8px;
+        background-color: #e8ecf1;
+        border-radius: 4px;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        border-radius: 4px;
+    }
+
+    .module-sections {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-tag {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .section-tag.completed {
+        background: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .module-footer {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e8ecf1;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .breadcrumb-container {
+        margin-bottom: 2rem;
+    }
+
+    .course-info {
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .course-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .course-subtitle {
+        color: var(--text-muted);
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item active">Modules</li>
+        </ol>
+    </nav>
+
+    <!-- Course Header -->
+    <div class="course-info">
+        <h1 class="course-title">{{ course.name }}</h1>
+        <p class="course-subtitle">{{ course.description|truncatewords:20 }}</p>
+        <div class="mt-3">
+            <span class="badge bg-primary">{{ modules.count }} Modules</span>
+            <span class="badge bg-info">{{ total_lessons }} Lessons</span>
+            <span class="badge bg-success">{{ completion_percentage }}% Complete</span>
+        </div>
+    </div>
+
+    <!-- Overall Progress -->
+    {% if total_sections > 0 %}
+    <div class="card border-0 shadow-sm p-3 mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h6 class="mb-2">Course Progress</h6>
+                <div class="progress" style="height: 12px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%"
+                        aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <strong>{{ completed_sections }} of {{ total_sections }} sections completed</strong>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Modules Grid -->
+    <div class="row">
+        <div class="col-lg-8">
+            <h5 class="mb-3">Learning Modules</h5>
+            
+            {% if modules %}
+                {% for module in modules %}
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <h4 class="module-title">{{ module.name }}</h4>
+                            {% if module.description %}
+                            <p class="module-description">{{ module.description }}</p>
+                            {% endif %}
+                        </div>
+                        <span class="module-badge {% if module.completion_status == 'completed' %}completed{% elif module.completion_status == 'in_progress' %}in-progress{% endif %}">
+                            {{ module.completion_status|title }}
+                        </span>
+                    </div>
+
+                    <!-- Module Meta -->
+                    <div class="module-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-book"></i>
+                            <span>{{ module.sections.count }} sections</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>{{ module.total_lessons }} lessons</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ module.estimated_hours }} hours</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar-container">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <strong>{{ module.completion_percentage }}%</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ module.completion_percentage }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sections Preview -->
+                    {% if module.sections.all %}
+                    <div class="module-sections">
+                        {% for section in module.sections.all|slice:":3" %}
+                        <div class="section-tag {% if section.completion_status == 'completed' %}completed{% endif %}">
+                            {{ section.name }}
+                        </div>
+                        {% endfor %}
+                        {% if module.sections.count > 3 %}
+                        <div class="section-tag">+{{ module.sections.count|add:"-3" }} more</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="module-footer">
+                        <a href="{% url 'module_detail' course.id module.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>View Module
+                        </a>
+                        {% if module.completion_status != 'completed' %}
+                        <a href="{% url 'module_detail' course.id module.id %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-play me-2"></i>Continue
+                        </a>
+                        {% else %}
+                        <span class="badge bg-success mt-2"><i class="fas fa-check me-2"></i>Completed</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No modules available for this course yet.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Learning Stats</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Total Modules</small>
+                        <p class="fs-5 fw-bold mb-0">{{ modules.count }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Active Sections</small>
+                        <p class="fs-5 fw-bold mb-0">{{ active_sections }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Lessons Completed</small>
+                        <p class="fs-5 fw-bold mb-0">{{ completed_lessons }}/{{ total_lessons }}</p>
+                    </div>
+                    <div class="mb-0">
+                        <small class="text-muted">Overall Progress</small>
+                        <p class="fs-5 fw-bold mb-0">{{ completion_percentage }}%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Quick Links</h6>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'learning_path_list' course.id %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                        <i class="fas fa-map me-2"></i>Learning Paths
+                    </a>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="fas fa-chevron-left me-2"></i>Back to Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

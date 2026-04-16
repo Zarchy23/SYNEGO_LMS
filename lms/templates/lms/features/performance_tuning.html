@@ -1,0 +1,176 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Performance Tuning - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .perf-content { padding: 20px; }
+    .perf-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .perf-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .metric-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+    }
+    .metric-value { font-size: 2em; font-weight: 700; color: #667eea; }
+    .metric-label { color: #999; font-size: 0.9em; margin-top: 5px; }
+    .performance-bar {
+        width: 100%;
+        height: 8px;
+        background: #eee;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    .performance-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid perf-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="perf-header">
+        <h1>⚡ Performance Tuning</h1>
+        <p>Optimize system performance and caching</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📊 System Performance</h4>
+    
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-value">142 ms</div>
+            <div class="metric-label">Avg Response Time</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">99.8%</div>
+            <div class="metric-label">Uptime</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">2.4 GB</div>
+            <div class="metric-label">Cache Size</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">8,456</div>
+            <div class="metric-label">Requests/min</div>
+        </div>
+    </div>
+    
+    <div class="perf-card">
+        <h4 style="margin-bottom: 20px;">💾 Caching Strategy</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Cache Backend</label>
+                <select class="form-select">
+                    <option>Redis (Current)</option>
+                    <option>Memcached</option>
+                    <option>Database</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Cache TTL (seconds)</label>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" class="form-range" min="60" max="3600" value="300" style="flex: 1;">
+                    <span style="font-weight: 600; min-width: 50px;">300s</span>
+                </div>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="query" checked>
+                <label class="form-check-label" for="query">
+                    Cache database queries
+                </label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="session" checked>
+                <label class="form-check-label" for="session">
+                    Cache user sessions
+                </label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="static" checked>
+                <label class="form-check-label" for="static">
+                    Enable static asset caching (CDN)
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="perf-card">
+        <h4 style="margin-bottom: 20px;">🔄 Database Optimization</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Query Logging</label>
+                <div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="querylog">
+                        <label class="form-check-label" for="querylog">
+                            Log slow queries (> 500ms)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">Auto-Vacuuming</label>
+                <select class="form-select">
+                    <option>Every 24 hours</option>
+                    <option>Every 12 hours</option>
+                    <option>Every 6 hours</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary">Run Query Analyzer</button>
+                <button class="btn btn-outline-secondary">View Index Status</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="perf-card">
+        <h4 style="margin-bottom: 20px;">🧹 Cleanup Tasks</h4>
+        <div style="display: grid; gap: 15px;">
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Clear Cache</strong>
+                    <div style="font-size: 0.9em; color: #999;">Last run: 2 hours ago</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Run Now</button>
+            </div>
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Clean Old Sessions</strong>
+                    <div style="font-size: 0.9em; color: #999;">Last run: 1 day ago</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Run Now</button>
+            </div>
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Optimize Database</strong>
+                    <div style="font-size: 0.9em; color: #999;">Last run: 3 days ago</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Run Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

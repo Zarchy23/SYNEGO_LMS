@@ -1,0 +1,547 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}{{ lesson.name }} - Lesson{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lesson-hero {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .lesson-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .lesson-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .navigation-breadcrumb {
+        margin-bottom: 2rem;
+    }
+
+    .lesson-content-wrapper {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .lesson-description {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+
+    /* Resources Section */
+    .resources-container {
+        margin-top: 2rem;
+    }
+
+    .resources-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .resource-card {
+        background: var(--bg-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .resource-card:hover {
+        box-shadow: 0 4px 12px rgba(31, 58, 93, 0.1);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .resource-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--secondary-color);
+        color: white;
+        border-radius: 12px;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .resource-icon.pdf {
+        background: #e74c3c;
+    }
+
+    .resource-icon.video {
+        background: #e67e22;
+    }
+
+    .resource-icon.url {
+        background: #3498db;
+    }
+
+    .resource-icon.document {
+        background: #2ecc71;
+    }
+
+    .resource-info {
+        flex: 1;
+    }
+
+    .resource-type {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 0.35rem 0.75rem;
+        background: rgba(0,0,0,0.05);
+        border-radius: 4px;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .resource-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .resource-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .resource-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .resource-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn-access {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-access.primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-access.primary:hover {
+        background: #1f69db;
+        transform: translateX(2px);
+    }
+
+    .btn-access.secondary {
+        background: white;
+        color: var(--secondary-color);
+        border: 1px solid var(--secondary-color);
+    }
+
+    .btn-access.secondary:hover {
+        background: var(--bg-light);
+    }
+
+    /* Learning Notes Section */
+    .notes-section {
+        background: var(--bg-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .notes-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .notes-textarea {
+        width: 100%;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        font-family: 'Inter', sans-serif;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .notes-textarea:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.1);
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sidebar-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .sidebar-item:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .sidebar-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.05rem;
+    }
+
+    /* Progress Tracking */
+    .progress-tracker {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .tracker-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .tracker-label strong {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .completion-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-complete {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-complete.primary {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-complete.primary:hover {
+        background: #229954;
+    }
+
+    .btn-complete.secondary {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        border: 1px solid #e8ecf1;
+    }
+
+    .btn-complete.secondary:hover {
+        border-color: var(--secondary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="navigation-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'module_list' course.id %}">Modules</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'module_detail' course.id module.id %}">{{ module.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'section_detail' course.id module.id section.id %}">{{ section.name }}</a></li>
+            <li class="breadcrumb-item active">{{ lesson.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Lesson Hero -->
+    <div class="lesson-hero">
+        <h1 class="lesson-title">{{ lesson.name }}</h1>
+        <div class="lesson-meta">
+            <div class="meta-item">
+                <i class="fas fa-book-open"></i>
+                <span>Section: {{ section.name }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-hourglass-half"></i>
+                <span>{{ lesson.estimated_minutes }} minutes</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-file-alt"></i>
+                <span>{{ resources.count }} Resources</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Lesson Description -->
+            {% if lesson.description %}
+            <div class="lesson-content-wrapper">
+                <h5 class="mb-3">Overview</h5>
+                <div class="lesson-description">
+                    {{ lesson.description|safe }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Learning Objectives -->
+            {% if learning_objectives %}
+            <div class="lesson-content-wrapper">
+                <h5 class="mb-3">Learning Objectives</h5>
+                <ul class="list-unstyled">
+                    {% for objective in learning_objectives %}
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        {{ objective }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Resources Section -->
+            {% if resources %}
+            <div class="lesson-content-wrapper">
+                <div class="resources-header">
+                    <i class="fas fa-file-alt"></i>
+                    Learning Resources
+                </div>
+
+                {% for resource in resources %}
+                <div class="resource-card">
+                    <div class="resource-icon {% if resource.resource_type == 'PDF' %}pdf{% elif resource.resource_type == 'Video' %}video{% elif resource.resource_type == 'URL' %}url{% else %}document{% endif %}">
+                        {% if resource.resource_type == 'PDF' %}
+                        <i class="fas fa-file-pdf"></i>
+                        {% elif resource.resource_type == 'Video' %}
+                        <i class="fas fa-play-circle"></i>
+                        {% elif resource.resource_type == 'URL' %}
+                        <i class="fas fa-link"></i>
+                        {% else %}
+                        <i class="fas fa-file"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="resource-info">
+                        <div class="resource-type">{{ resource.resource_type }}</div>
+                        <div class="resource-name">{{ resource.title }}</div>
+                        {% if resource.description %}
+                        <div class="resource-description">{{ resource.description }}</div>
+                        {% endif %}
+                        <div class="resource-meta">
+                            <i class="fas fa-calendar me-1"></i>
+                            Added {{ resource.created_at|date:"M d, Y" }}
+                        </div>
+
+                        <div class="resource-actions">
+                            {% if resource.resource_type == 'PDF' or resource.resource_type == 'Document' %}
+                                <a href="{{ resource.file_url }}" class="btn-access primary" target="_blank">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </a>
+                            {% elif resource.resource_type == 'Video' %}
+                                <a href="{{ resource.url }}" class="btn-access primary" target="_blank">
+                                    <i class="fas fa-play me-1"></i>Watch Video
+                                </a>
+                            {% elif resource.resource_type == 'URL' %}
+                                <a href="{{ resource.url }}" class="btn-access primary" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>Open Link
+                                </a>
+                            {% endif %}
+                            <a href="#" class="btn-access secondary">
+                                <i class="fas fa-bookmark me-1"></i>Save
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No resources available for this lesson yet.
+            </div>
+            {% endif %}
+
+            <!-- Learning Notes -->
+            <div class="notes-section">
+                <div class="notes-header">
+                    <i class="fas fa-pencil-alt"></i>
+                    Your Learning Notes
+                </div>
+                <form method="post" action="{% url 'save_lesson_notes' lesson.id %}">
+                    {% csrf_token %}
+                    <textarea class="notes-textarea" name="notes" placeholder="Take notes about what you learned...">{{ user_notes }}</textarea>
+                    <button type="submit" class="btn btn-primary btn-sm mt-3">
+                        <i class="fas fa-save me-2"></i>Save Notes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Progress Tracker -->
+            <div class="progress-tracker">
+                <div class="tracker-label">
+                    <span>Lesson Progress</span>
+                    <strong>{{ lesson_progress }}%</strong>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ lesson_progress }}%"></div>
+                </div>
+            </div>
+
+            <!-- Lesson Info -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-info-circle"></i>Lesson Info
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Duration</div>
+                    <div class="sidebar-value">{{ lesson.estimated_minutes }} minutes</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Difficulty</div>
+                    <div class="sidebar-value">
+                        <span class="badge bg-primary">{{ lesson.difficulty_level|default:"Intermediate" }}</span>
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Resources</div>
+                    <div class="sidebar-value">{{ resources.count }} items</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Status</div>
+                    <div class="sidebar-value">
+                        <span class="badge {% if lesson_status == 'completed' %}bg-success{% elif lesson_status == 'in_progress' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ lesson_status|title }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Concepts Covered -->
+            {% if concepts %}
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-lightbulb"></i>Concepts Covered
+                </div>
+                {% for concept in concepts %}
+                <div class="sidebar-item">
+                    <span class="badge bg-light text-dark">{{ concept.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Completion Actions -->
+            <div class="completion-actions">
+                {% if lesson_status != 'completed' %}
+                <button class="btn-complete primary" onclick="markLessonComplete()">
+                    <i class="fas fa-check me-2"></i>Mark as Complete
+                </button>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    You've completed this lesson!
+                </div>
+                {% endif %}
+
+                <a href="{% url 'section_detail' course.id module.id section.id %}" class="btn-complete secondary">
+                    <i class="fas fa-chevron-left me-2"></i>Back to Section
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function markLessonComplete() {
+    fetch('{% url "mark_lesson_complete" lesson.id %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

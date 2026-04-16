@@ -30,7 +30,7 @@ def sidebar_context(request):
     role_display = {
         'learner': 'Learner',
         'instructor': 'Instructor',
-        'dept_head': 'Department Head',
+        'module_head': 'Module Head',
         'approver': 'Approver',
         'admin': 'Administrator',
     }
@@ -75,7 +75,7 @@ def sidebar_context(request):
             
             # Get instructor's courses (from their department)
             instructor_courses = Course.objects.filter(
-                department=request.user.department, is_active=True
+                department=request.user.module, is_active=True
             )
             
             # Pending submissions requiring grading
@@ -89,32 +89,32 @@ def sidebar_context(request):
         except Exception:
             pass
 
-    # Department Head-specific counts
-    elif request.user.role == 'dept_head':
+    # Module Head-specific counts
+    elif request.user.role == 'module_head':
         try:
             from lms.models import EnrollmentRequest, Course, Enrollment, Submission
             
             # Pending enrollment requests for their department
             context['pending_requests'] = EnrollmentRequest.objects.filter(
-                course__department=request.user.department,
+                course__department=request.user.module,
                 status='pending'
             ).count()
             
-            # Department courses count
+            # Module courses count
             context['dept_courses'] = Course.objects.filter(
-                department=request.user.department, is_active=True
+                department=request.user.module, is_active=True
             ).count()
             
-            # Department students count
+            # Module students count
             dept_students = Enrollment.objects.filter(
-                course__department=request.user.department,
+                course__department=request.user.module,
                 status__in=['active', 'completed']
             ).values('student').distinct().count()
             context['dept_students'] = dept_students
             
             # Pending submissions in department
             context['pending_submissions'] = Submission.objects.filter(
-                assignment__course__department=request.user.department,
+                assignment__course__department=request.user.module,
                 status='submitted'
             ).count()
         except Exception:
@@ -144,14 +144,14 @@ def sidebar_context(request):
     # Admin-specific counts
     elif request.user.role == 'admin' or request.user.is_superuser:
         try:
-            from lms.models import User, Course, Department, EnrollmentRequest, Submission
+            from lms.models import User, Course, Module, EnrollmentRequest, Submission
             
             # System-wide counts
             context['total_users'] = User.objects.count()
             context['total_students'] = User.objects.filter(role='learner').count()
             context['total_instructors'] = User.objects.filter(role='instructor').count()
             context['total_courses'] = Course.objects.count()
-            context['total_departments'] = Department.objects.count()
+            context['total_modules'] = Module.objects.count()
             
             # Pending approvals
             context['pending_requests'] = EnrollmentRequest.objects.filter(

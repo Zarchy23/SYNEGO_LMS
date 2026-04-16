@@ -1,0 +1,151 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Student Engagement Tools - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .engagement-content { padding: 20px; }
+    .engagement-header {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .engagement-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .engagement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .engagement-item {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .engagement-number { font-size: 2em; font-weight: 700; }
+    .engagement-label { font-size: 0.9em; opacity: 0.9; }
+    .tool-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid engagement-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="engagement-header">
+        <h1>👥 Student Engagement Tools</h1>
+        <p>Increase participation and interaction</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📊 Engagement Metrics</h4>
+    
+    <div class="engagement-grid">
+        <div class="engagement-item">
+            <div class="engagement-number">87%</div>
+            <div class="engagement-label">Participation Rate</div>
+        </div>
+        <div class="engagement-item">
+            <div class="engagement-number">450</div>
+            <div class="engagement-label">Forum Posts</div>
+        </div>
+        <div class="engagement-item">
+            <div class="engagement-number">12.4h</div>
+            <div class="engagement-label">Avg Session Time</div>
+        </div>
+        <div class="engagement-item">
+            <div class="engagement-number">94%</div>
+            <div class="engagement-label">Assignment Completion</div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">🛠️ Engagement Tools</h4>
+    
+    <div class="engagement-card">
+        <h5 style="margin-bottom: 15px;">Gamification</h5>
+        <div style="display: grid; gap: 15px;">
+            <div class="tool-item">
+                <div>
+                    <strong>Point System</strong>
+                    <div style="font-size: 0.9em; color: #999;">Award points for activities</div>
+                </div>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" checked>
+                    <span>Enabled</span>
+                </label>
+            </div>
+            <div class="tool-item">
+                <div>
+                    <strong>Leaderboards</strong>
+                    <div style="font-size: 0.9em; color: #999;">Show top performers</div>
+                </div>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" checked>
+                    <span>Enabled</span>
+                </label>
+            </div>
+            <div class="tool-item">
+                <div>
+                    <strong>Badges & Achievements</strong>
+                    <div style="font-size: 0.9em; color: #999;">Reward milestones</div>
+                </div>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" checked>
+                    <span>Enabled</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="engagement-card">
+        <h5 style="margin-bottom: 15px;">Interactive Features</h5>
+        <div style="display: grid; gap: 15px;">
+            <div class="tool-item">
+                <div>
+                    <strong>Live Polls & Quizzes</strong>
+                    <div style="font-size: 0.9em; color: #999;">Real-time classroom participation</div>
+                </div>
+                <button class="btn btn-sm btn-primary">Create Poll</button>
+            </div>
+            <div class="tool-item">
+                <div>
+                    <strong>Breakout Rooms</strong>
+                    <div style="font-size: 0.9em; color: #999;">Group collaboration sessions</div>
+                </div>
+                <button class="btn btn-sm btn-primary">Setup Rooms</button>
+            </div>
+            <div class="tool-item">
+                <div>
+                    <strong>Discussion Threads</strong>
+                    <div style="font-size: 0.9em; color: #999;">Asynchronous conversations</div>
+                </div>
+                <button class="btn btn-sm btn-primary">Manage Forums</button>
+            </div>
+            <div class="tool-item">
+                <div>
+                    <strong>Peer Reviews</strong>
+                    <div style="font-size: 0.9em; color: #999;">Collaborative feedback</div>
+                </div>
+                <button class="btn btn-sm btn-primary">Create Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

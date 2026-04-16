@@ -1,0 +1,157 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}User Management - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .user-mgmt-content { padding: 20px; }
+    .user-mgmt-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .user-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .user-table table { width: 100%; margin: 0; }
+    .user-table th {
+        background: #f8f9fa;
+        padding: 15px;
+        font-weight: 700;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .user-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .user-table tr:last-child td { border-bottom: none; }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+    }
+    .role-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    .role-admin { background: #dc3545; color: white; }
+    .role-instructor { background: #667eea; color: white; }
+    .role-student { background: #28a745; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid user-mgmt-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="user-mgmt-header">
+        <h1>👥 User Management</h1>
+        <p>Manage users, roles, and permissions</p>
+    </div>
+    
+    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <input type="text" placeholder="Search users..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <select style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+            <option>All Roles</option>
+            <option>Admin</option>
+            <option>Instructor</option>
+            <option>Student</option>
+        </select>
+        <button class="btn btn-primary">Add User</button>
+    </div>
+    
+    <div class="user-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <div class="user-avatar">JD</div>
+                            <div>John Davis</div>
+                        </div>
+                    </td>
+                    <td>john.davis@example.com</td>
+                    <td><span class="role-badge role-admin">Admin</span></td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>Today</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <div class="user-avatar" style="background: #764ba2;">SJ</div>
+                            <div>Sarah Johnson</div>
+                        </div>
+                    </td>
+                    <td>sarah.johnson@example.com</td>
+                    <td><span class="role-badge role-instructor">Instructor</span></td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>2 hours ago</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <div class="user-avatar" style="background: #f5576c;">MC</div>
+                            <div>Michael Chen</div>
+                        </div>
+                    </td>
+                    <td>michael.chen@example.com</td>
+                    <td><span class="role-badge role-student">Student</span></td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>30 mins ago</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <div class="user-avatar" style="background: #ffc107; color: #333;">AG</div>
+                            <div>Ana Garcia</div>
+                        </div>
+                    </td>
+                    <td>ana.garcia@example.com</td>
+                    <td><span class="role-badge role-student">Student</span></td>
+                    <td><span class="badge bg-secondary">Inactive</span></td>
+                    <td>5 days ago</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

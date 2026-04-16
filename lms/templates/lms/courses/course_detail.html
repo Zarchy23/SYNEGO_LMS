@@ -10,7 +10,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'lms:course_list' %}">Courses</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'lms:department_detail' course.department.slug %}">{{ course.department.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'lms:module_detail' course.department.slug %}">{{ course.department.name }}</a></li>
                     <li class="breadcrumb-item active">{{ course.title }}</li>
                 </ol>
             </nav>
@@ -27,7 +27,7 @@
             </div>
             {% if user.is_authenticated %}
                 {% if user.role == 'admin' or user.role == 'instructor' or user.role == 'dept_head' %}
-                    {% if user.role == 'admin' or user.is_superuser or user.department_id == course.department_id %}
+                    {% if user.role == 'admin' or user.is_superuser or user.module_id == course.department_id %}
                         <a href="{% url 'lms:manage_course' course.slug %}" class="btn btn-outline-dark btn-sm mb-2">
                             <i class="fas fa-tools me-2"></i>Manage Materials
                         </a>

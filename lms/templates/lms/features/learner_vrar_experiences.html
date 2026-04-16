@@ -1,0 +1,169 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}VR/AR Learning Experiences - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vrar-content { padding: 20px; }
+    .vrar-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .experience-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+    }
+    .experience-card:hover { transform: translateY(-5px); }
+    .experience-image {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3em;
+    }
+    .experience-body {
+        padding: 20px;
+    }
+    .experience-title { font-weight: 700; font-size: 1.1em; margin-bottom: 8px; }
+    .experience-meta {
+        display: flex;
+        gap: 15px;
+        margin: 10px 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+    .experience-meta span { display: flex; align-items: center; gap: 5px; }
+    .session-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .session-info { flex: 1; }
+    .session-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    .status-completed { background: #d4edda; color: #155724; }
+    .status-in-progress { background: #cfe2ff; color: #084298; }
+    .status-available { background: #e8f5e9; color: #2e7d32; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid vrar-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="vrar-header">
+        <h1>🥽 VR/AR Learning Experiences</h1>
+        <p>Immersive learning through Virtual Reality and Augmented Reality</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">🌍 Available Experiences</h3>
+            
+            <div class="experience-card">
+                <div class="experience-image">🏛️</div>
+                <div class="experience-body">
+                    <div class="experience-title">Ancient Rome Virtual Tour</div>
+                    <div class="experience-meta">
+                        <span>⏱️ 45 minutes</span>
+                        <span>📚 History</span>
+                        <span>⭐ 4.8/5</span>
+                    </div>
+                    <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Explore the streets of ancient Rome in immersive VR, visiting iconic landmarks and experiencing historical events.</p>
+                    <button class="btn btn-primary btn-sm">Launch Experience</button>
+                    <button class="btn btn-outline-secondary btn-sm">Details</button>
+                </div>
+            </div>
+            
+            <div class="experience-card">
+                <div class="experience-image">🧬</div>
+                <div class="experience-body">
+                    <div class="experience-title">DNA Structure Explorer</div>
+                    <div class="experience-meta">
+                        <span>⏱️ 30 minutes</span>
+                        <span>📚 Biology</span>
+                        <span>⭐ 4.9/5</span>
+                    </div>
+                    <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Interact with 3D DNA molecules, learn about base pairs, and understand genetic coding through hands-on exploration.</p>
+                    <button class="btn btn-primary btn-sm">Launch Experience</button>
+                    <button class="btn btn-outline-secondary btn-sm">Details</button>
+                </div>
+            </div>
+            
+            <div class="experience-card">
+                <div class="experience-image">🌌</div>
+                <div class="experience-body">
+                    <div class="experience-title">Solar System VR Adventure</div>
+                    <div class="experience-meta">
+                        <span>⏱️ 60 minutes</span>
+                        <span>📚 Astronomy</span>
+                        <span>⭐ 4.7/5</span>
+                    </div>
+                    <p class="text-muted" style="margin: 10px 0; font-size: 0.95em;">Travel through space, visit planets, and learn about celestial mechanics in an interactive VR environment.</p>
+                    <button class="btn btn-primary btn-sm">Launch Experience</button>
+                    <button class="btn btn-outline-secondary btn-sm">Details</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                <h5>📋 My Sessions</h5>
+                <hr>
+                
+                <div class="session-item">
+                    <div class="session-info">
+                        <div style="font-weight: 600;">Ancient Rome Tour</div>
+                        <small class="text-muted">Completed Dec 10, 2025</small>
+                    </div>
+                    <span class="session-status status-completed">Done</span>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-info">
+                        <div style="font-weight: 600;">DNA Explorer</div>
+                        <small class="text-muted">In progress (25%)</small>
+                    </div>
+                    <span class="session-status status-in-progress">Active</span>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-info">
+                        <div style="font-weight: 600;">Solar System VR</div>
+                        <small class="text-muted">Not started</small>
+                    </div>
+                    <span class="session-status status-available">Ready</span>
+                </div>
+            </div>
+            
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <h5>💻 Equipment Requirements</h5>
+                <div style="font-size: 0.9em; line-height: 1.8;">
+                    <div><strong>VR Headset:</strong> Meta Quest 3, HTC Vive</div>
+                    <div><strong>AR Device:</strong> iOS/Android phone or AR tablet</div>
+                    <div><strong>Internet:</strong> High-speed connection recommended</div>
+                    <div><strong>Storage:</strong> 2GB free space</div>
+                </div>
+                <button class="btn btn-outline-primary w-100" style="margin-top: 15px;">Device Setup Guide</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

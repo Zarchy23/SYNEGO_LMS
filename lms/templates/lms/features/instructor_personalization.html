@@ -1,0 +1,139 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Instructor Personalization - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .personalization-content { padding: 20px; }
+    .personalization-header {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .personalization-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .student-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .personalization-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid personalization-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="personalization-header">
+        <h1>👤 Personalization Settings</h1>
+        <p>Customize learning experience for each student</p>
+    </div>
+    
+    <div class="personalization-card">
+        <h4 style="margin-bottom: 20px;">🎯 Learning Path Customization</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Select Student</label>
+                <select class="form-select">
+                    <option>Sarah Johnson</option>
+                    <option>Michael Chen</option>
+                    <option>Emma Wilson</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Difficulty Level</label>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline-secondary">Beginner</button>
+                    <button class="btn btn-primary">Intermediate</button>
+                    <button class="btn btn-outline-secondary">Advanced</button>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">Learning Pace</label>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" class="form-range" min="0" max="100" value="50" style="flex: 1;">
+                    <span style="font-weight: 600; min-width: 80px;">Moderate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="personalization-card">
+        <h4 style="margin-bottom: 20px;">📚 Content Recommendations</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Recommended Topics</label>
+                <div style="display: grid; gap: 10px;">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="topic1" checked>
+                        <label class="form-check-label" for="topic1">Variables & Data Types (Core)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="topic2" checked>
+                        <label class="form-check-label" for="topic2">Functions (Core)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="topic3">
+                        <label class="form-check-label" for="topic3">Advanced Recursion (Optional)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="personalization-card">
+        <h4 style="margin-bottom: 20px;">⏰ Assignment Schedule</h4>
+        <div class="personalization-grid">
+            <div>
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-control" value="2026-05-01">
+            </div>
+            <div>
+                <label class="form-label">Submission Deadline</label>
+                <input type="date" class="form-control" value="2026-04-30">
+            </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 15px;">Assign to Student</button>
+    </div>
+    
+    <div class="personalization-card">
+        <h4 style="margin-bottom: 20px;">📊 Student Progress</h4>
+        <div class="student-item">
+            <div>
+                <strong>Sarah Johnson</strong>
+                <div style="font-size: 0.9em; color: #999;">Progress: 75% • Pace: Moderate</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Adjust</button>
+                <button class="btn btn-sm btn-outline-secondary">View Progress</button>
+            </div>
+        </div>
+        <div class="student-item">
+            <div>
+                <strong>Michael Chen</strong>
+                <div style="font-size: 0.9em; color: #999;">Progress: 45% • Pace: Slow</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Adjust</button>
+                <button class="btn btn-sm btn-outline-secondary">View Progress</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

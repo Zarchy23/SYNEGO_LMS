@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +13,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Design System CSS Files -->
+    <link rel="stylesheet" href="{% static 'lms/css/animations.css' %}">
+    <link rel="stylesheet" href="{% static 'lms/css/glassmorphism.css' %}">
+    <link rel="stylesheet" href="{% static 'lms/css/brutalism.css' %}">
+    <link rel="stylesheet" href="{% static 'lms/css/swiss-minimalist.css' %}">
+    <link rel="stylesheet" href="{% static 'lms/css/dashboard-layout.css' %}">
 
     {% block extra_css %}{% endblock %}
 
@@ -225,13 +233,13 @@
             letter-spacing: 0.02em;
         }
 
-        .departments-list {
+        .modules-list {
             gap: 1rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         }
 
-        .department-chip {
+        .module-chip {
             padding: 18px 20px;
             border-radius: 16px;
             background: #ffffff;
@@ -239,7 +247,7 @@
             transition: transform 0.3s ease;
         }
 
-        .department-chip:hover {
+        .module-chip:hover {
             transform: translateY(-4px);
         }
 
@@ -342,7 +350,7 @@
                         <a class="nav-link" href="{% url 'lms:course_list' %}"><i class="fas fa-book me-1"></i> Courses</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lms:department_list' %}"><i class="fas fa-building me-1"></i> Departments</a>
+                        <a class="nav-link" href="{% url 'lms:module_list' %}"><i class="fas fa-building me-1"></i> Modules</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'lms:about' %}"><i class="fas fa-info-circle me-1"></i> About</a>

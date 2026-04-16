@@ -3,126 +3,129 @@
 {% block title %}All Courses - Synego Institute{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-5 fw-bold">Our Courses</h1>
-            <p class="lead">Discover a wide range of professional training programs across multiple departments</p>
+<div class="swiss-course-container">
+    <!-- Page Header - Swiss Minimalist -->
+    <div class="swiss-header">
+        <div class="swiss-header-content">
+            <h1 class="swiss-title">Our Courses</h1>
+            <p class="swiss-subtitle">Discover a wide range of professional training programs</p>
         </div>
     </div>
     
-    <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <form method="get" class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Department</label>
-                            <select name="department" class="form-select" onchange="this.form.submit()">
-                                <option value="">All Departments</option>
-                                {% for dept in departments %}
-                                    <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ dept.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Difficulty</label>
-                            <select name="difficulty" class="form-select" onchange="this.form.submit()">
-                                <option value="">All Levels</option>
-                                <option value="beginner" {% if selected_difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
-                                <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
-                                <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Search</label>
-                            <div class="input-group">
-                                <input type="text" name="q" class="form-control" placeholder="Search courses..." value="{{ search_query }}">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <a href="{% url 'lms:course_list' %}" class="btn btn-outline-secondary w-100">Clear</a>
-                        </div>
-                    </form>
+    <!-- Filters - Minimalist Style -->
+    <div class="swiss-filters-section">
+        <div class="swiss-filters">
+            <form method="get" class="swiss-filter-form">
+                <div class="swiss-filter-group">
+                    <label class="swiss-filter-label">Module</label>
+                    <select name="module" class="swiss-select" onchange="this.form.submit()">
+                        <option value="">All Modules</option>
+                        {% for dept in modules %}
+                            <option value="{{ dept.id }}" {% if selected_module == dept.id|stringformat:"s" %}selected{% endif %}>
+                                {{ dept.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
+                
+                <div class="swiss-filter-group">
+                    <label class="swiss-filter-label">Difficulty</label>
+                    <select name="difficulty" class="swiss-select" onchange="this.form.submit()">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if selected_difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+                
+                <div class="swiss-filter-group swiss-search">
+                    <label class="swiss-filter-label">Search</label>
+                    <input type="text" name="q" class="swiss-input" placeholder="Search courses..." value="{{ search_query }}">
+                    <button type="submit" class="swiss-search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="swiss-filter-group">
+                    <a href="{% url 'lms:course_list' %}" class="swiss-clear-btn">Clear</a>
+                </div>
+            </form>
         </div>
     </div>
     
     <!-- Course Grid -->
-    <div class="row">
+    <div class="swiss-courses-grid">
         {% for course in page_obj %}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card course-card h-100">
-                    {% if course.thumbnail %}
-                        <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}">
-                    {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                            <i class="fas fa-graduation-cap fa-4x text-muted"></i>
+            <div class="swiss-course-card">
+                {% if course.thumbnail %}
+                    <div class="swiss-course-image">
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                    </div>
+                {% else %}
+                    <div class="swiss-course-image swiss-placeholder">
+                        <i class="fas fa-book"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="swiss-course-content">
+                    <div class="swiss-course-meta">
+                        <span class="swiss-badge swiss-badge-dept">{{ course.department.name }}</span>
+                        <span class="swiss-badge swiss-badge-{% if course.difficulty == 'beginner' %}beginner{% elif course.difficulty == 'intermediate' %}intermediate{% else %}advanced{% endif %}">
+                            {{ course.get_difficulty_display }}
+                        </span>
+                    </div>
+                    
+                    <h3 class="swiss-course-title">{{ course.title }}</h3>
+                    
+                    <p class="swiss-course-description">{{ course.description|truncatewords:15 }}</p>
+                    
+                    <div class="swiss-course-stats">
+                        <div class="swiss-stat">
+                            <span class="swiss-stat-value">{{ course.duration }}</span>
+                            <span class="swiss-stat-label">Duration</span>
                         </div>
-                    {% endif %}
-                    <div class="card-body">
-                        <div class="mb-2">
-                            <span class="badge bg-primary">{{ course.department.name }}</span>
-                            <span class="badge {% if course.difficulty == 'beginner' %}bg-success{% elif course.difficulty == 'intermediate' %}bg-warning{% else %}bg-danger{% endif %}">
-                                {{ course.get_difficulty_display }}
-                            </span>
-                        </div>
-                        <h5 class="card-title">{{ course.title }}</h5>
-                        <p class="card-text text-muted">{{ course.description|truncatewords:20 }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div>
-                                <i class="fas fa-clock text-muted me-1"></i>
-                                <small class="text-muted">{{ course.duration }}</small>
-                            </div>
-                            <div>
-                                <i class="fas fa-users text-muted me-1"></i>
-                                <small class="text-muted">{{ course.total_students_enrolled }} students</small>
-                            </div>
+                        <div class="swiss-stat">
+                            <span class="swiss-stat-value">{{ course.total_students_enrolled }}</span>
+                            <span class="swiss-stat-label">Enrolled</span>
                         </div>
                     </div>
-                    <div class="card-footer bg-white border-0 pb-3">
-                        <a href="{% url 'lms:course_detail' course.slug %}" class="btn btn-primary w-100">
-                            View Course <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
+                    
+                    <a href="{% url 'lms:course_detail' course.slug %}" class="swiss-course-link">
+                        View Course
+                        <span class="swiss-arrow">→</span>
+                    </a>
                 </div>
             </div>
         {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+            <div class="swiss-empty-state">
+                <i class="fas fa-search"></i>
                 <h3>No courses found</h3>
-                <p class="text-muted">Try adjusting your search or filter criteria.</p>
-                <a href="{% url 'lms:course_list' %}" class="btn btn-primary">View All Courses</a>
+                <p>Try adjusting your search or filter criteria.</p>
+                <a href="{% url 'lms:course_list' %}" class="swiss-btn">View All Courses</a>
             </div>
         {% endfor %}
     </div>
     
     <!-- Pagination -->
     {% if page_obj.has_other_pages %}
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
+        <div class="swiss-pagination">
+            <ul class="swiss-pagination-list">
                 {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
-                            <i class="fas fa-chevron-left"></i> Previous
+                    <li>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if selected_module %}&module={{ selected_module }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="swiss-page-link">
+                            ← Previous
                         </a>
                     </li>
                 {% endif %}
                 
                 {% for num in page_obj.paginator.page_range %}
                     {% if page_obj.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        <li>
+                            <span class="swiss-page-link swiss-page-current">{{ num }}</span>
+                        </li>
                     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                        <li>
+                            <a href="?page={{ num }}{% if selected_module %}&module={{ selected_module }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="swiss-page-link">
                                 {{ num }}
                             </a>
                         </li>
@@ -130,14 +133,424 @@
                 {% endfor %}
                 
                 {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
-                            Next <i class="fas fa-chevron-right"></i>
+                    <li>
+                        <a href="?page={{ page_obj.next_page_number }}{% if selected_module %}&module={{ selected_module }}{% endif %}{% if selected_difficulty %}&difficulty={{ selected_difficulty }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="swiss-page-link">
+                            Next →
                         </a>
                     </li>
                 {% endif %}
             </ul>
-        </nav>
+        </div>
     {% endif %}
 </div>
+
+<style>
+/* Swiss Minimalist Design System */
+
+.swiss-course-container {
+    background: #f9f9f9;
+    min-height: 100vh;
+}
+
+/* Header */
+.swiss-header {
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.swiss-header-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.swiss-title {
+    font-size: 2.25rem;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+    color: #000;
+}
+
+.swiss-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Filters */
+.swiss-filters-section {
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 40px;
+}
+
+.swiss-filters {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.swiss-filter-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    align-items: flex-end;
+}
+
+.swiss-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.swiss-filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+}
+
+.swiss-select,
+.swiss-input {
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 0;
+    font-size: 0.95rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.swiss-select:focus,
+.swiss-input:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.swiss-search {
+    grid-column: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.swiss-search .swiss-filter-label {
+    margin-bottom: 0;
+}
+
+.swiss-search {
+    position: relative;
+}
+
+.swiss-search input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.swiss-search-btn {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.swiss-search-btn:hover {
+    color: #000;
+}
+
+.swiss-clear-btn {
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    background: white;
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 0;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.swiss-clear-btn:hover {
+    background: #f5f5f5;
+    border-color: #000;
+}
+
+/* Course Grid */
+.swiss-courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+    padding: 60px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.swiss-course-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.swiss-course-card:hover {
+    border-color: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.swiss-course-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.swiss-course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiss-course-image.swiss-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    font-size: 3rem;
+}
+
+.swiss-course-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.swiss-course-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.swiss-badge {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #e5e5e5;
+    border-radius: 0;
+    background: white;
+}
+
+.swiss-badge-dept {
+    color: #666;
+    border-color: #d0d0d0;
+}
+
+.swiss-badge-beginner {
+    color: #15803d;
+    border-color: #86efac;
+    background: #f0fdf4;
+}
+
+.swiss-badge-intermediate {
+    color: #b45309;
+    border-color: #fcd34d;
+    background: #fffbeb;
+}
+
+.swiss-badge-advanced {
+    color: #7c2d12;
+    border-color: #fed7aa;
+    background: #fefce8;
+}
+
+.swiss-course-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #000;
+    line-height: 1.4;
+}
+
+.swiss-course-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+.swiss-course-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.swiss-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.swiss-stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.swiss-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+}
+
+.swiss-course-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.swiss-course-link:hover {
+    gap: 12px;
+}
+
+.swiss-arrow {
+    transition: transform 0.2s;
+}
+
+.swiss-course-link:hover .swiss-arrow {
+    transform: translateX(2px);
+}
+
+/* Empty State */
+.swiss-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 40px;
+    background: white;
+    border: 1px solid #e5e5e5;
+}
+
+.swiss-empty-state i {
+    font-size: 3rem;
+    color: #ccc;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.swiss-empty-state h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.swiss-empty-state p {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.swiss-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 1px solid #000;
+    background: #000;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-radius: 0;
+}
+
+.swiss-btn:hover {
+    background: white;
+    color: #000;
+}
+
+/* Pagination */
+.swiss-pagination {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-top: 1px solid #e5e5e5;
+}
+
+.swiss-pagination-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+
+.swiss-page-link {
+    display: inline-block;
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0;
+    color: #000;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-radius: 0;
+}
+
+.swiss-page-link:hover:not(.swiss-page-current) {
+    border-color: #000;
+    background: #f5f5f5;
+}
+
+.swiss-page-current {
+    border-color: #000;
+    background: #000;
+    color: white;
+    cursor: default;
+}
+
+@media (max-width: 768px) {
+    .swiss-header {
+        padding: 40px 20px;
+    }
+
+    .swiss-title {
+        font-size: 1.8rem;
+    }
+
+    .swiss-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .swiss-courses-grid {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+    }
+
+    .swiss-filters-section {
+        padding: 20px;
+    }
+}
+</style>
 {% endblock %}

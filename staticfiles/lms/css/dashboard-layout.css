@@ -1,0 +1,129 @@
+/* Dashboard Layout - Sidebar and Main Content Positioning */
+
+/* Sidebar Base Styles - Override Bootstrap */
+.dashboard-sidebar {
+    width: 250px !important;
+    flex-shrink: 0 !important;
+    border-right: 1px solid #e5e5e5 !important;
+    background: white !important;
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+    position: relative;
+    z-index: 1000;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-sidebar .nav {
+    padding: 0 10px;
+}
+
+.dashboard-sidebar .nav-link {
+    color: #333 !important;
+    padding: 10px 15px !important;
+    margin: 4px 0 !important;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.dashboard-sidebar .nav-link:hover {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+}
+
+.dashboard-sidebar .nav-link.active {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    border-left: 3px solid #000;
+    padding-left: 12px !important;
+}
+
+/* Dashboard Container Flex Layout */
+.swiss-student-dashboard,
+.swiss-instructor-dashboard {
+    display: flex !important;
+    background: #f9f9f9 !important;
+    min-height: 100vh !important;
+    gap: 0 !important;
+}
+
+/* Main Content Area */
+.swiss-student-dashboard .swiss-dashboard-main,
+.swiss-instructor-dashboard .swiss-dashboard-main {
+    flex: 1 !important;
+    padding: 40px !important;
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+    width: calc(100% - 250px);
+}
+
+/* Responsive - Sidebar Collapse on Tablet */
+@media (max-width: 1024px) {
+    .dashboard-sidebar {
+        width: 220px !important;
+    }
+
+    .swiss-student-dashboard .swiss-dashboard-main,
+    .swiss-instructor-dashboard .swiss-dashboard-main {
+        width: calc(100% - 220px);
+    }
+}
+
+/* Responsive - Sidebar Drawer on Mobile */
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        position: fixed !important;
+        left: -250px !important;
+        top: 80px !important;
+        width: 250px !important;
+        height: calc(100vh - 80px) !important;
+        max-height: none !important;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-sidebar.show {
+        left: 0 !important;
+    }
+
+    .swiss-student-dashboard .swiss-dashboard-main,
+    .swiss-instructor-dashboard .swiss-dashboard-main {
+        width: 100% !important;
+        padding: 20px 16px !important;
+    }
+
+    .swiss-header-section {
+        margin-bottom: 24px !important;
+    }
+
+    .swiss-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Scrollbar Styling */
+.dashboard-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+    background: #d0d0d0;
+    border-radius: 3px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Firefox Scrollbar */
+.dashboard-sidebar {
+    scrollbar-color: #d0d0d0 #f5f5f5;
+    scrollbar-width: thin;
+}

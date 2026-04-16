@@ -1,0 +1,163 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Advanced Assessment & Proctoring - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assessment-content { padding: 20px; }
+    .assessment-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .assessment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #00f2fe;
+    }
+    .code-editor {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        overflow-x: auto;
+        margin: 15px 0;
+    }
+    .exercise-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        border-left: 4px solid #00f2fe;
+    }
+    .exercise-item.completed { border-left-color: #28a745; background: #f0fdf4; }
+    .exercise-item.pending { border-left-color: #ffc107; background: #fffbf0; }
+    .badge-row {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; display: block; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid assessment-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="assessment-header">
+        <h1>🎯 Advanced Assessment & Proctoring</h1>
+        <p>Code Exercises • Remote Proctoring • Live Exam Monitoring</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="assessment-card">
+                <h3>💻 Code Exercises</h3>
+                <p class="text-muted">Create programming challenges with automated grading.</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong>Exercise Template</strong>
+                    <div class="code-editor">
+<span style="color: #6a9955;">// Python: Fibonacci Function</span>
+<span style="color: #569cd6;">def</span> fibonacci(n):
+    <span style="color: #569cd6;">if</span> n <= 1:
+        <span style="color: #569cd6;">return</span> n
+    <span style="color: #569cd6;">return</span> fibonacci(n-1) + fibonacci(n-2)
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary">Create New Exercise</button>
+                <button class="btn btn-outline-primary">Browse Templates</button>
+            </div>
+            
+            <div class="assessment-card">
+                <h3>👁️ Remote Proctoring Setup</h3>
+                <p class="text-muted">Configure proctored exams with AI monitoring and human review.</p>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h5>Proctoring Rules</h5>
+                    <div style="margin-top: 15px;">
+                        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Require webcam monitoring</span>
+                        </label>
+                        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Monitor screen switching</span>
+                        </label>
+                        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Require ID verification</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" style="margin-right: 10px;">
+                            <span>Allow resources during exam</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success">Save Proctoring Settings</button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="assessment-card">
+                <h5>📋 Recent Assessments</h5>
+                <div class="exercise-item completed">
+                    <strong>Python Data Structures</strong><br>
+                    <small class="text-muted">28 students completed</small>
+                    <div class="badge-row">
+                        <span class="badge bg-success">Avg: 87%</span>
+                    </div>
+                </div>
+                <div class="exercise-item pending">
+                    <strong>JavaScript Async Programming</strong><br>
+                    <small class="text-muted">12 in progress</small>
+                    <div class="badge-row">
+                        <span class="badge bg-warning">15 pending</span>
+                    </div>
+                </div>
+                <div class="exercise-item completed">
+                    <strong>Web API Development</strong><br>
+                    <small class="text-muted">35 students completed</small>
+                    <div class="badge-row">
+                        <span class="badge bg-success">Avg: 92%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="assessment-card">
+                <h5>⚙️ Exam Settings</h5>
+                <div class="form-group">
+                    <label>Time Limit (minutes)</label>
+                    <input type="number" value="60" min="15">
+                </div>
+                <div class="form-group">
+                    <label>Passing Score (%)</label>
+                    <input type="number" value="70" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Attempts Allowed</label>
+                    <input type="number" value="3" min="1">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

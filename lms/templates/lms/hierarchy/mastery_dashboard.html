@@ -1,0 +1,654 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}Student Mastery Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1rem;
+        opacity: 0.95;
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-card {
+        background: rgba(255,255,255,0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+        text-align: center;
+    }
+
+    .stat-card-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card-label {
+        font-size: 0.85rem;
+        opacity: 0.85;
+    }
+
+    /* Mastery Grid */
+    .mastery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .concept-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .concept-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+    }
+
+    .concept-card:hover {
+        box-shadow: 0 8px 20px rgba(31, 58, 93, 0.15);
+        transform: translateY(-4px);
+    }
+
+    .concept-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .concept-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .mastery-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .mastery-badge.expert {
+        background: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .mastery-badge.proficient {
+        background: #b3e5fc;
+        color: #01579b;
+    }
+
+    .mastery-badge.developing {
+        background: #ffe0b2;
+        color: #e65100;
+    }
+
+    .mastery-badge.beginning {
+        background: #f8bbd0;
+        color: #880e4f;
+    }
+
+    .mastery-percentage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .mastery-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .progress {
+        height: 10px;
+        background: #e8ecf1;
+        border-radius: 5px;
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        border-radius: 5px;
+        transition: width 0.3s ease;
+    }
+
+    .concept-stats {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        padding-top: 0.75rem;
+        border-top: 1px solid #e8ecf1;
+        margin-top: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .concept-action {
+        margin-top: 1rem;
+    }
+
+    .btn-concept {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background: var(--bg-light);
+        color: var(--primary-color);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-concept:hover {
+        background: #e8ecf1;
+        color: var(--secondary-color);
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid #e8ecf1;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .filter-button {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: 1px solid #e8ecf1;
+        background: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .filter-button.active {
+        background: var(--secondary-color);
+        color: white;
+        border-color: var(--secondary-color);
+    }
+
+    .filter-button:hover {
+        border-color: var(--secondary-color);
+    }
+
+    /* Performance Trend */
+    .trend-section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .trend-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .trend-chart {
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 300px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+    }
+
+    .trend-bar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .trend-bar-value {
+        width: 30px;
+        background: linear-gradient(180deg, var(--secondary-color), var(--accent-color));
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s;
+        cursor: pointer;
+        min-height: 40px;
+    }
+
+    .trend-bar-value:hover {
+        filter: brightness(1.1);
+    }
+
+    .trend-bar-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* Recommendations */
+    .recommendations-section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e8ecf1;
+        margin-bottom: 2rem;
+    }
+
+    .rec-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .recommendation-item {
+        background: var(--bg-light);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .recommendation-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .rec-info {
+        flex: 1;
+    }
+
+    .rec-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .rec-reason {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .rec-action {
+        margin-left: 1rem;
+    }
+
+    .btn-small {
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        border: none;
+        background: var(--secondary-color);
+        color: white;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-small:hover {
+        background: #1f69db;
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .sidebar-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .sidebar-item:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .sidebar-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.05rem;
+        margin-top: 0.25rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: var(--bg-light);
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .empty-text {
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Knowledge Mastery Dashboard</h1>
+        <p class="dashboard-subtitle">Track your learning progress across all concepts</p>
+
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-card-value">{{ total_concepts }}</div>
+                <div class="stat-card-label">Total Concepts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-value">{{ mastered_concepts }}</div>
+                <div class="stat-card-label">Mastered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-value">{{ developing_concepts }}</div>
+                <div class="stat-card-label">Developing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-value">{{ average_mastery }}%</div>
+                <div class="stat-card-label">Average Mastery</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <span class="filter-label">Filter by Mastery Level:</span>
+        <button class="filter-button active" onclick="filterConcepts('all')">All</button>
+        <button class="filter-button" onclick="filterConcepts('expert')">Expert</button>
+        <button class="filter-button" onclick="filterConcepts('proficient')">Proficient</button>
+        <button class="filter-button" onclick="filterConcepts('developing')">Developing</button>
+        <button class="filter-button" onclick="filterConcepts('beginning')">Beginning</button>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Mastery Concepts Grid -->
+            {% if student_concepts %}
+            <div class="mastery-grid">
+                {% for concept in student_concepts %}
+                <div class="concept-card" data-mastery="{{ concept.mastery_level }}">
+                    <div class="concept-header">
+                        <div class="concept-name">{{ concept.concept.name }}</div>
+                        <span class="mastery-badge {{ concept.mastery_level|lower }}">
+                            {{ concept.mastery_level|title }}
+                        </span>
+                    </div>
+
+                    <div class="mastery-percentage">{{ concept.mastery_percentage }}%</div>
+                    <div class="mastery-desc">
+                        {% if concept.mastery_level == 'Expert' %}
+                            You have demonstrated expert mastery of this concept
+                        {% elif concept.mastery_level == 'Proficient' %}
+                            You are proficient in this concept
+                        {% elif concept.mastery_level == 'Developing' %}
+                            You are developing skills in this concept
+                        {% else %}
+                            You are beginning to learn this concept
+                        {% endif %}
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ concept.mastery_percentage }}%"></div>
+                    </div>
+
+                    <div class="concept-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-book"></i>
+                            <span>{{ concept.lessons_completed }}/{{ concept.lessons_total }} lessons</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-check"></i>
+                            <span>{{ concept.items_correct }}/{{ concept.items_total }} items</span>
+                        </div>
+                    </div>
+
+                    <div class="concept-action">
+                        <a href="#" class="btn-concept">
+                            <i class="fas fa-arrow-right"></i>Review Concept
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-chart-bar"></i></div>
+                <div class="empty-title">No Mastery Data Yet</div>
+                <p class="empty-text">Start learning to track your mastery progress across concepts.</p>
+                <a href="{% url 'course_list' %}" class="btn btn-primary btn-sm mt-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Courses
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Performance Trend -->
+            {% if performance_trend %}
+            <div class="trend-section">
+                <h5 class="trend-title">
+                    <i class="fas fa-chart-line"></i>Performance Trend (Last 30 Days)
+                </h5>
+                <div class="trend-chart">
+                    {% for day in performance_trend %}
+                    <div class="trend-bar">
+                        <div class="trend-bar-value" style="height: {{ day.percentage }}%;"></div>
+                        <div class="trend-bar-label">{{ day.label }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if recommendations %}
+            <div class="recommendations-section">
+                <h5 class="rec-title">
+                    <i class="fas fa-lightbulb"></i>Recommended Next Steps
+                </h5>
+                {% for rec in recommendations %}
+                <div class="recommendation-item">
+                    <div class="rec-info">
+                        <div class="rec-name">{{ rec.title }}</div>
+                        <div class="rec-reason">{{ rec.reason }}</div>
+                    </div>
+                    <div class="rec-action">
+                        <a href="{% url 'lesson_detail' course.id rec.lesson.module.id rec.lesson.section.id rec.lesson.id %}" class="btn-small">
+                            <i class="fas fa-play me-1"></i>Start
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Overall Statistics -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-bar-chart me-2"></i>Overall Statistics
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Total Concepts</div>
+                    <div class="sidebar-value">{{ total_concepts }}</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Expert Level</div>
+                    <div class="sidebar-value">{{ expert_count }} ({{ expert_percentage }}%)</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Proficient Level</div>
+                    <div class="sidebar-value">{{ proficient_count }} ({{ proficient_percentage }}%)</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Developing Level</div>
+                    <div class="sidebar-value">{{ developing_count }} ({{ developing_percentage }}%)</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Beginning Level</div>
+                    <div class="sidebar-value">{{ beginning_count }} ({{ beginning_percentage }}%)</div>
+                </div>
+            </div>
+
+            <!-- Mastery Breakdown -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-pie-chart me-2"></i>Mastery Breakdown
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Average Mastery</div>
+                    <div class="sidebar-value">{{ average_mastery }}%</div>
+                </div>
+                <div class="progress mt-2" style="height: 10px;">
+                    <div class="progress-bar" style="width: {{ average_mastery }}%"></div>
+                </div>
+                <div class="sidebar-item mt-3">
+                    <div class="sidebar-label">Learning Velocity</div>
+                    <div class="sidebar-value">{{ learning_velocity }} concepts/week</div>
+                </div>
+            </div>
+
+            <!-- Goals -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-bullseye me-2"></i>Goals
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Mastery Goal</div>
+                    <div class="sidebar-value">{{ mastery_goal }}%</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Concepts to Master</div>
+                    <div class="sidebar-value">{{ concepts_to_master }}</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Est. Time to Goal</div>
+                    <div class="sidebar-value">{{ estimated_weeks }} weeks</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar-card">
+                <a href="{% url 'course_list' %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                    <i class="fas fa-book me-2"></i>Browse Courses
+                </a>
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="downloadReport()">
+                    <i class="fas fa-download me-2"></i>Download Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterConcepts(level) {
+    document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.concept-card').forEach(card => {
+        if (level === 'all') {
+            card.style.display = 'block';
+        } else {
+            card.style.display = card.dataset.mastery.toLowerCase() === level ? 'block' : 'none';
+        }
+    });
+}
+
+function downloadReport() {
+    window.location.href = '{% url "download_mastery_report" %}';
+}
+</script>
+{% endblock %}

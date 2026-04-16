@@ -1,0 +1,13 @@
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'lms:admin_dashboard' %}">Dashboard</a>
+        </li>
+        {% if page_title %}
+            <li class="breadcrumb-item active" aria-current="page">
+                {{ page_title }}
+            </li>
+        {% endif %}
+    </ol>
+</nav>

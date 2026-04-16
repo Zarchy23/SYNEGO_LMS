@@ -1,0 +1,137 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Notifications Management - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notifications-content { padding: 20px; }
+    .notifications-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .notification-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .notification-item.unread {
+        background: #f0f5ff;
+        border-left-color: #667eea;
+    }
+    .notification-item.read {
+        background: white;
+        border-left-color: #ddd;
+        opacity: 0.7;
+    }
+    .notification-content { flex: 1; }
+    .notification-title { font-weight: 600; margin-bottom: 3px; }
+    .notification-time { color: #999; font-size: 0.85em; }
+    .pref-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid notifications-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="notifications-header">
+        <h1>🔔 Notifications</h1>
+        <p>Manage notifications and preferences</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">📬 Recent Notifications</h3>
+            
+            <div class="notification-item unread">
+                <div class="notification-content">
+                    <div class="notification-title">Assignment Submitted</div>
+                    <p class="text-muted" style="margin: 5px 0;">Student John Davis submitted Assignment #5 for review.</p>
+                    <div class="notification-time">5 minutes ago</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Review</button>
+            </div>
+            
+            <div class="notification-item unread">
+                <div class="notification-content">
+                    <div class="notification-title">Quiz Available</div>
+                    <p class="text-muted" style="margin: 5px 0;">Chapter 3 Quiz is now available for students.</p>
+                    <div class="notification-time">2 hours ago</div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
+            </div>
+            
+            <div class="notification-item read">
+                <div class="notification-content">
+                    <div class="notification-title">Course Update</div>
+                    <p class="text-muted" style="margin: 5px 0;">Course content for Web Development has been updated.</p>
+                    <div class="notification-time">1 day ago</div>
+                </div>
+            </div>
+            
+            <div class="notification-item read">
+                <div class="notification-content">
+                    <div class="notification-title">Class Scheduled</div>
+                    <p class="text-muted" style="margin: 5px 0;">Live class session scheduled for tomorrow at 2:00 PM.</p>
+                    <div class="notification-time">2 days ago</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <h3 style="margin-bottom: 20px;">⚙️ Notification Preferences</h3>
+            
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <div class="pref-item">
+                    <span>Assignment Submissions</span>
+                    <label><input type="checkbox" checked> On</label>
+                </div>
+                
+                <div class="pref-item">
+                    <span>Quiz Availability</span>
+                    <label><input type="checkbox" checked> On</label>
+                </div>
+                
+                <div class="pref-item">
+                    <span>Course Updates</span>
+                    <label><input type="checkbox" checked> On</label>
+                </div>
+                
+                <div class="pref-item">
+                    <span>Class Announcements</span>
+                    <label><input type="checkbox" checked> On</label>
+                </div>
+                
+                <div class="pref-item">
+                    <span>Student Messages</span>
+                    <label><input type="checkbox" checked> On</label>
+                </div>
+                
+                <div class="pref-item">
+                    <span>Grade Changes</span>
+                    <label><input type="checkbox"> On</label>
+                </div>
+                
+                <button class="btn btn-primary w-100" style="margin-top: 15px;">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

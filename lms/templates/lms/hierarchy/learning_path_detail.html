@@ -1,0 +1,602 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}{{ learning_path.name }} - Learning Path{% endblock %}
+
+{% block extra_css %}
+<style>
+    .path-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .path-header-content {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .path-header-icon {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.15);
+        border-radius: 12px;
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .path-header-info h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .path-header-description {
+        font-size: 1.05rem;
+        opacity: 0.95;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .path-header-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .path-stat-box {
+        background: rgba(255,255,255,0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.85;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .path-progress-section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .progress-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .progress-bar {
+        height: 12px;
+        background: #e8ecf1;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        border-radius: 6px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* Timeline View */
+    .timeline-container {
+        position: relative;
+        padding: 0;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 19px;
+        top: 50px;
+        width: 2px;
+        height: calc(100% + 1rem);
+        background: #e8ecf1;
+    }
+
+    .timeline-item:last-child::before {
+        display: none;
+    }
+
+    .timeline-marker {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 2px solid #e8ecf1;
+        border-radius: 50%;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .timeline-marker.completed {
+        background: #27ae60;
+        border-color: #27ae60;
+        color: white;
+    }
+
+    .timeline-marker.active {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: white;
+        box-shadow: 0 0 0 8px rgba(47, 128, 237, 0.1);
+    }
+
+    .timeline-marker.pending {
+        background: var(--bg-light);
+        border-color: #ccc;
+        color: var(--text-muted);
+    }
+
+    .timeline-content {
+        flex: 1;
+        padding-top: 0.5rem;
+    }
+
+    .milestone-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .milestone-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .milestone-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-milestone {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-milestone.primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-milestone.primary:hover {
+        background: #1f69db;
+    }
+
+    .btn-milestone.secondary {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        border: 1px solid #e8ecf1;
+    }
+
+    .btn-milestone.secondary:hover {
+        background: white;
+        border-color: var(--secondary-color);
+    }
+
+    .module-item {
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .module-item-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .module-item-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* Card Sections */
+    .info-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .info-card-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-top: 0.25rem;
+    }
+
+    .badge-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        background: var(--bg-light);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .milestone-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e8ecf1;
+        margin-bottom: 1.5rem;
+    }
+
+    .milestone-card.completed {
+        border-color: #27ae60;
+        background: #f1f8f5;
+    }
+
+    .milestone-card.active {
+        border: 2px solid var(--secondary-color);
+        background: rgba(47, 128, 237, 0.02);
+    }
+
+    .path-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-action.primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-action.primary:hover {
+        background: #1f69db;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(47, 128, 237, 0.3);
+    }
+
+    .btn-action.secondary {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        border: 1px solid #e8ecf1;
+    }
+
+    .btn-action.secondary:hover {
+        border-color: var(--secondary-color);
+        background: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'learning_path_list' course.id %}">Learning Paths</a></li>
+            <li class="breadcrumb-item active">{{ learning_path.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="path-header">
+        <div class="path-header-content">
+            <div class="path-header-icon">
+                <i class="fas fa-road"></i>
+            </div>
+            <div class="path-header-info">
+                <h1>{{ learning_path.name }}</h1>
+                <p class="path-header-description">{{ learning_path.description }}</p>
+
+                <div class="path-header-stats">
+                    <div class="path-stat-box">
+                        <div class="stat-label">Total Modules</div>
+                        <div class="stat-value">{{ modules_count }}</div>
+                    </div>
+                    <div class="path-stat-box">
+                        <div class="stat-label">Total Lessons</div>
+                        <div class="stat-value">{{ lessons_count }}</div>
+                    </div>
+                    <div class="path-stat-box">
+                        <div class="stat-label">Duration</div>
+                        <div class="stat-value">{{ estimated_hours }}h</div>
+                    </div>
+                    <div class="path-stat-box">
+                        <div class="stat-label">Difficulty</div>
+                        <div class="stat-value">{{ learning_path.difficulty_level|default:"Mid" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Progress Section -->
+            <div class="path-progress-section">
+                <div class="progress-title">
+                    <i class="fas fa-chart-line me-2"></i>Your Progress
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: {{ completion_percentage }}%"></div>
+                </div>
+                <div class="progress-stats">
+                    <div>
+                        <strong>{{ completion_percentage }}%</strong> Complete
+                    </div>
+                    <div>
+                        <strong>{{ completed_modules }}</strong> of <strong>{{ modules_count }}</strong> modules done
+                    </div>
+                    <div>
+                        Estimated <strong>{{ remaining_hours }}</strong>h remaining
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Path Timeline/Milestones -->
+            <h5 class="mb-3">Learning Timeline</h5>
+            <div class="timeline-container">
+                {% for module in path_modules %}
+                <div class="timeline-item">
+                    <div class="timeline-marker {% if module.status == 'completed' %}completed{% elif module.status == 'active' %}active{% else %}pending{% endif %}">
+                        {% if module.status == 'completed' %}
+                            <i class="fas fa-check"></i>
+                        {% elif module.status == 'active' %}
+                            <i class="fas fa-play"></i>
+                        {% else %}
+                            <i class="fas fa-lock"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="timeline-content">
+                        <div class="milestone-title">{{ module.name }}</div>
+                        {% if module.description %}
+                        <div class="milestone-description">{{ module.description }}</div>
+                        {% endif %}
+
+                        <!-- Module Contents -->
+                        <div style="margin-bottom: 1rem;">
+                            {% for section in module.sections.all|slice:":3" %}
+                            <div class="module-item">
+                                <div class="module-item-name">
+                                    <i class="fas fa-bookmark me-1"></i>{{ section.name }}
+                                </div>
+                                <div class="module-item-meta">
+                                    {{ section.lessons_count|default:"0" }} lessons
+                                    • {{ section.estimated_minutes|default:"0" }} mins
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if module.sections.count > 3 %}
+                            <div class="module-item" style="text-align: center; color: var(--text-muted);">
+                                <i class="fas fa-ellipsis-h"></i> +{{ module.sections.count|add:"-3" }} more sections
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="milestone-actions">
+                            {% if module.status in 'active,completed' %}
+                                <a href="{% url 'module_detail' course.id module.id %}" class="btn-milestone primary">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    {% if module.status == 'active' %}Start Module{% else %}Review Module{% endif %}
+                                </a>
+                            {% else %}
+                                <button class="btn-milestone secondary" disabled>
+                                    <i class="fas fa-lock me-1"></i>Locked
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Path Info -->
+            <div class="info-card">
+                <div class="info-card-title">
+                    <i class="fas fa-info-circle"></i>Path Information
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Learning Style</div>
+                    <div class="info-value">{{ learning_path.learning_style|default:"Mixed" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Path Type</div>
+                    <div class="info-value">{{ learning_path.path_type|default:"Sequential" }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">
+                        <span class="badge {% if is_enrolled %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if is_enrolled %}Enrolled{% else %}Not Enrolled{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Start Date</div>
+                    <div class="info-value">{{ start_date|date:"M d, Y"|default:"Not started" }}</div>
+                </div>
+            </div>
+
+            <!-- Concepts Covered -->
+            {% if concepts %}
+            <div class="info-card">
+                <div class="info-card-title">
+                    <i class="fas fa-lightbulb"></i>Concepts Covered
+                </div>
+                <div class="badge-list">
+                    {% for concept in concepts|slice:":5" %}
+                        <span class="badge">{{ concept.name }}</span>
+                    {% endfor %}
+                    {% if concepts.count > 5 %}
+                        <span class="badge">+{{ concepts.count|add:"-5" }} more</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Prerequisites -->
+            {% if prerequisites %}
+            <div class="info-card">
+                <div class="info-card-title">
+                    <i class="fas fa-link"></i>Prerequisites
+                </div>
+                {% for prereq in prerequisites %}
+                <div class="info-item">
+                    <div class="info-value">
+                        <span class="badge">{{ prereq.name }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="path-actions">
+                {% if not is_enrolled %}
+                <button class="btn-action primary w-100" onclick="enrollPath()">
+                    <i class="fas fa-arrow-right"></i>Start Path
+                </button>
+                {% else %}
+                    {% if current_module %}
+                    <a href="{% url 'module_detail' course.id current_module.id %}" class="btn-action primary w-100">
+                        <i class="fas fa-play"></i>Continue
+                    </a>
+                    {% endif %}
+                {% endif %}
+                
+                <a href="{% url 'learning_path_list' course.id %}" class="btn-action secondary w-100">
+                    <i class="fas fa-arrow-left"></i>All Paths
+                </a>
+            </div>
+
+            <!-- Time Estimation -->
+            <div class="info-card">
+                <div class="info-card-title">
+                    <i class="fas fa-hourglass-half"></i>Time Estimate
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Total Duration</div>
+                    <div class="info-value">{{ estimated_hours }} hours</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Time Completed</div>
+                    <div class="info-value">{{ time_spent_hours|default:"0" }} hours</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Time Remaining</div>
+                    <div class="info-value">{{ remaining_hours }} hours</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function enrollPath() {
+    fetch('{% url "enroll_learning_path" %}?path_id={{ learning_path.id }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -2,6 +2,10 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
+from . import views_enterprise_admin
+from . import views_enterprise_instructor
+from . import views_enterprise_learner
+from . import views_enterprise_dept_head
 
 # Namespace for the app
 app_name = 'lms'
@@ -13,6 +17,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path('featured-courses/', views.featured_courses, name='featured_courses'),
     
     # -------------------------------------------------------------------
     # Authentication & Registration
@@ -58,13 +63,13 @@ urlpatterns = [
     path('dashboard/', views.student_dashboard, name='student_dashboard'),
     path('dashboard/instructor/', views.instructor_dashboard, name='instructor_dashboard'),
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
-    path('dashboard/department/', views.department_head_dashboard, name='department_head_dashboard'),
+    path('dashboard/department/', views.module_head_dashboard, name='module_head_dashboard'),
     
     # -------------------------------------------------------------------
-    # Department Views
+    # Module Views
     # -------------------------------------------------------------------
-    path('departments/', views.department_list, name='department_list'),
-    path('departments/<slug:slug>/', views.department_detail, name='department_detail'),
+    path('modules/', views.module_list, name='module_list'),
+    path('modules/<slug:slug>/', views.module_detail, name='module_detail'),
     
     # -------------------------------------------------------------------
     # Course Views
@@ -116,6 +121,12 @@ urlpatterns = [
     # -------------------------------------------------------------------
     # Assignment Creation (Instructor)
     # -------------------------------------------------------------------
+    path('api/course/<slug:course_slug>/chapters/', 
+         views.api_course_chapters, 
+         name='api_course_chapters'),
+    path('instructor/create-assignment/', 
+         views.create_assignment, 
+         name='create_assignment_new'),
     path('instructor/course/<slug:course_slug>/create-assignment/', 
          views.create_assignment, 
          name='create_assignment'),
@@ -166,16 +177,17 @@ urlpatterns = [
     path('admin-panel/enrollment-requests/<int:request_id>/process/', 
          views.admin_process_request, 
          name='admin_process_request'),
-    path('admin-panel/departments/', views.admin_departments, name='admin_departments'),
-    path('admin-panel/departments/add/', views.admin_add_department, name='admin_add_department'),
-    path('admin-panel/departments/<int:dept_id>/edit/', 
-         views.admin_edit_department, 
-         name='admin_edit_department'),
+    path('admin-panel/modules/', views.admin_modules, name='admin_modules'),
+    path('admin-panel/modules/add/', views.admin_add_module, name='admin_add_module'),
+    path('admin-panel/modules/<int:module_id>/edit/', 
+         views.admin_edit_module, 
+         name='admin_edit_module'),
     path('admin-panel/reports/', views.admin_reports, name='admin_reports'),
     path('admin-panel/reports/download/<str:report_type>/', 
          views.download_report, 
          name='download_report'),
     path('admin-panel/system-logs/', views.admin_system_logs, name='admin_system_logs'),
+    path('admin-panel/system-settings/', views.admin_system_settings, name='admin_system_settings'),
 
      # Course Material Management (Admin)
      path('admin-panel/course/<slug:course_slug>/manage/', views.manage_course, name='manage_course'),
@@ -197,6 +209,7 @@ urlpatterns = [
     # -------------------------------------------------------------------
     # Bulk Operations (Admin)
     # -------------------------------------------------------------------
+    path('admin-panel/bulk-enroll/download-template/', views.download_bulk_enroll_template, name='download_bulk_enroll_template'),
     path('admin-panel/bulk-enroll/', views.bulk_enroll_students, name='bulk_enroll_students'),
     path('admin-panel/bulk-upload/', views.bulk_upload_courses, name='bulk_upload_courses'),
     
@@ -259,6 +272,116 @@ urlpatterns = [
     path('help/', views.help_center, name='help_center'),
     path('help/<slug:topic>/', views.help_topic, name='help_topic'),
     path('support/ticket/', views.create_support_ticket, name='create_support_ticket'),
+    
+    # ===================================================================
+    # ENTERPRISE ADMIN FEATURES
+    # ===================================================================
+    
+    # AI Administration
+    path('admin/ai/models/', views_enterprise_admin.ai_models_view, name='ai_models'),
+    path('admin/ai/config/', views_enterprise_admin.ai_model_config_view, name='ai_config'),
+    path('admin/ai/performance/', views_enterprise_admin.ai_performance_view, name='ai_performance'),
+    
+    # Blockchain
+    path('admin/blockchain/contracts/', views_enterprise_admin.smart_contracts_view, name='smart_contracts'),
+    path('admin/blockchain/registry/', views_enterprise_admin.contract_registry_view, name='contract_registry'),
+    
+    # Integrations & API
+    path('admin/api/management/', views_enterprise_admin.api_management_view, name='api_management'),
+    path('admin/integrations/third-party/', views_enterprise_admin.third_party_services_view, name='third_party_services'),
+    path('admin/integrations/webhooks/', views_enterprise_admin.webhooks_view, name='webhooks'),
+    
+    # Security & Compliance
+    path('admin/security/authentication/', views_enterprise_admin.authentication_config_view, name='authentication'),
+    path('admin/security/encryption/', views_enterprise_admin.encryption_keys_view, name='encryption'),
+    path('admin/security/audit-trail/', views_enterprise_admin.audit_trail_view, name='audit_trail'),
+    path('admin/security/compliance/', views_enterprise_admin.compliance_view, name='compliance'),
+    
+    # System Configuration
+    path('admin/config/email/', views_enterprise_admin.email_config_view, name='email_config'),
+    path('admin/config/storage-backup/', views_enterprise_admin.storage_backup_view, name='storage_backup'),
+    path('admin/config/theme/', views_enterprise_admin.theme_customization_view, name='theme'),
+    path('admin/config/plugins/', views_enterprise_admin.plugins_view, name='plugins'),
+    path('admin/config/licenses/', views_enterprise_admin.licenses_view, name='licenses'),
+    
+    # Enterprise Analytics
+    path('admin/analytics/bi/', views_enterprise_admin.bi_integration_view, name='bi_integration'),
+    path('admin/analytics/reports/', views_enterprise_admin.report_scheduling_view, name='report_scheduling'),
+    path('admin/analytics/health/', views_enterprise_admin.system_health_view, name='system_health'),
+    
+    # ===================================================================
+    # ENTERPRISE INSTRUCTOR FEATURES
+    # ===================================================================
+    
+    # AI Content Tools
+    path('instructor/ai/generate-questions/', views_enterprise_instructor.generate_questions_view, name='generate_questions'),
+    path('instructor/ai/adaptive-learning/', views_enterprise_instructor.adaptive_learning_view, name='adaptive_learning'),
+    path('instructor/ai/essay-scoring/', views_enterprise_instructor.ai_essay_scoring_view, name='ai_essay_scoring'),
+    
+    # VR/AR Content Creation
+    path('instructor/vr/create-session/', views_enterprise_instructor.create_vr_session_view, name='create_vr_session'),
+    path('instructor/ar/create-simulation/', views_enterprise_instructor.create_ar_simulation_view, name='create_ar_simulation'),
+    
+    # Advanced Assessment
+    path('instructor/assessment/code-exercises/', views_enterprise_instructor.code_exercises_view, name='code_exercises'),
+    path('instructor/assessment/proctoring/', views_enterprise_instructor.proctoring_view, name='proctoring'),
+    
+    # Blockchain & Credentials
+    path('instructor/credentials/issue-certificates/', views_enterprise_instructor.issue_certificates_view, name='issue_certificates'),
+    path('instructor/credentials/mint-badges/', views_enterprise_instructor.mint_badges_view, name='mint_badges'),
+    
+    # Teaching Analytics
+    path('instructor/analytics/engagement/', views_enterprise_instructor.engagement_dashboard_view, name='engagement_dashboard'),
+    path('instructor/analytics/at-risk-students/', views_enterprise_instructor.at_risk_students_view, name='at_risk_students'),
+    path('instructor/analytics/reports/', views_enterprise_instructor.reports_export_view, name='reports_export'),
+    
+    # ===================================================================
+    # ENTERPRISE LEARNER FEATURES
+    # ===================================================================
+    
+    # AI Learning
+    path('learner/ai/knowledge-state/', views_enterprise_learner.knowledge_state_view, name='knowledge_state'),
+    path('learner/ai/recommendations/', views_enterprise_learner.ai_recommendations_view, name='ai_recommendations'),
+    path('learner/ai/assistant/', views_enterprise_learner.ai_assistant_view, name='ai_assistant'),
+    
+    # VR/AR Experiences
+    path('learner/vr/sessions/', views_enterprise_learner.vr_sessions_view, name='vr_sessions'),
+    path('learner/ar/simulations/', views_enterprise_learner.ar_simulations_view, name='ar_simulations'),
+    
+    # Collaboration
+    path('learner/collaboration/study-groups/', views_enterprise_learner.study_groups_view, name='study_groups'),
+    path('learner/collaboration/peer-reviews/', views_enterprise_learner.peer_reviews_view, name='peer_reviews'),
+    
+    # Blockchain & Credentials
+    path('learner/credentials/certificates/', views_enterprise_learner.verified_certificates_view, name='verified_certificates'),
+    path('learner/credentials/badges/', views_enterprise_learner.nft_badges_view, name='nft_badges'),
+    path('learner/credentials/wallet/', views_enterprise_learner.my_wallet_view, name='my_wallet'),
+    
+    # Personal Analytics
+    path('learner/analytics/learning-analytics/', views_enterprise_learner.learning_analytics_view, name='learning_analytics'),
+    path('learner/analytics/predictions/', views_enterprise_learner.predictions_view, name='predictions'),
+    
+    # ===================================================================
+    # MODULE HEAD FEATURES
+    # ===================================================================
+    
+    # Course Quality & AI
+    path('dept-head/quality/reviews/', views_enterprise_dept_head.quality_reviews_view, name='quality_reviews'),
+    path('dept-head/quality/ai-recommendations/', views_enterprise_dept_head.ai_recommendations_view, name='module_ai_recommendations'),
+    
+    # Staff Management
+    path('dept-head/staff/evaluations/', views_enterprise_dept_head.instructor_evaluations_view, name='instructor_evaluations'),
+    path('dept-head/staff/performance/', views_enterprise_dept_head.instructor_performance_view, name='instructor_performance'),
+    path('dept-head/staff/schedule-meetings/', views_enterprise_dept_head.schedule_meetings_view, name='schedule_meetings'),
+    
+    # Budget & Resources
+    path('dept-head/budget/overview/', views_enterprise_dept_head.budget_overview_view, name='budget_overview'),
+    path('dept-head/budget/request-resources/', views_enterprise_dept_head.request_resources_view, name='request_resources'),
+    path('dept-head/budget/approve-requests/', views_enterprise_dept_head.approve_requests_view, name='approve_requests'),
+    
+    # Analytics
+    path('dept-head/analytics/cohort-comparison/', views_enterprise_dept_head.cohort_comparison_view, name='cohort_comparison'),
+    path('dept-head/analytics/cross-course/', views_enterprise_dept_head.cross_course_analytics_view, name='cross_course_analytics'),
 ]
 
 # -------------------------------------------------------------------

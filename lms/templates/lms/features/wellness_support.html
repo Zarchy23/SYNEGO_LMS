@@ -1,0 +1,107 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Wellness & Support Resources - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wellness-content { padding: 20px; }
+    .wellness-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .resource-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid #f5576c;
+    }
+    .resource-icon { font-size: 2em; margin-bottom: 10px; }
+    .resource-title { font-weight: 700; margin-bottom: 8px; }
+    .resource-desc { font-size: 0.9em; color: #666; margin-bottom: 12px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid wellness-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="wellness-header">
+        <h1>🤝 Wellness & Support Resources</h1>
+        <p>Access mental health, academic, and technical support</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">🔗 Available Resources</h4>
+    
+    <div class="resource-grid">
+        <div class="resource-card">
+            <div class="resource-icon">🧠</div>
+            <div class="resource-title">Counseling Services</div>
+            <div class="resource-desc">Free confidential mental health support for students.</div>
+            <button class="btn btn-sm btn-primary w-100">Contact Counselor</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">📚</div>
+            <div class="resource-title">Academic Support</div>
+            <div class="resource-desc">Tutoring, study groups, and academic coaching.</div>
+            <button class="btn btn-sm btn-primary w-100">Schedule Session</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">💻</div>
+            <div class="resource-title">Tech Support</div>
+            <div class="resource-desc">Help with LMS functionailty and technical issues.</div>
+            <button class="btn btn-sm btn-primary w-100">Get Help</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">♿</div>
+            <div class="resource-title">Accessibility Services</div>
+            <div class="resource-desc">Support for students with accessibility needs.</div>
+            <button class="btn btn-sm btn-primary w-100">Learn More</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">💼</div>
+            <div class="resource-title">Career Services</div>
+            <div class="resource-desc">Resume review, job search, interview prep.</div>
+            <button class="btn btn-sm btn-primary w-100">Explore</button>
+        </div>
+        
+        <div class="resource-card">
+            <div class="resource-icon">🌍</div>
+            <div class="resource-title">Community Programs</div>
+            <div class="resource-desc">Social events, networking, student clubs.</div>
+            <button class="btn btn-sm btn-primary w-100">Join Community</button>
+        </div>
+    </div>
+    
+    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+        <h4 style="margin-bottom: 15px;">📞 Quick Help</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+            <div>
+                <strong>24/7 Crisis Support</strong>
+                <div style="font-size: 0.9em; color: #999; margin-top: 5px;">1-800-CRISIS-1 (in US)</div>
+            </div>
+            <div>
+                <strong>Academic Advisor</strong>
+                <div style="font-size: 0.9em; color: #999; margin-top: 5px;">advisor@university.edu</div>
+            </div>
+            <div>
+                <strong>IT Help Desk</strong>
+                <div style="font-size: 0.9em; color: #999; margin-top: 5px;">support@university.edu • (555) 123-4567</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

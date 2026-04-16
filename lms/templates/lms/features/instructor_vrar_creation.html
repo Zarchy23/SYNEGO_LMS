@@ -1,0 +1,190 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}VR/AR Content Creation - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vrar-creation-content { padding: 20px; }
+    .vrar-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .template-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    .template-card:hover { transform: translateY(-5px); }
+    .template-image {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3em;
+    }
+    .template-body {
+        padding: 15px;
+    }
+    .template-name { font-weight: 700; margin-bottom: 5px; }
+    .template-desc { color: #666; font-size: 0.9em; margin: 10px 0; }
+    .editor-section {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; display: block; }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid vrar-creation-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="vrar-header">
+        <h1>🥽 Create VR/AR Content</h1>
+        <p>Build immersive learning experiences with VR and AR templates</p>
+    </div>
+    
+    <h3 style="margin-bottom: 20px;">📋 Content Templates</h3>
+    
+    <div class="template-grid">
+        <div class="template-card">
+            <div class="template-image">🏛️</div>
+            <div class="template-body">
+                <div class="template-name">Historical Tour</div>
+                <div class="template-desc">Walk through historical sites and events in VR.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+        
+        <div class="template-card">
+            <div class="template-image">🔬</div>
+            <div class="template-body">
+                <div class="template-name">Lab Simulation</div>
+                <div class="template-desc">Interactive virtual lab experiments and demonstrations.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+        
+        <div class="template-card">
+            <div class="template-image">🌍</div>
+            <div class="template-body">
+                <div class="template-name">Interactive Map</div>
+                <div class="template-desc">Explore geography with AR-enhanced maps and layers.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+        
+        <div class="template-card">
+            <div class="template-image">🏥</div>
+            <div class="template-body">
+                <div class="template-name">Anatomy Explorer</div>
+                <div class="template-desc">3D anatomical models with interactive annotations.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+        
+        <div class="template-card">
+            <div class="template-image">🎭</div>
+            <div class="template-body">
+                <div class="template-name">Virtual Stage</div>
+                <div class="template-desc">Theater and performance experiences in VR.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+        
+        <div class="template-card">
+            <div class="template-image">🚀</div>
+            <div class="template-body">
+                <div class="template-name">Space Explorer</div>
+                <div class="template-desc">Explore the solar system and outer space.</div>
+                <button class="btn btn-sm btn-primary w-100" style="margin-top: 10px;">Create</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="editor-section">
+                <h5>✏️ Content Editor - Historical Tour</h5>
+                <hr>
+                
+                <div class="form-group">
+                    <label>Experience Title</label>
+                    <input type="text" class="form-control" value="Ancient Rome Virtual Tour" placeholder="Enter title">
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" style="height: 100px; padding: 10px;">Explore the streets of ancient Rome in immersive VR, visiting iconic landmarks and experiencing historical events.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" class="form-control" value="45">
+                </div>
+                
+                <div class="form-group">
+                    <label>Difficulty Level</label>
+                    <select class="form-control">
+                        <option>Beginner</option>
+                        <option selected>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Content (3D Models, Images)</label>
+                    <div style="padding: 20px; background: #f8f9fa; border: 2px dashed #ddd; border-radius: 8px; text-align: center; cursor: pointer;">
+                        📁 Click to upload or drag and drop
+                    </div>
+                </div>
+                
+                <button class="btn btn-success">Save & Preview</button>
+                <button class="btn btn-outline-secondary">Publish</button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="editor-section">
+                <h5>👁️ Preview</h5>
+                <div style="background: #000; height: 250px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff;">
+                    VR Preview
+                </div>
+            </div>
+            
+            <div class="editor-section">
+                <h5>🔧 Settings</h5>
+                <div style="margin: 15px 0;">
+                    <label><input type="checkbox" checked> VR Mode Enabled</label>
+                    <label style="margin-top: 10px;"><input type="checkbox" checked> AR Mode Enabled</label>
+                    <label style="margin-top: 10px;"><input type="checkbox"> Interactive Elements</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

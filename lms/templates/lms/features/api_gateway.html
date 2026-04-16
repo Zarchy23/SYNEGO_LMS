@@ -1,0 +1,158 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}API Gateway - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .api-content { padding: 20px; }
+    .api-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .api-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .endpoint-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid #667eea;
+    }
+    .method-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.85em;
+        margin-right: 10px;
+    }
+    .method-get { background: #cfe2ff; color: #084298; }
+    .method-post { background: #d1e7dd; color: #0f5132; }
+    .method-put { background: #fff3cd; color: #664d03; }
+    .method-delete { background: #f8d7da; color: #842029; }
+    .code-block {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid api-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="api-header">
+        <h1>🔌 API Gateway</h1>
+        <p>Manage API endpoints and integrations</p>
+    </div>
+    
+    <div class="api-card">
+        <h4 style="margin-bottom: 20px;">🔑 API Keys</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Active API Key</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" value="sk_live_abc123xyz789..." readonly style="font-family: monospace; font-size: 0.9em;">
+                    <button class="btn btn-outline-secondary">Copy</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary">Generate New Key</button>
+                <button class="btn btn-outline-danger">Revoke Key</button>
+            </div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📍 API Endpoints</h4>
+    
+    <div class="api-card">
+        <h5 style="margin-bottom: 15px;">Courses API</h5>
+        <div class="endpoint-item">
+            <div>
+                <span class="method-badge method-get">GET</span>
+                <code>/api/v1/courses</code>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Test</button>
+                <button class="btn btn-sm btn-outline-secondary">Docs</button>
+            </div>
+        </div>
+        <div class="endpoint-item">
+            <div>
+                <span class="method-badge method-post">POST</span>
+                <code>/api/v1/courses</code>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Test</button>
+                <button class="btn btn-sm btn-outline-secondary">Docs</button>
+            </div>
+        </div>
+        <div class="endpoint-item">
+            <div>
+                <span class="method-badge method-put">PUT</span>
+                <code>/api/v1/courses/{id}</code>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Test</button>
+                <button class="btn btn-sm btn-outline-secondary">Docs</button>
+            </div>
+        </div>
+        <div class="endpoint-item">
+            <div>
+                <span class="method-badge method-delete">DELETE</span>
+                <code>/api/v1/courses/{id}</code>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Test</button>
+                <button class="btn btn-sm btn-outline-secondary">Docs</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="api-card">
+        <h5 style="margin-bottom: 15px;">Rate Limiting</h5>
+        <div style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div>
+                <label class="form-label">Requests per minute</label>
+                <input type="number" class="form-control" value="100">
+            </div>
+            <div>
+                <label class="form-label">Burst limit</label>
+                <input type="number" class="form-control" value="200">
+            </div>
+            <div>
+                <label class="form-label">Throttle strategy</label>
+                <select class="form-select">
+                    <option>Sliding window</option>
+                    <option>Fixed window</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="api-card">
+        <h5 style="margin-bottom: 15px;">Example Request</h5>
+        <div class="code-block">
+curl -X GET https://api.synego.com/v1/courses \<br>
+&nbsp;&nbsp;-H "Authorization: Bearer sk_live_abc123xyz789..." \<br>
+&nbsp;&nbsp;-H "Content-Type: application/json"
+        </div>
+    </div>
+</div>
+{% endblock %}

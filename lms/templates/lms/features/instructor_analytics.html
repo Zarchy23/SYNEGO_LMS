@@ -1,0 +1,178 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Teaching Analytics & Insights - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .teaching-analytics-content { padding: 20px; }
+    .ta-header {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .metric-card i { font-size: 2.5em; color: #1abc9c; margin-bottom: 10px; }
+    .metric-card .value { font-size: 2em; font-weight: 700; }
+    .metric-card .label { color: #666; font-size: 0.9em; margin-top: 5px; }
+    .student-list {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .student-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .student-name { font-weight: 600; }
+    .student-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    .status.at-risk { background: #ffe0e0; color: #d32f2f; }
+    .status.good { background: #e0f0e0; color: #2e7d32; }
+    .status.excellent { background: #c3e9ff; color: #0277bd; }
+    .chart-placeholder {
+        background: #f8f9fa;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 60px 20px;
+        text-align: center;
+        color: #999;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid teaching-analytics-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="ta-header">
+        <h1>📊 Teaching Analytics & Insights</h1>
+        <p>Engagement Dashboard • At-Risk Students • Reports & Export</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <i class="fas fa-users"></i>
+                <div class="value">156</div>
+                <div class="label">Students Enrolled</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <i class="fas fa-chart-line"></i>
+                <div class="value">84.5%</div>
+                <div class="label">Avg Completion</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <i class="fas fa-star"></i>
+                <div class="value">3.8 / 5.0</div>
+                <div class="label">Course Rating</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="value">12</div>
+                <div class="label">At-Risk Students</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="student-list">
+                <h3>⚠️ At-Risk Students</h3>
+                <p class="text-muted">Students who may need additional support based on performance metrics.</p>
+                
+                <div class="student-item">
+                    <div class="student-name">
+                        John Smith
+                        <br>
+                        <small class="text-muted">0% completion · Last active 5 days ago</small>
+                    </div>
+                    <span class="badge status at-risk">AT RISK</span>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">
+                        Maria Johnson
+                        <br>
+                        <small class="text-muted">45% completion · Falling behind</small>
+                    </div>
+                    <span class="badge status at-risk">AT RISK</span>
+                </div>
+                <div class="student-item">
+                    <div class="student-name">
+                        Alex Chen
+                        <br>
+                        <small class="text-muted">70% completion · Multiple low grades</small>
+                    </div>
+                    <span class="badge status at-risk">AT RISK</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="student-list">
+                <h3>📈 Engagement Metrics</h3>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Active This Week</span>
+                        <strong>142 / 156</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 91%; background: #1abc9c;"></div>
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Forum Participation</span>
+                        <strong>73</strong>
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Avg Quiz Score</span>
+                        <strong>78.3%</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 78%; background: #1abc9c;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="student-list" style="margin-top: 30px;">
+        <h3>📊 Engagement Trend</h3>
+        <div class="chart-placeholder">
+            <i class="fas fa-chart-area"></i>
+            <p>Engagement trend chart (Coming Soon)</p>
+        </div>
+        <button class="btn btn-primary">Export Report</button>
+        <button class="btn btn-outline-primary">Schedule Report</button>
+    </div>
+</div>
+{% endblock %}

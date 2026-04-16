@@ -1,0 +1,145 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}My Learning Analytics - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .learning-analytics-content { padding: 20px; }
+    .la-header {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .score-badge {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .score-badge .score { font-size: 3em; font-weight: 700; color: #fa709a; }
+    .score-badge .label { color: #666; font-size: 0.95em; margin-top: 10px; }
+    .progress-item {
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .progress-item .title { font-weight: 600; margin-bottom: 10px; }
+    .progress-item .progress { height: 12px; }
+    .insight-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .insight-icon {
+        background: #f0f5ff;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+    .insight-icon i { font-size: 1.5em; color: #fa709a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid learning-analytics-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="la-header">
+        <h1>📊 My Learning Analytics</h1>
+        <p>Track your progress, performance, and learning goals</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">📚 Course Progress</h3>
+            
+            <div class="progress-item">
+                <div class="title">Python Programming 101</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 75%; background: #fa709a;"></div>
+                </div>
+                <small class="text-muted">75% complete · 15 chapters done</small>
+            </div>
+            
+            <div class="progress-item">
+                <div class="title">Web Development Fundamentals</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 45%; background: #ffc107;"></div>
+                </div>
+                <small class="text-muted">45% complete · 9 chapters done</small>
+            </div>
+            
+            <div class="progress-item">
+                <div class="title">Data Science & Analytics</div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 20%; background: #6c757d;"></div>
+                </div>
+                <small class="text-muted">20% complete · 4 chapters done</small>
+            </div>
+            
+            <h3 style="margin: 30px 0 20px 0;">💡 Learning Insights</h3>
+            
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <strong>You're on a 7-day learning streak!</strong>
+                <p class="text-muted" style="margin: 10px 0;">Keep it up! You're making consistent progress in your studies.</p>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <strong>Your Performance is Improving</strong>
+                <p class="text-muted" style="margin: 10px 0;">Your average quiz score improved by 12% this week.</p>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <strong>Recommended Next Steps</strong>
+                <p class="text-muted" style="margin: 10px 0;">Consider completing "Advanced Python Functions" before moving to Web Dev.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="score-badge">
+                <div class="label">Overall Score</div>
+                <div class="score">84.3</div>
+                <div style="margin-top: 15px; font-size: 0.9em;">
+                    <span class="badge bg-success">+8.5 this month</span>
+                </div>
+            </div>
+            
+            <div class="score-badge" style="background: #f8f9fa; color: #333;">
+                <div class="label">Study Time This Week</div>
+                <div class="score" style="color: #fa709a;">12.5 hrs</div>
+                <small class="text-muted">Goal: 15 hours</small>
+                <div class="progress" style="margin-top: 10px; height: 8px;">
+                    <div class="progress-bar" style="width: 83%; background: #fa709a;"></div>
+                </div>
+            </div>
+            
+            <div class="score-badge" style="background: #f8f9fa; color: #333;">
+                <div class="label">Completed Courses</div>
+                <div class="score" style="color: #fa709a;">5</div>
+                <small class="text-muted">with certificates</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

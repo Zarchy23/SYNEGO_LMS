@@ -17,13 +17,25 @@
             <i class="fas fa-clipboard-list me-2"></i> Pending Requests
             {% if pending_requests %}<span class="badge bg-warning ms-auto">{{ pending_requests }}</span>{% endif %}
         </a>
-        <a href="#" class="nav-link">
+        <a href="{% url 'lms:admin_enrollment_requests' %}" class="nav-link {% if active_page == 'approved_requests' %}active{% endif %}">
             <i class="fas fa-check-double me-2"></i> Approved
             {% if approved_count %}<span class="badge bg-success ms-auto">{{ approved_count }}</span>{% endif %}
         </a>
-        <a href="#" class="nav-link">
+        <a href="{% url 'lms:admin_enrollment_requests' %}" class="nav-link {% if active_page == 'rejected_requests' %}active{% endif %}">
             <i class="fas fa-times-circle me-2"></i> Rejected
             {% if rejected_count %}<span class="badge bg-danger ms-auto">{{ rejected_count }}</span>{% endif %}
+        </a>
+        <hr>
+        <!-- Approval Analytics -->
+        <div class="nav-section-title"><small class="text-muted fw-bold">📊 APPROVAL ANALYTICS</small></div>
+        <a href="{% url 'lms:admin_enrollment_requests' %}" class="nav-link" data-bs-toggle="tooltip" title="View approval history and trends">
+            <i class="fas fa-history me-2"></i> Approval History
+        </a>
+        <a href="{% url 'lms:admin_reports' %}" class="nav-link" data-bs-toggle="tooltip" title="View enrollment statistics">
+            <i class="fas fa-chart-bar me-2"></i> Enrollment Stats
+        </a>
+        <a href="{% url 'lms:admin_users' %}" class="nav-link" data-bs-toggle="tooltip" title="View student basic information">
+            <i class="fas fa-users me-2"></i> Student Directory
         </a>
         <hr>
         <a href="{% url 'lms:profile' %}" class="nav-link {% if active_page == 'profile' %}active{% endif %}">

@@ -21,9 +21,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('lms.urls')),
     path('admin/', admin.site.urls),
     path('accounts/login/', RedirectView.as_view(url='/login/', permanent=False)),
-    path('', include('lms.urls')),
 ]
 
 # Serve media files during development

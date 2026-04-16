@@ -1,0 +1,199 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Learner VR/AR Creation - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .learner-vrar-content { padding: 20px; }
+    .learner-vrar-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .experience-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .experience-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .experience-image {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3em;
+    }
+    .experience-body { padding: 15px; }
+    .experience-title { font-weight: 700; margin-bottom: 5px; }
+    .experience-meta {
+        display: flex;
+        gap: 12px;
+        margin: 10px 0;
+        font-size: 0.85em;
+        color: #666;
+    }
+    .session-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid learner-vrar-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="learner-vrar-header">
+        <h1>🥽 My VR/AR Simulations</h1>
+        <p>Create and customize immersive learning experiences</p>
+    </div>
+    
+    <h3 style="margin-bottom: 20px;">🎮 Available Simulations</h3>
+    
+    <div class="experience-grid">
+        <div class="experience-card">
+            <div class="experience-image">🧪</div>
+            <div class="experience-body">
+                <div class="experience-title">Chemistry Lab Sim</div>
+                <div class="experience-meta">
+                    <span>30 min</span>
+                    <span>Beginner</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Mix compounds safely in virtual lab.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+        
+        <div class="experience-card">
+            <div class="experience-image">🌊</div>
+            <div class="experience-body">
+                <div class="experience-title">Ocean Exploration</div>
+                <div class="experience-meta">
+                    <span>45 min</span>
+                    <span>Intermediate</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Dive deep to discover marine life.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+        
+        <div class="experience-card">
+            <div class="experience-image">🧮</div>
+            <div class="experience-body">
+                <div class="experience-title">3D Math Visualization</div>
+                <div class="experience-meta">
+                    <span>25 min</span>
+                    <span>Advanced</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Explore complex mathematical concepts.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+        
+        <div class="experience-card">
+            <div class="experience-image">⚡</div>
+            <div class="experience-body">
+                <div class="experience-title">Electricity Circuit Sim</div>
+                <div class="experience-meta">
+                    <span>35 min</span>
+                    <span>Beginner</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Build circuits and learn electronics.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+        
+        <div class="experience-card">
+            <div class="experience-image">🌌</div>
+            <div class="experience-body">
+                <div class="experience-title">Space Station VR</div>
+                <div class="experience-meta">
+                    <span>60 min</span>
+                    <span>Intermediate</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Train as a virtual astronaut.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+        
+        <div class="experience-card">
+            <div class="experience-image">🏛️</div>
+            <div class="experience-body">
+                <div class="experience-title">Museum AR Tour</div>
+                <div class="experience-meta">
+                    <span>40 min</span>
+                    <span>All Levels</span>
+                </div>
+                <p class="text-muted" style="margin: 8px 0; font-size: 0.9em;">Tour famous museums worldwide.</p>
+                <button class="btn btn-sm btn-primary w-100">Launch</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3>📋 Your Sessions</h3>
+            
+            <div class="session-item">
+                <div>
+                    <div style="font-weight: 600;">Chemistry Lab - Session 1</div>
+                    <small class="text-muted">Completed 45 min • 85% accuracy</small>
+                </div>
+                <span class="badge bg-success">Passed</span>
+            </div>
+            
+            <div class="session-item">
+                <div>
+                    <div style="font-weight: 600;">Ocean Exploration - Session 1</div>
+                    <small class="text-muted">In progress • 25% complete</small>
+                </div>
+                <span class="badge bg-info">Active</span>
+            </div>
+            
+            <div class="session-item">
+                <div>
+                    <div style="font-weight: 600;">3D Math Visualization - Session 1</div>
+                    <small class="text-muted">Not started</small>
+                </div>
+                <span class="badge bg-secondary">Ready</span>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <h5>📊 Session Stats</h5>
+                <hr>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Completed</span>
+                        <strong>8</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>In Progress</span>
+                        <strong>3</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Total Hours</span>
+                        <strong>12.5 hrs</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

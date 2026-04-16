@@ -1,0 +1,111 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Learner Profile - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-content { padding: 20px; }
+    .profile-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .profile-grid { display: grid; grid-template-columns: 250px 1fr; gap: 20px; }
+    .profile-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        height: fit-content;
+    }
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        margin: 0 auto 15px;
+    }
+    .profile-main {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .profile-item { margin-bottom: 20px; }
+    .stat-item { text-align: center; padding: 15px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid profile-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="profile-header">
+        <h1>👤 My Learning Profile</h1>
+        <p>Track your progress and achievements</p>
+    </div>
+    
+    <div class="profile-grid">
+        <!-- Sidebar -->
+        <div class="profile-sidebar">
+            <div class="profile-avatar">SJ</div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <strong style="display: block;">Sarah Johnson</strong>
+                <small style="color: #999;">Computer Science</small>
+            </div>
+            <hr>
+            <div style="display: grid; gap: 12px;">
+                <button class="btn btn-outline-primary btn-sm w-100">Edit Profile</button>
+                <button class="btn btn-outline-secondary btn-sm w-100">Settings</button>
+                <button class="btn btn-outline-secondary btn-sm w-100">Privacy</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="profile-main">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div class="stat-item" style="background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 1.8em; font-weight: 700; color: #f5576c;">12</div>
+                    <div style="color: #999; font-size: 0.9em;">Courses Enrolled</div>
+                </div>
+                <div class="stat-item" style="background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 1.8em; font-weight: 700; color: #f5576c;">87%</div>
+                    <div style="color: #999; font-size: 0.9em;">Avg Completion</div>
+                </div>
+                <div class="stat-item" style="background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 1.8em; font-weight: 700; color: #f5576c;">3.82</div>
+                    <div style="color: #999; font-size: 0.9em;">GPA</div>
+                </div>
+                <div class="stat-item" style="background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 1.8em; font-weight: 700; color: #f5576c;">8</div>
+                    <div style="color: #999; font-size: 0.9em;">Badges Earned</div>
+                </div>
+            </div>
+            
+            <div class="profile-item">
+                <h5 style="margin-bottom: 15px;">📚 Current Courses</h5>
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <div><strong>Python Fundamentals</strong> • Progress: 75%</div>
+                    <div style="font-size: 0.9em; color: #999; margin-top: 5px;">Completed 9 of 12 modules</div>
+                </div>
+            </div>
+            
+            <div class="profile-item">
+                <h5 style="margin-bottom: 15px;">🏆 Recent Achievements</h5>
+                <div style="display: grid; gap: 10px;">
+                    <div style="padding: 12px; background: #d4edda; border-radius: 8px; color: #155724;">✓ Course Completed - Data Structures</div>
+                    <div style="padding: 12px; background: #d4edda; border-radius: 8px; color: #155724;">✓ Perfect Score - Quiz 5</div>
+                    <div style="padding: 12px; background: #d4edda; border-radius: 8px; color: #155724;">✓ 7-Day Streak - Daily Learning</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

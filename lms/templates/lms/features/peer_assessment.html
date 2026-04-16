@@ -1,0 +1,124 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Peer Assessment - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .peer-content { padding: 20px; }
+    .peer-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .peer-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .submission-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid #f5576c;
+    }
+    .rating-control {
+        display: flex;
+        gap: 8px;
+        margin: 10px 0;
+    }
+    .star { font-size: 1.5em; cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid peer-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="peer-header">
+        <h1>🔄 Peer Assessment</h1>
+        <p>Review and provide feedback on classmate work</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📋 Assignments Pending Review</h4>
+    
+    <div class="peer-card">
+        <div class="submission-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                    <strong>Python Project: Data Analysis Tool</strong>
+                    <div style="font-size: 0.9em; color: #999;">Submitted by: Sarah Johnson • 2 days ago</div>
+                </div>
+                <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 0.85em; font-weight: 600;">PENDING</span>
+            </div>
+            <button class="btn btn-sm btn-primary">Review Submission</button>
+        </div>
+        
+        <div class="submission-item">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div>
+                    <strong>Web Development: E-commerce Site</strong>
+                    <div style="font-size: 0.9em; color: #999;">Submitted by: Michael Chen • 1 day ago</div>
+                </div>
+                <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 0.85em; font-weight: 600;">PENDING</span>
+            </div>
+            <button class="btn btn-sm btn-primary">Review Submission</button>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">⭐ Leave Feedback</h4>
+    
+    <div class="peer-card">
+        <div style="display: grid; gap: 20px;">
+            <div>
+                <strong>Submission: Data Analysis Tool by Sarah Johnson</strong>
+                <div style="font-size: 0.9em; color: #999; margin-top: 5px;">Due: 2026-04-20</div>
+            </div>
+            
+            <div>
+                <label class="form-label">Code Quality Rating</label>
+                <div class="rating-control">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                </div>
+            </div>
+            
+            <div>
+                <label class="form-label">Functionality Rating</label>
+                <div class="rating-control">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                </div>
+            </div>
+            
+            <div>
+                <label class="form-label">Creativity Rating</label>
+                <div class="rating-control">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                </div>
+            </div>
+            
+            <div>
+                <label class="form-label">Written Feedback</label>
+                <textarea class="form-control" rows="5" placeholder="Provide constructive feedback..."></textarea>
+            </div>
+            
+            <button class="btn btn-primary">Submit Review</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

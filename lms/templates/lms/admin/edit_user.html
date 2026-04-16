@@ -52,11 +52,11 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="department_id" class="form-label">Department</label>
-                            <select name="department_id" id="department_id" class="form-select">
-                                <option value="">No Department</option>
-                                {% for dept in departments %}
-                                    <option value="{{ dept.id }}" {% if edit_user.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                            <label for="module_id" class="form-label">Module</label>
+                            <select name="module_id" id="module_id" class="form-select">
+                                <option value="">No Module</option>
+                                {% for module in modules %}
+                                    <option value="{{ module.id }}" {% if edit_user.module_id == module.id %}selected{% endif %}>{{ module.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>

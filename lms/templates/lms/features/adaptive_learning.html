@@ -1,0 +1,126 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Adaptive Learning Paths - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .adaptive-content { padding: 20px; }
+    .adaptive-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .path-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+    .path-name { font-weight: 700; font-size: 1.05em; margin-bottom: 8px; }
+    .path-meta {
+        display: flex;
+        gap: 20px;
+        margin: 10px 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+    .recommendation-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+    .section-title { font-weight: 700; margin-bottom: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid adaptive-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="adaptive-header">
+        <h1>🧭 Adaptive Learning Paths</h1>
+        <p>Personalized learning journeys based on your performance</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">📖 Your Learning Paths</h3>
+            
+            <div class="path-item">
+                <div class="path-name">Python Mastery Path</div>
+                <div class="path-meta">
+                    <span>⏱️ 12 weeks</span>
+                    <span>📚 28 lessons</span>
+                    <span>Progress: 45%</span>
+                </div>
+                <div class="progress" style="margin: 10px 0;">
+                    <div class="progress-bar" style="width: 45%;"></div>
+                </div>
+                <p class="text-muted" style="margin: 10px 0;">Customized path focusing on advanced Python concepts based on your learning speed and interests.</p>
+                <button class="btn btn-sm btn-outline-primary">Continue Path</button>
+            </div>
+            
+            <div class="path-item">
+                <div class="path-name">Web Development Accelerated</div>
+                <div class="path-meta">
+                    <span>⏱️ 8 weeks</span>
+                    <span>📚 18 lessons</span>
+                    <span>Progress: 22%</span>
+                </div>
+                <div class="progress" style="margin: 10px 0;">
+                    <div class="progress-bar" style="width: 22%;"></div>
+                </div>
+                <p class="text-muted" style="margin: 10px 0;">Accelerated path for learners with programming background. Skips basics and focuses on practical projects.</p>
+                <button class="btn btn-sm btn-outline-primary">Continue Path</button>
+            </div>
+            
+            <div class="path-item">
+                <div class="path-name">Data Science Fundamentals</div>
+                <div class="path-meta">
+                    <span>⏱️ 10 weeks</span>
+                    <span>📚 22 lessons</span>
+                    <span>Progress: 8%</span>
+                </div>
+                <div class="progress" style="margin: 10px 0;">
+                    <div class="progress-bar" style="width: 8%;"></div>
+                </div>
+                <p class="text-muted" style="margin: 10px 0;">Foundation path for data science. Includes math refresher and statistical concepts.</p>
+                <button class="btn btn-sm btn-outline-primary">Start Path</button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="recommendation-box">
+                <div class="section-title">💡 Recommended Next</div>
+                <p class="text-muted" style="margin: 10px 0;">Based on your performance, we recommend focusing on:</p>
+                <div style="background: #f0f5ff; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>Advanced Functions & Decorators</strong>
+                    <p class="text-muted" style="margin: 5px 0; font-size: 0.9em;">You're strong with basics. This will unlock advanced Python concepts.</p>
+                </div>
+            </div>
+            
+            <div class="recommendation-box">
+                <div class="section-title">📚 Related Topics</div>
+                <div style="padding: 10px 0;">
+                    <div style="padding: 8px; background: #f8f9fa; border-radius: 6px; margin-bottom: 8px;">
+                        <span style="font-weight: 600;">Object-Oriented Programming</span>
+                    </div>
+                    <div style="padding: 8px; background: #f8f9fa; border-radius: 6px; margin-bottom: 8px;">
+                        <span style="font-weight: 600;">Design Patterns</span>
+                    </div>
+                    <div style="padding: 8px; background: #f8f9fa; border-radius: 6px;">
+                        <span style="font-weight: 600;">Testing & Debugging</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

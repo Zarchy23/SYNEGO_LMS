@@ -1,0 +1,130 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Course Catalog Management - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-mgmt-content { padding: 20px; }
+    .course-mgmt-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .course-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid #667eea;
+    }
+    .course-image {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5em;
+    }
+    .course-body { padding: 15px; }
+    .course-title { font-weight: 700; margin-bottom: 5px; }
+    .course-meta {
+        displayflex;
+        gap: 15px;
+        margin: 10px 0;
+        font-size: 0.85em;
+        color: #666;
+    }
+    .course-stats {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px solid #f0f0f0;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid course-mgmt-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="course-mgmt-header">
+        <h1>📚 Course Management</h1>
+        <p>Manage courses, content, and enrollment</p>
+    </div>
+    
+    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <input type="text" placeholder="Search courses..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <select style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+            <option>All Status</option>
+            <option>Published</option>
+            <option>Draft</option>
+            <option>Archived</option>
+        </select>
+        <button class="btn btn-primary">Create Course</button>
+    </div>
+    
+    <div class="course-grid">
+        <div class="course-card">
+            <div class="course-image">🐍</div>
+            <div class="course-body">
+                <div class="course-title">Python Programming</div>
+                <small class="text-muted">Instructor: Dr. James Wilson</small>
+                <div class="course-stats">
+                    <span>👥 128 students</span>
+                    <span class="badge bg-success">Published</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary w-100" style="margin-top: 10px;">Edit</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">🌐</div>
+            <div class="course-body">
+                <div class="course-title">Web Development</div>
+                <small class="text-muted">Instructor: Prof. Sarah Johnson</small>
+                <div class="course-stats">
+                    <span>👥 95 students</span>
+                    <span class="badge bg-success">Published</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary w-100" style="margin-top: 10px;">Edit</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">📊</div>
+            <div class="course-body">
+                <div class="course-title">Data Science</div>
+                <small class="text-muted">Instructor: Dr. Michael Chen</small>
+                <div class="course-stats">
+                    <span>👥 67 students</span>
+                    <span class="badge bg-warning">Draft</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary w-100" style="margin-top: 10px;">Edit</button>
+            </div>
+        </div>
+        
+        <div class="course-card">
+            <div class="course-image">🤖</div>
+            <div class="course-body">
+                <div class="course-title">Machine Learning</div>
+                <small class="text-muted">Instructor: Dr. Lisa Park</small>
+                <div class="course-stats">
+                    <span>👥 45 students</span>
+                    <span class="badge bg-secondary">Archived</span>
+                </div>
+                <button class="btn btn-sm btn-outline-primary w-100" style="margin-top: 10px;">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

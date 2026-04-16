@@ -1,0 +1,213 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}{{ page_title }} - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feature-content {
+        padding: 20px;
+    }
+    .feature-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .feature-header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        font-weight: 700;
+    }
+    .feature-header p {
+        margin: 10px 0 0 0;
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    .coming-soon {
+        text-align: center;
+        padding: 80px 40px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 15px;
+        border: 2px dashed #999;
+    }
+    .coming-soon i {
+        font-size: 5em;
+        color: #667eea;
+        margin-bottom: 30px;
+        display: block;
+    }
+    .coming-soon h3 {
+        font-size: 2em;
+        color: #333;
+        margin: 20px 0;
+    }
+    .feature-description {
+        font-size: 1.1em;
+        color: #666;
+        margin: 20px 0;
+        line-height: 1.6;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9em;
+    }
+    .status-badge.in-dev {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .status-badge.coming {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+    .status-badge.beta {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+    .features-list {
+        list-style: none;
+        padding: 0;
+    }
+    .features-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+    .features-list li:last-child {
+        border-bottom: none;
+    }
+    .features-list li:before {
+        content: "✓";
+        color: #28a745;
+        font-weight: bold;
+        margin-right: 15px;
+        font-size: 1.2em;
+    }
+    .icon-feature {
+        text-align: center;
+        padding: 20px;
+    }
+    .icon-feature i {
+        font-size: 2.5em;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    .roadmap-item {
+        padding: 15px;
+        margin: 10px 0;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+    .roadmap-item .quarter {
+        font-weight: 700;
+        color: #667eea;
+    }
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .action-buttons .btn {
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid feature-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="feature-header">
+        <h1>{{ page_title }}</h1>
+        <p>Enterprise Feature Module</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="coming-soon">
+                <i class="fas fa-rocket"></i>
+                <h3>{{ page_title }}</h3>
+                <p class="feature-description">
+                    This feature is currently under active development and will be available soon.
+                </p>
+                <p class="text-muted" style="margin: 20px 0;">
+                    Check back regularly for updates on this enterprise feature. We're building something amazing for you!
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Status Card -->
+            <div class="feature-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <h5 style="margin: 0;">📌 Status</h5>
+                    <span class="status-badge in-dev">In Development</span>
+                </div>
+                <hr>
+                <div style="margin: 15px 0;">
+                    <p style="margin: 10px 0;"><strong>Module:</strong></p>
+                    <p style="color: #666;">{{ page_title }}</p>
+                </div>
+                <div style="margin: 15px 0;">
+                    <p style="margin: 10px 0;"><strong>Expected Launch:</strong></p>
+                    <p style="color: #666;">Q2 2026</p>
+                </div>
+                <hr>
+                <button class="btn btn-primary w-100" style="border-radius: 8px; padding: 10px; font-weight: 600;">
+                    <i class="fas fa-bell me-2"></i> Get Notified When Available
+                </button>
+            </div>
+            
+            <!-- Features Coming Card -->
+            <div class="feature-card">
+                <h5 style="margin-bottom: 20px;">✨ Features Coming</h5>
+                <ul class="features-list">
+                    <li>Real-time dashboards</li>
+                    <li>Advanced analytics</li>
+                    <li>Custom reporting</li>
+                    <li>Integration support</li>
+                    <li>API access</li>
+                </ul>
+            </div>
+
+            <!-- Development Roadmap Card -->
+            <div class="feature-card">
+                <h5 style="margin-bottom: 20px;">🗺️ Development Roadmap</h5>
+                <div class="roadmap-item">
+                    <div class="quarter">Q1 2026</div>
+                    <small class="text-muted">Core infrastructure & setup</small>
+                </div>
+                <div class="roadmap-item">
+                    <div class="quarter">Q2 2026</div>
+                    <small class="text-muted">Alpha release & testing</small>
+                </div>
+                <div class="roadmap-item">
+                    <div class="quarter">Q3 2026</div>
+                    <small class="text-muted">Beta launch & refinement</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

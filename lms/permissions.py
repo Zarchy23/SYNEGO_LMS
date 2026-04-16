@@ -49,20 +49,20 @@ def instructor_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('lms:login')
-        if request.user.role not in ['instructor', 'dept_head', 'admin'] and not request.user.is_superuser:
+        if request.user.role not in ['instructor', 'module_head', 'admin'] and not request.user.is_superuser:
             raise PermissionDenied("Instructor access required.")
         return view_func(request, *args, **kwargs)
     return wrapper
 
 
-def dept_head_required(view_func):
-    """Restrict access to department heads and admins."""
+def module_head_required(view_func):
+    """Restrict access to module heads and admins."""
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('lms:login')
-        if request.user.role not in ['dept_head', 'admin'] and not request.user.is_superuser:
-            raise PermissionDenied("Department head access required.")
+        if request.user.role not in ['module_head', 'admin'] and not request.user.is_superuser:
+            raise PermissionDenied("Module head access required.")
         return view_func(request, *args, **kwargs)
     return wrapper
 
@@ -73,7 +73,7 @@ def approver_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('lms:login')
-        if request.user.role not in ['approver', 'dept_head', 'admin'] and not request.user.is_superuser:
+        if request.user.role not in ['approver', 'module_head', 'admin'] and not request.user.is_superuser:
             raise PermissionDenied("Approval access required.")
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -111,7 +111,7 @@ class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        return request.user.role in ["instructor", "dept_head", "admin"]
+        return request.user.role in ["instructor", "module_head", "admin"]
 
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
@@ -120,17 +120,17 @@ class IsInstructor(permissions.BasePermission):
         if request.user.role == "admin":
             return True
 
-        if request.user.role == "dept_head":
+        if request.user.role == "module_head":
             if hasattr(obj, "course") and hasattr(obj.course, "department"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
             if hasattr(obj, "department"):
-                return obj.department == request.user.department
+                return obj.department == request.user.module
 
         if request.user.role == "instructor":
             if hasattr(obj, "course"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
             if hasattr(obj, "assignment") and hasattr(obj.assignment, "course"):
-                return obj.assignment.course.department == request.user.department
+                return obj.assignment.course.department == request.user.module
 
         return False
 
@@ -163,7 +163,7 @@ class IsApprover(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        return request.user.role in ["admin", "approver", "dept_head"]
+        return request.user.role in ["admin", "approver", "module_head"]
 
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
@@ -172,9 +172,9 @@ class IsApprover(permissions.BasePermission):
         if request.user.role == "admin":
             return True
 
-        if request.user.role == "dept_head":
+        if request.user.role == "module_head":
             if hasattr(obj, "course") and hasattr(obj.course, "department"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
 
         return request.user.role == "approver"
 
@@ -192,9 +192,9 @@ class CanAccessCourse(permissions.BasePermission):
         if hasattr(obj, "is_free_preview") and obj.is_free_preview:
             return True
 
-        if request.user.role in ["instructor", "dept_head"]:
+        if request.user.role in ["instructor", "module_head"]:
             if hasattr(obj, "course"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
 
         if request.user.role == "learner" and request.user.is_approved:
             from lms.models import Enrollment
@@ -213,7 +213,7 @@ class CanGradeSubmission(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in [
             "instructor",
-            "dept_head",
+            "module_head",
             "admin",
         ]
 
@@ -224,13 +224,13 @@ class CanGradeSubmission(permissions.BasePermission):
         if request.user.role == "admin":
             return True
 
-        if request.user.role == "dept_head":
+        if request.user.role == "module_head":
             if hasattr(obj, "assignment") and hasattr(obj.assignment, "course"):
-                return obj.assignment.course.department == request.user.department
+                return obj.assignment.course.department == request.user.module
 
         if request.user.role == "instructor":
             if hasattr(obj, "assignment") and hasattr(obj.assignment, "course"):
-                return obj.assignment.course.department == request.user.department
+                return obj.assignment.course.department == request.user.module
 
         return False
 
@@ -241,7 +241,7 @@ class CanEditCourse(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in [
             "instructor",
-            "dept_head",
+            "module_head",
             "admin",
         ]
 
@@ -252,17 +252,17 @@ class CanEditCourse(permissions.BasePermission):
         if request.user.role == "admin":
             return True
 
-        if request.user.role == "dept_head":
+        if request.user.role == "module_head":
             if hasattr(obj, "department"):
-                return obj.department == request.user.department
+                return obj.department == request.user.module
             if hasattr(obj, "course") and hasattr(obj.course, "department"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
 
         if request.user.role == "instructor":
             if hasattr(obj, "course"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
             if hasattr(obj, "department"):
-                return obj.department == request.user.department
+                return obj.department == request.user.module
 
         return False
 
@@ -289,7 +289,7 @@ class CanViewReport(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role in [
             "admin",
-            "dept_head",
+            "module_head",
             "instructor",
         ]
 
@@ -300,14 +300,14 @@ class CanViewReport(permissions.BasePermission):
         if request.user.role == "admin":
             return True
 
-        if request.user.role == "dept_head":
+        if request.user.role == "module_head":
             if hasattr(obj, "department"):
-                return obj.department == request.user.department
+                return obj.department == request.user.module
             if hasattr(obj, "course") and hasattr(obj.course, "department"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
 
         if request.user.role == "instructor":
             if hasattr(obj, "course"):
-                return obj.course.department == request.user.department
+                return obj.course.department == request.user.module
 
         return False

@@ -1,0 +1,145 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Tutor Matching & Support - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tutor-content { padding: 20px; }
+    .tutor-header {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .tutor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .tutor-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid #1abc9c;
+    }
+    .tutor-header-card {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    .tutor-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1abc9c;
+        font-weight: 700;
+        font-size: 2em;
+        margin: 0 auto 10px;
+    }
+    .tutor-name { font-weight: 700; font-size: 1.1em; }
+    .tutor-specialty { font-size: 0.9em; opacity: 0.9; }
+    .tutor-body { padding: 15px; }
+    .rating-stars { color: #ffc107; }
+    .availability-item {
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid tutor-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="tutor-header">
+        <h1>👨‍🏫 Tutor Matching & Support</h1>
+        <p>Find qualified tutors and schedule sessions</p>
+    </div>
+    
+    <h3 style="margin-bottom: 20px;">👥 Recommended Tutors</h3>
+    
+    <div class="tutor-grid">
+        <div class="tutor-card">
+            <div class="tutor-header-card">
+                <div class="tutor-avatar">JW</div>
+                <div class="tutor-name">Dr. James Wilson</div>
+                <div class="tutor-specialty">Python & Advanced Programming</div>
+            </div>
+            <div class="tutor-body">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span class="rating-stars">★★★★★ 4.9/5</span>
+                    <small class="d-block text-muted">(125 reviews)</small>
+                </div>
+                <div class="availability-item">
+                    <span>Availability</span>
+                    <strong>4.5 hrs/week</strong>
+                </div>
+                <div class="availability-item">
+                    <span>Rate</span>
+                    <strong>$50/hr</strong>
+                </div>
+                <button class="btn btn-primary w-100" style="margin-top: 10px;">Request Tutor</button>
+            </div>
+        </div>
+        
+        <div class="tutor-card">
+            <div class="tutor-header-card">
+                <div class="tutor-avatar" style="background: white; color: #f5576c;">SJ</div>
+                <div class="tutor-name">Prof. Sarah Johnson</div>
+                <div class="tutor-specialty">Web Development & Frontend</div>
+            </div>
+            <div class="tutor-body">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span class="rating-stars">★★★★☆ 4.7/5</span>
+                    <small class="d-block text-muted">(98 reviews)</small>
+                </div>
+                <div class="availability-item">
+                    <span>Availability</span>
+                    <strong>6 hrs/week</strong>
+                </div>
+                <div class="availability-item">
+                    <span>Rate</span>
+                    <strong>$40/hr</strong>
+                </div>
+                <button class="btn btn-primary w-100" style="margin-top: 10px;">Request Tutor</button>
+            </div>
+        </div>
+        
+        <div class="tutor-card">
+            <div class="tutor-header-card">
+                <div class="tutor-avatar" style="background: white; color: #667eea;">MC</div>
+                <div class="tutor-name">Dr. Michael Chen</div>
+                <div class="tutor-specialty">Data Science & Analytics</div>
+            </div>
+            <div class="tutor-body">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span class="rating-stars">★★★★☆ 4.5/5</span>
+                    <small class="d-block text-muted">(76 reviews)</small>
+                </div>
+                <div class="availability-item">
+                    <span>Availability</span>
+                    <strong>3 hrs/week</strong>
+                </div>
+                <div class="availability-item">
+                    <span>Rate</span>
+                    <strong>$60/hr</strong>
+                </div>
+                <button class="btn btn-primary w-100" style="margin-top: 10px;">Request Tutor</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

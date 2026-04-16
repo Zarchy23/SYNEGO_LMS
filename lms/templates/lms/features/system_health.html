@@ -1,0 +1,132 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}System Health Dashboard - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .health-content { padding: 20px; }
+    .health-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .health-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    .health-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    .health-value { font-size: 2em; font-weight: 700; margin-bottom: 8px; }
+    .health-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    .status-healthy { background: #d4edda; color: #155724; }
+    .status-warning { background: #fff3cd; color: #856404; }
+    .status-critical { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid health-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="health-header">
+        <h1>🏥 System Health Dashboard</h1>
+        <p>Real-time monitoring of system health and performance</p>
+    </div>
+    
+    <div class="health-grid">
+        <div class="health-card" style="border-top: 4px solid #28a745;">
+            <div class="health-value" style="color: #28a745;">99.8%</div>
+            <div style="margin-bottom: 8px;">System Uptime</div>
+            <div class="health-status status-healthy">HEALTHY</div>
+        </div>
+        
+        <div class="health-card" style="border-top: 4px solid #28a745;">
+            <div class="health-value" style="color: #28a745;">142ms</div>
+            <div style="margin-bottom: 8px;">Response Time</div>
+            <div class="health-status status-healthy">OPTIMAL</div>
+        </div>
+        
+        <div class="health-card" style="border-top: 4px solid #ffc107;">
+            <div class="health-value" style="color: #856404;">78%</div>
+            <div style="margin-bottom: 8px;">Disk Usage</div>
+            <div class="health-status status-warning">WARNING</div>
+        </div>
+        
+        <div class="health-card" style="border-top: 4px solid #28a745;">
+            <div class="health-value" style="color: #28a745;">2,847</div>
+            <div style="margin-bottom: 8px;">Active Users</div>
+            <div class="health-status status-healthy">NORMAL</div>
+        </div>
+    </div>
+    
+    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        <h4 style="margin-bottom: 15px;">⚠️ Active Alerts</h4>
+        <div style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px; margin-bottom: 10px;">
+            <strong style="color: #856404;">⚠️ Disk Space Running Low</strong>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">Disk usage at 78%. Consider running cleanup and archiving old logs.</div>
+        </div>
+        
+        <div style="padding: 15px; background: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 8px;">
+            <strong style="color: #0c5460;">ℹ️ Scheduled Maintenance</strong>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">Backup scheduled for 2026-04-17 at 2:00 AM - System may be briefly unavailable.</div>
+        </div>
+    </div>
+    
+    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+        <h4 style="margin-bottom: 15px;">📊 Performance Statistics</h4>
+        <div style="overflow-x: auto;">
+            <table class="table" style="margin: 0;">
+                <thead style="background: #f8f9fa;">
+                    <tr>
+                        <th>Component</th>
+                        <th>Status</th>
+                        <th>Avg Response</th>
+                        <th>Uptime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database Server</td>
+                        <td><span class="health-status status-healthy">HEALTHY</span></td>
+                        <td>45ms</td>
+                        <td>99.9%</td>
+                    </tr>
+                    <tr>
+                        <td>Application Server</td>
+                        <td><span class="health-status status-healthy">HEALTHY</span></td>
+                        <td>89ms</td>
+                        <td>99.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Cache Layer</td>
+                        <td><span class="health-status status-healthy">HEALTHY</span></td>
+                        <td>8ms</td>
+                        <td>99.95%</td>
+                    </tr>
+                    <tr>
+                        <td>Search Index</td>
+                        <td><span class="health-status status-warning">WARNING</span></td>
+                        <td>156ms</td>
+                        <td>99.7%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

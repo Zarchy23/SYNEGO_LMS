@@ -1,0 +1,150 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Integrations & API - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .integration-content {
+        padding: 20px;
+    }
+    .integration-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .integration-header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        font-weight: 700;
+    }
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #00f2fe;
+    }
+    .feature-card:hover {
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+    }
+    .integration-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    .integration-item {
+        background: #e0f7ff;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        border: 2px solid #b3e5fc;
+        transition: all 0.3s;
+    }
+    .integration-item:hover {
+        border-color: #00f2fe;
+        background: #b3e5fc;
+    }
+    .integration-item i {
+        font-size: 2.5em;
+        color: #00f2fe;
+        margin-bottom: 10px;
+    }
+    .integration-item p {
+        margin: 10px 0 0 0;
+        font-size: 0.9em;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='integrations' %}
+    
+    <div class="dashboard-main">
+    <div class="integrations-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="integration-header">
+        <h1>🔗 Integrations & API Management</h1>
+        <p>Connect with third-party services and manage API access</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="feature-card">
+                <h3>Available Integrations</h3>
+                <p class="text-muted">Seamlessly connect your LMS with popular third-party services and platforms.</p>
+                
+                <div class="integration-grid">
+                    <div class="integration-item">
+                        <i class="fab fa-google"></i>
+                        <p>Google Classroom</p>
+                    </div>
+                    <div class="integration-item">
+                        <i class="fas fa-video"></i>
+                        <p>Zoom Meetings</p>
+                    </div>
+                    <div class="integration-item">
+                        <i class="fas fa-file-alt"></i>
+                        <p>Turnitin</p>
+                    </div>
+                    <div class="integration-item">
+                        <i class="fas fa-cloud"></i>
+                        <p>AWS Services</p>
+                    </div>
+                    <div class="integration-item">
+                        <i class="fas fa-database"></i>
+                        <p>Salesforce</p>
+                    </div>
+                    <div class="integration-item">
+                        <i class="fas fa-webhook"></i>
+                        <p>Custom Webhooks</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>API Documentation</h3>
+                <p class="text-muted">Complete RESTful API for building custom integrations.</p>
+                <ul style="margin: 15px 0;">
+                    <li style="padding: 8px 0;"><strong>REST API</strong> - Full course and enrollment management</li>
+                    <li style="padding: 8px 0;"><strong>GraphQL API</strong> - Advanced querying capabilities</li>
+                    <li style="padding: 8px 0;"><strong>Webhooks</strong> - Real-time event notifications</li>
+                    <li style="padding: 8px 0;"><strong>OAuth 2.0</strong> - Secure authentication</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <h5>📌 Status</h5>
+                <hr>
+                <p><strong>Module:</strong> Integrations & API</p>
+                <p><strong>Status:</strong> <span class="badge bg-warning">In Development</span></p>
+                <p><strong>Expected Launch:</strong> Q2 2026</p>
+                <hr>
+                <button class="btn btn-info w-100">Get Notified When Available</button>
+            </div>
+            
+            <div class="feature-card">
+                <h5>🔌 Features</h5>
+                <ul class="list-unstyled">
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><span style="color: #00f2fe;">✓</span> OAuth 2.0 auth</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><span style="color: #00f2fe;">✓</span> REST API</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><span style="color: #00f2fe;">✓</span> GraphQL API</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;"><span style="color: #00f2fe;">✓</span> Webhooks</li>
+                    <li style="padding: 8px 0;"><span style="color: #00f2fe;">✓</span> Rate limiting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

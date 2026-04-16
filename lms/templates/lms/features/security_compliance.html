@@ -1,0 +1,163 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Security & Compliance - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .security-content { padding: 20px; }
+    .security-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .security-header h1 { margin: 0; font-size: 2.5em; font-weight: 700; }
+    .card-feature {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid #dc3545;
+    }
+    .card-feature:hover { box-shadow: 0 5px 25px rgba(0,0,0,0.12); }
+    .security-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    .security-item {
+        background: #ffe0e6;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        border: 2px solid #ffb3c1;
+    }
+    .security-item i { font-size: 2.5em; color: #dc3545; margin-bottom: 10px; }
+    .security-item p { margin: 10px 0 0 0; font-weight: 600; }
+    .compliance-status { padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 10px 0; }
+    .compliance-status.passed { border-left: 4px solid #28a745; }
+    .compliance-status.warning { border-left: 4px solid #ffc107; }
+    .compliance-status.failed { border-left: 4px solid #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='security' %}
+    
+    <div class="dashboard-main">
+    <div class="security-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="security-header">
+        <h1>🔐 Security & Compliance</h1>
+        <p>Manage authentication, encryption, audit trails, and compliance requirements</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card-feature">
+                <h3>Security Modules</h3>
+                <p class="text-muted">Configure and monitor all security aspects of your LMS.</p>
+                <div class="security-grid">
+                    <div class="security-item">
+                        <i class="fas fa-lock"></i>
+                        <p>Authentication</p>
+                        <small>OAuth, SAML, MFA</small>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-key"></i>
+                        <p>Encryption</p>
+                        <small>Keys & Certificates</small>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-history"></i>
+                        <p>Audit Trail</p>
+                        <small>Activity Logs</small>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-file-check"></i>
+                        <p>Compliance</p>
+                        <small>GDPR, FERPA, CCPA</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-feature">
+                <h3>Compliance Status</h3>
+                <p class="text-muted">Current compliance dashboard for your institution.</p>
+                <div class="compliance-status passed">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>GDPR Compliance</strong>
+                            <p class="text-muted" style="margin: 5px 0;">General Data Protection Regulation</p>
+                        </div>
+                        <span class="badge bg-success">PASSED</span>
+                    </div>
+                </div>
+                <div class="compliance-status passed">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>FERPA Compliance</strong>
+                            <p class="text-muted" style="margin: 5px 0;">Family Educational Rights and Privacy Act</p>
+                        </div>
+                        <span class="badge bg-success">PASSED</span>
+                    </div>
+                </div>
+                <div class="compliance-status warning">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>CCPA Compliance</strong>
+                            <p class="text-muted" style="margin: 5px 0;">California Consumer Privacy Act</p>
+                        </div>
+                        <span class="badge bg-warning">REVIEW PENDING</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card-feature">
+                <h5>🛡️ Security Score</h5>
+                <hr>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 3em; color: #28a745; font-weight: 700;">94</div>
+                    <p class="text-muted">out of 100</p>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" style="width: 94%;"></div>
+                </div>
+                <small class="text-muted">Last updated: Today</small>
+            </div>
+            
+            <div class="card-feature">
+                <h5>📋 Recent Activity</h5>
+                <ul class="list-unstyled" style="font-size: 0.9em;">
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>Admin Login</strong><br>
+                        <small class="text-muted">2 hours ago</small>
+                    </li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>User Role Changed</strong><br>
+                        <small class="text-muted">4 hours ago</small>
+                    </li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>Encryption Keys Rotated</strong><br>
+                        <small class="text-muted">1 day ago</small>
+                    </li>
+                    <li style="padding: 8px 0;">
+                        <strong>Policy Updated</strong><br>
+                        <small class="text-muted">3 days ago</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

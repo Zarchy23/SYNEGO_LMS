@@ -1,0 +1,92 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}{{ page_title }} - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feature-content {
+        padding: 20px;
+    }
+    .feature-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .coming-soon {
+        text-align: center;
+        padding: 50px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        border: 2px dashed #ccc;
+    }
+    .coming-soon i {
+        font-size: 4em;
+        color: #999;
+        margin-bottom: 20px;
+    }
+    .feature-description {
+        font-size: 1.1em;
+        color: #666;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid feature-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="feature-header">
+        <h1>{{ page_title }}</h1>
+        <p>Enterprise Feature Module</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="coming-soon">
+                <i class="fas fa-rocket"></i>
+                <h3>{{ page_title }}</h3>
+                <p class="feature-description">
+                    This feature is currently under active development and will be available soon.
+                </p>
+                <p class="text-muted">
+                    Check back regularly for updates on this enterprise feature.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <h5>📌 Status</h5>
+                <hr>
+                <p><strong>Module:</strong> {{ page_title }}</p>
+                <p><strong>Status:</strong> <span class="badge bg-warning">In Development</span></p>
+                <p><strong>Expected Launch:</strong> Q2 2026</p>
+                <hr>
+                <button class="btn btn-primary w-100">Get Notified When Available</button>
+            </div>
+            
+            <div class="feature-card">
+                <h5>✨ Features Coming</h5>
+                <hr>
+                <ul class="list-unstyled">
+                    <li>✓ Real-time dashboards</li>
+                    <li>✓ Advanced analytics</li>
+                    <li>✓ Custom reporting</li>
+                    <li>✓ Integration support</li>
+                    <li>✓ API access</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,532 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}Learning Paths - {{ course.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .header-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle {
+        font-size: 1.05rem;
+        opacity: 0.95;
+    }
+
+    .path-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .path-card:hover {
+        box-shadow: 0 8px 20px rgba(31, 58, 93, 0.15);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .path-card-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--secondary-color), #3b9dff);
+        color: white;
+        border-radius: 12px;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .path-card-content {
+        flex: 1;
+    }
+
+    .path-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .path-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .path-meta {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .path-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: var(--bg-light);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .tag.learning-style {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .tag.level {
+        background: #f3e5f5;
+        color: #6a1b9a;
+    }
+
+    .progress-indicator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .progress-bar-small {
+        flex: 1;
+        height: 8px;
+        background: #e8ecf1;
+        border-radius: 4px;
+    }
+
+    .progress-bar-small::after {
+        content: '';
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        border-radius: 4px;
+    }
+
+    .progress-percentage {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        min-width: 50px;
+        text-align: right;
+    }
+
+    .path-action {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e8ecf1;
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-path {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-path.primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-path.primary:hover {
+        background: #1f69db;
+    }
+
+    .btn-path.secondary {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        border: 1px solid #e8ecf1;
+    }
+
+    .btn-path.secondary:hover {
+        border-color: var(--secondary-color);
+        background: white;
+    }
+
+    /* Filters */
+    .filter-section {
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .filter-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .filter-checkbox input {
+        cursor: pointer;
+    }
+
+    .filter-checkbox label {
+        cursor: pointer;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: var(--bg-light);
+        border-radius: 12px;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .path-stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .path-stat:last-child {
+        border-bottom: none;
+    }
+
+    .path-stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .path-stat-value {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item active">Learning Paths</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="header-section">
+        <h1 class="header-title">Learning Paths</h1>
+        <p class="header-subtitle">Choose a personalized learning path based on your goals and learning style</p>
+    </div>
+
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-section">
+                <div class="filter-title">
+                    <i class="fas fa-filter me-2"></i>Filter Paths
+                </div>
+
+                <!-- Learning Style Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Learning Style</label>
+                    <div class="filter-options">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="visual" value="visual">
+                            <label for="visual">Visual</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="auditory" value="auditory">
+                            <label for="auditory">Auditory</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="kinesthetic" value="kinesthetic">
+                            <label for="kinesthetic">Kinesthetic</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="reading" value="reading">
+                            <label for="reading">Reading/Writing</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Difficulty Level Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Difficulty Level</label>
+                    <div class="filter-options">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="beginner" value="beginner">
+                            <label for="beginner">Beginner</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="intermediate" value="intermediate">
+                            <label for="intermediate">Intermediate</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="advanced" value="advanced">
+                            <label for="advanced">Advanced</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Path Type Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Path Type</label>
+                    <div class="filter-options">
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="sequential" value="sequential">
+                            <label for="sequential">Sequential</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="adaptive" value="adaptive">
+                            <label for="adaptive">Adaptive</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="flexible" value="flexible">
+                            <label for="flexible">Flexible</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="fas fa-redo me-2"></i>Reset Filters
+                </button>
+            </div>
+
+            <!-- Stats Sidebar -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-chart-pie me-2"></i>Your Stats
+                </div>
+                <div class="path-stat">
+                    <span class="path-stat-label">Paths Active</span>
+                    <span class="path-stat-value">{{ active_paths }}</span>
+                </div>
+                <div class="path-stat">
+                    <span class="path-stat-label">Paths Completed</span>
+                    <span class="path-stat-value">{{ completed_paths }}</span>
+                </div>
+                <div class="path-stat">
+                    <span class="path-stat-label">Total Available</span>
+                    <span class="path-stat-value">{{ paths.count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Sort Options -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Available Paths</h5>
+                <select class="form-select form-select-sm" style="max-width: 200px;">
+                    <option selected>Most Popular</option>
+                    <option>Recently Added</option>
+                    <option>Shortest Duration</option>
+                    <option>Longest Duration</option>
+                    <option>Highest Rated</option>
+                </select>
+            </div>
+
+            {% if paths %}
+                {% for path in paths %}
+                <div class="path-card">
+                    <div class="path-card-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <div class="path-card-content">
+                        <h5 class="path-name">{{ path.name }}</h5>
+                        <p class="path-description">{{ path.description|truncatewords:25 }}</p>
+
+                        <!-- Meta Info -->
+                        <div class="path-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-book-open"></i>
+                                <span>{{ path.modules.count }} modules</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>{{ path.lessons_count }} lessons</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-hourglass-half"></i>
+                                <span>{{ path.estimated_hours }} hours</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-star"></i>
+                                <span>{{ path.difficulty_level|default:"Intermediate" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="path-tags">
+                            {% if path.learning_style %}
+                            <span class="tag learning-style">{{ path.learning_style }}</span>
+                            {% endif %}
+                            {% if path.path_type %}
+                            <span class="tag level">{{ path.path_type }}</span>
+                            {% endif %}
+                            {% if path.is_recommended %}
+                            <span class="tag" style="background: #e8f5e9; color: #2e7d32;">
+                                <i class="fas fa-thumbs-up me-1"></i>Recommended
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Progress -->
+                        {% if path.enrollment_status == 'enrolled' %}
+                        <div class="progress-indicator">
+                            <div class="progress-bar-small" style="width: {{ path.completion_percentage }}%;"></div>
+                            <div class="progress-percentage">{{ path.completion_percentage }}%</div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Actions -->
+                        <div class="path-action">
+                            {% if path.enrollment_status == 'enrolled' %}
+                                <a href="{% url 'learning_path_detail' course.id path.id %}" class="btn-path primary">
+                                    <i class="fas fa-play"></i>Continue Learning
+                                </a>
+                            {% else %}
+                                <button class="btn-path primary" onclick="enrollPath('{{ path.id }}')">
+                                    <i class="fas fa-arrow-right"></i>Start Path
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'learning_path_detail' course.id path.id %}" class="btn-path secondary">
+                                <i class="fas fa-eye"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <div class="empty-state-title">No Learning Paths Available</div>
+                    <p class="empty-state-text">There are no learning paths available for this course yet.</p>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Course
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function enrollPath(pathId) {
+    fetch(`{% url 'enroll_learning_path' %}?path_id=${pathId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

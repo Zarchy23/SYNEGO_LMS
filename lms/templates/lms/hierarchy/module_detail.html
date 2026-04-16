@@ -1,0 +1,459 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}{{ module.name }} - Module{% endblock %}
+
+{% block extra_css %}
+<style>
+    .module-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .module-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .module-header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .module-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .module-description {
+        font-size: 1.05rem;
+        opacity: 0.95;
+        margin-bottom: 1rem;
+    }
+
+    .module-stats {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.95rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+    }
+
+    .section-card:hover {
+        box-shadow: 0 4px 12px rgba(31, 58, 93, 0.1);
+        border-color: var(--secondary-color);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .section-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 1rem;
+        background: var(--bg-light);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .section-status.completed {
+        background: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .section-status.in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .section-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .lessons-list {
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .lesson-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        transition: all 0.2s;
+    }
+
+    .lesson-item:last-child {
+        border-bottom: none;
+    }
+
+    .lesson-item:hover {
+        background: rgba(47, 128, 237, 0.05);
+        padding-left: 0.5rem;
+    }
+
+    .lesson-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--secondary-color);
+        color: white;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .lesson-info {
+        flex: 1;
+    }
+
+    .lesson-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .lesson-name:hover {
+        color: var(--secondary-color);
+    }
+
+    .lesson-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .lesson-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e0e0e0;
+    }
+
+    .progress-dot.completed {
+        background: #27ae60;
+    }
+
+    .progress-dot.in-progress {
+        background: #f39c12;
+    }
+
+    .section-footer {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e8ecf1;
+    }
+
+    .breadcrumb-container {
+        margin-bottom: 2rem;
+    }
+
+    .progress-overview {
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .progress-label strong {
+        font-size: 1.25rem;
+    }
+
+    .sidebar-widget {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .widget-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .widget-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .widget-item:last-child {
+        border-bottom: none;
+    }
+
+    .widget-item-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .widget-item-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'module_list' course.id %}">Modules</a></li>
+            <li class="breadcrumb-item active">{{ module.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Module Header -->
+    <div class="module-header">
+        <div class="module-header-content">
+            <h1 class="module-title">{{ module.name }}</h1>
+            {% if module.description %}
+            <p class="module-description">{{ module.description }}</p>
+            {% endif %}
+            
+            <div class="module-stats">
+                <div class="stat-item">
+                    <i class="fas fa-bookmark"></i>
+                    <span>{{ sections.count }} Sections</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>{{ total_lessons }} Lessons</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>{{ module.estimated_hours }} hours</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="progress-overview">
+        <div class="progress-label">
+            <span>Module Progress</span>
+            <strong>{{ completion_percentage }}%</strong>
+        </div>
+        <div class="progress" style="height: 12px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%"
+                aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+        <div class="mt-2" style="font-size: 0.9rem; color: var(--text-muted);">
+            {{ completed_sections }} of {{ sections.count }} sections completed
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sections List -->
+        <div class="col-lg-8">
+            <h5 class="mb-3">Learning Sections</h5>
+
+            {% if sections %}
+                {% for section in sections %}
+                <div class="section-card">
+                    <div class="section-header">
+                        <div>
+                            <h4 class="section-title">{{ section.name }}</h4>
+                            {% if section.description %}
+                            <p class="section-description">{{ section.description }}</p>
+                            {% endif %}
+                        </div>
+                        <span class="section-status {% if section.completion_status == 'completed' %}completed{% elif section.completion_status == 'in_progress' %}in-progress{% endif %}">
+                            {% if section.completion_status == 'completed' %}
+                            <i class="fas fa-check"></i>
+                            {% elif section.completion_status == 'in_progress' %}
+                            <i class="fas fa-spinner"></i>
+                            {% else %}
+                            <i class="fas fa-lock-open"></i>
+                            {% endif %}
+                            {{ section.completion_status|title }}
+                        </span>
+                    </div>
+
+                    <!-- Lessons in Section -->
+                    {% if section.lessons.all %}
+                    <div class="lessons-list">
+                        <h6 style="font-weight: 600; color: var(--primary-color); margin-bottom: 1rem;">
+                            {{ section.lessons.count }} Lessons
+                        </h6>
+                        
+                        {% for lesson in section.lessons.all %}
+                        <div class="lesson-item">
+                            <div class="lesson-icon">
+                                {% if lesson.completion_status == 'completed' %}
+                                <i class="fas fa-check"></i>
+                                {% else %}
+                                <i class="fas fa-play"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="lesson-info">
+                                <a href="{% url 'lesson_detail' course.id module.id section.id lesson.id %}" class="lesson-name">
+                                    {{ lesson.name }}
+                                </a>
+                                <div class="lesson-meta">
+                                    <i class="fas fa-clock"></i> {{ lesson.estimated_minutes }} mins
+                                    {% if lesson.resource_count > 0 %}
+                                    • <i class="fas fa-file"></i> {{ lesson.resource_count }} resources
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="lesson-progress">
+                                <div class="progress-dot {% if lesson.completion_status == 'completed' %}completed{% elif lesson.completion_status == 'in_progress' %}in-progress{% endif %}"></div>
+                                <span class="text-muted">{{ lesson.completion_status|title }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Section Footer -->
+                    <div class="section-footer">
+                        <a href="{% url 'section_detail' course.id module.id section.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-arrow-right me-2"></i>View Section
+                        </a>
+                        {% if section.completion_status != 'completed' %}
+                        <a href="{% url 'section_detail' course.id module.id section.id %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-play me-2"></i>Start Learning
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No sections available in this module yet.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Module Info -->
+            <div class="sidebar-widget">
+                <h6 class="widget-title">
+                    <i class="fas fa-info-circle"></i> Module Info
+                </h6>
+                <div class="widget-item">
+                    <div class="widget-item-label">Sections</div>
+                    <div class="widget-item-value">{{ sections.count }}</div>
+                </div>
+                <div class="widget-item">
+                    <div class="widget-item-label">Total Lessons</div>
+                    <div class="widget-item-value">{{ total_lessons }}</div>
+                </div>
+                <div class="widget-item">
+                    <div class="widget-item-label">Estimated Time</div>
+                    <div class="widget-item-value">{{ module.estimated_hours }}h</div>
+                </div>
+                <div class="widget-item">
+                    <div class="widget-item-label">Completion</div>
+                    <div class="widget-item-value">{{ completion_percentage }}%</div>
+                </div>
+            </div>
+
+            <!-- Learning Progress -->
+            <div class="sidebar-widget">
+                <h6 class="widget-title">
+                    <i class="fas fa-chart-line"></i> Your Progress
+                </h6>
+                <div class="widget-item">
+                    <div class="widget-item-label">Sections Completed</div>
+                    <div class="widget-item-value">{{ completed_sections }}/{{ sections.count }}</div>
+                </div>
+                <div class="widget-item">
+                    <div class="widget-item-label">Lessons Completed</div>
+                    <div class="widget-item-value">{{ completed_lessons }}/{{ total_lessons }}</div>
+                </div>
+                <div class="widget-item">
+                    <div class="widget-item-label">Time Spent</div>
+                    <div class="widget-item-value">{{ time_spent_minutes|default:"0" }} mins</div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="sidebar-widget">
+                <a href="{% url 'module_list' course.id %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                    <i class="fas fa-chevron-left me-2"></i>Back to Modules
+                </a>
+                <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="fas fa-book me-2"></i>Course Overview
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

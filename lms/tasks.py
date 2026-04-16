@@ -291,7 +291,7 @@ def sync_google_classroom_task(user_id):
                 defaults={
                     "title": course_data.get("name", "Imported Course"),
                     "description": course_data.get("description", ""),
-                    "department": user.department,
+                    "department": user.module,
                     "status": "draft",
                     "duration": "TBD",
                     "learning_objectives": "Imported from Google Classroom",

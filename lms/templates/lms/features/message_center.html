@@ -1,0 +1,116 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Learner Message Center - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .messages-content { padding: 20px; }
+    .messages-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .message-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .letter-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid #f5576c;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .letter-item:hover { background: #f0f0f0; }
+    .unread-badge { 
+        display: inline-block;
+        background: #f5576c;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75em;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid messages-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="messages-header">
+        <h1>📨 Message Center</h1>
+        <p>Communication with instructors and administrators</p>
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+        <input type="text" class="form-control" placeholder="Search messages..." style="flex: 1;">
+        <select class="form-select" style="max-width: 150px;">
+            <option>All Messages</option>
+            <option>Unread</option>
+            <option>Important</option>
+        </select>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📬 Inbox (6 unread)</h4>
+    
+    <div class="message-card">
+        <div class="letter-item">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <strong>Assignment Feedback - Python Project</strong>
+                    <span class="unread-badge">NEW</span>
+                </div>
+                <div style="font-size: 0.9em; color: #999;">From: Dr. James Wilson • 2 hours ago</div>
+                <div style="margin-top: 8px; color: #666;">Great work on the project! I've added detailed comments in the grading rubric...</div>
+            </div>
+            <button class="btn btn-sm btn-outline-primary">Open</button>
+        </div>
+        
+        <div class="letter-item">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <strong>Quiz Reminder - Data Structures</strong>
+                    <span class="unread-badge">NEW</span>
+                </div>
+                <div style="font-size: 0.9em; color: #999;">From: Prof. Sarah Johnson • 1 day ago</div>
+                <div style="margin-top: 8px; color: #666;">Reminder: Quiz on Data Structures opens tomorrow at 9 AM and closes at 11 PM...</div>
+            </div>
+            <button class="btn btn-sm btn-outline-primary">Open</button>
+        </div>
+        
+        <div class="letter-item">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <strong>Course Enrollment Confirmation</strong>
+                    <span class="unread-badge">NEW</span>
+                </div>
+                <div style="font-size: 0.9em; color: #999;">From: System • 2 days ago</div>
+                <div style="margin-top: 8px; color: #666;">You have been successfully enrolled in Web Development 301. Course starts next Monday...</div>
+            </div>
+            <button class="btn btn-sm btn-outline-primary">Open</button>
+        </div>
+        
+        <div class="letter-item">
+            <div style="flex: 1;">
+                <div style="margin-bottom: 4px;">
+                    <strong>Grade Posted - Quiz 5</strong>
+                </div>
+                <div style="font-size: 0.9em; color: #999;">From: Dr. Michael Chen • 3 days ago</div>
+                <div style="margin-top: 8px; color: #666;">Your grade for Quiz 5 has been posted. Score: 92/100 - Excellent work!</div>
+            </div>
+            <button class="btn btn-sm btn-outline-primary">Open</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

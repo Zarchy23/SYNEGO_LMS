@@ -1,0 +1,214 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Course Quality Review - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .quality-content { padding: 20px; }
+    .quality-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .course-item {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        border-left: 5px solid #667eea;
+    }
+    .quality-score {
+        display: inline-block;
+        background: #f0f5ff;
+        color: #667eea;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 1.1em;
+    }
+    .quality-score.low { background: #ffe5e5; color: #d32f2f; }
+    .quality-score.medium { background: #fff3cd; color: #856404; }
+    .quality-score.high { background: #d4edda; color: #155724; }
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-label { color: #666; }
+    .metric-value { font-weight: 600; }
+    .recommendation-box {
+        background: #f8f9fa;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid quality-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="quality-header">
+        <h1>📋 Course Quality Review</h1>
+        <p>Evaluate and improve course quality across your module</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">Courses Under Review</h3>
+            
+            <div class="course-item">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h5>Python Programming 101</h5>
+                        <small class="text-muted">Instructor: Dr. James Wilson</small>
+                    </div>
+                    <span class="quality-score high">92/100</span>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>Quality Metrics:</strong>
+                    <div class="metric-row">
+                        <span class="metric-label">Content Alignment</span>
+                        <span class="metric-value">95%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Student Engagement</span>
+                        <span class="metric-value">88%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Assessment Quality</span>
+                        <span class="metric-value">91%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Resource Availability</span>
+                        <span class="metric-value">93%</span>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-sm btn-primary">View Details</button>
+                    <button class="btn btn-sm btn-outline-secondary">Send Feedback</button>
+                </div>
+            </div>
+            
+            <div class="course-item">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h5>Web Development Fundamentals</h5>
+                        <small class="text-muted">Instructor: Prof. Sarah Johnson</small>
+                    </div>
+                    <span class="quality-score medium">72/100</span>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>Quality Metrics:</strong>
+                    <div class="metric-row">
+                        <span class="metric-label">Content Alignment</span>
+                        <span class="metric-value">78%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Student Engagement</span>
+                        <span class="metric-value">65%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Assessment Quality</span>
+                        <span class="metric-value">75%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Resource Availability</span>
+                        <span class="metric-value">68%</span>
+                    </div>
+                </div>
+                <div class="recommendation-box">
+                    <strong>⚠️ Improvement Needed:</strong> Consider adding more interactive coding exercises and updating course materials to latest web standards.
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-sm btn-primary">View Details</button>
+                    <button class="btn btn-sm btn-outline-warning">Schedule Review</button>
+                </div>
+            </div>
+            
+            <div class="course-item">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h5>Data Science & Analytics</h5>
+                        <small class="text-muted">Instructor: Dr. Michael Chen</small>
+                    </div>
+                    <span class="quality-score low">58/100</span>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>Quality Metrics:</strong>
+                    <div class="metric-row">
+                        <span class="metric-label">Content Alignment</span>
+                        <span class="metric-value">62%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Student Engagement</span>
+                        <span class="metric-value">45%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Assessment Quality</span>
+                        <span class="metric-value">58%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Resource Availability</span>
+                        <span class="metric-value">65%</span>
+                    </div>
+                </div>
+                <div class="recommendation-box">
+                    <strong>🔴 Action Required:</strong> Course needs significant improvements. Recommend meeting with instructor to discuss curriculum updates and student engagement strategies.
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-sm btn-danger">Urgent Review</button>
+                    <button class="btn btn-sm btn-outline-secondary">Schedule Meeting</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                <h5>📊 Module Quality Overview</h5>
+                <hr>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Avg Quality Score</span>
+                        <strong style="color: #667eea;">79.3/100</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 79%; background: #667eea;"></div>
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Excellent Courses</span>
+                        <strong>8</strong>
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Needs Improvement</span>
+                        <strong style="color: #d32f2f;">3</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+                <h5>⚡ Quick Actions</h5>
+                <button class="btn btn-primary w-100" style="margin: 10px 0;">Generate Report</button>
+                <button class="btn btn-outline-primary w-100" style="margin: 10px 0;">Compare Courses</button>
+                <button class="btn btn-outline-primary w-100" style="margin: 10px 0;">Peer Benchmarking</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

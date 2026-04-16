@@ -1,0 +1,184 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Module Budget & Resources - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .budget-content { padding: 20px; }
+    .budget-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .budget-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .budget-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .budget-label { flex: 1; }
+    .budget-amount { font-weight: 700; color: #667eea; }
+    .resource-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+    }
+    .resource-item.available { border-left-color: #28a745; }
+    .resource-item.limited { border-left-color: #ffc107; }
+    .resource-item.unavailable { border-left-color: #d32f2f; }
+    .request-item {
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+    }
+    .request-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    .status-approved { background: #d4edda; color: #155724; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-rejected { background: #ffe5e5; color: #d32f2f; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid budget-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="budget-header">
+        <h1>💰 Budget & Resources</h1>
+        <p>Manage module budget, allocate resources, and track spending</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 style="margin-bottom: 20px;">💵 Annual Budget Overview</h3>
+            
+            <div class="budget-card">
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>Total Budget Allocation</strong>
+                        <strong style="color: #667eea;">$150,000</strong>
+                    </div>
+                    <div class="progress" style="height: 12px;">
+                        <div class="progress-bar" style="width: 100%; background: #667eea;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-weight: 600;">Spent</div>
+                        <div style="font-size: 1.5em; color: #d32f2f;">$98,500</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Remaining</div>
+                        <div style="font-size: 1.5em; color: #28a745;">$51,500</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Utilization</div>
+                        <div style="font-size: 1.5em; color: #ffc107;">65.7%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 style="margin: 20px 0;">Budget Breakdown by Category</h4>
+            
+            <div class="budget-item">
+                <div class="budget-label">
+                    <div style="font-weight: 600;">Personnel & Salaries</div>
+                    <small class="text-muted">Annual instructor and staff costs</small>
+                </div>
+                <div class="budget-amount">$85,000</div>
+            </div>
+            
+            <div class="budget-item">
+                <div class="budget-label">
+                    <div style="font-weight: 600;">Technology & Software</div>
+                    <small class="text-muted">Learning management systems and tools</small>
+                </div>
+                <div class="budget-amount">$22,500</div>
+            </div>
+            
+            <div class="budget-item">
+                <div class="budget-label">
+                    <div style="font-weight: 600;">Professional Development</div>
+                    <small class="text-muted">Training and certifications</small>
+                </div>
+                <div class="budget-amount">$15,000</div>
+            </div>
+            
+            <div class="budget-item">
+                <div class="budget-label">
+                    <div style="font-weight: 600;">Infrastructure & Equipment</div>
+                    <small class="text-muted">Servers, hardware, and lab equipment</small>
+                </div>
+                <div class="budget-amount">$27,500</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <h4>📦 Available Resources</h4>
+            
+            <div class="resource-item available">
+                <strong>VR/AR Equipment</strong>
+                <small class="d-block text-muted">10 units available</small>
+                <small class="text-success">✓ Available</small>
+            </div>
+            
+            <div class="resource-item available">
+                <strong>Server Capacity</strong>
+                <small class="d-block text-muted">850 GB / 1 TB</small>
+                <small class="text-success">✓ Sufficient</small>
+            </div>
+            
+            <div class="resource-item limited">
+                <strong>Software Licenses</strong>
+                <small class="d-block text-muted">5 / 8 available</small>
+                <small class="text-warning">⚠ Limited</small>
+            </div>
+            
+            <div class="resource-item unavailable">
+                <strong>Mobile Lab</strong>
+                <small class="d-block text-muted">In maintenance</small>
+                <small class="text-danger">✕ Unavailable</small>
+            </div>
+            
+            <h4 style="margin: 20px 0;">📋 Pending Requests</h4>
+            
+            <div class="request-item">
+                <div style="margin-bottom: 10px;">
+                    <strong>New AI Training Software</strong>
+                    <span class="request-status status-pending">Pending</span>
+                </div>
+                <small class="text-muted">Amount: $8,500 · Submitted by Sarah Johnson</small>
+            </div>
+            
+            <div class="request-item">
+                <div style="margin-bottom: 10px;">
+                    <strong>Instructor Conference Attendance</strong>
+                    <span class="request-status status-approved">Approved</span>
+                </div>
+                <small class="text-muted">Amount: $3,200 · For 2 instructors</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

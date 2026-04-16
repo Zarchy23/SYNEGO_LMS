@@ -1,0 +1,149 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Instructor Assessment Tools - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assessment-content { padding: 20px; }
+    .assessment-header {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .assessment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .assessment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .assessment-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    .assessment-item:hover { border-color: #9b59b6; }
+    .assessment-icon { font-size: 2em; margin-bottom: 8px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='instructor_assessment' %}
+    
+    <div class="dashboard-main">
+    <div class="assessment-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="assessment-header">
+        <h1>📝 Assessment Tools</h1>
+        <p>Create and manage assessments</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📋 Assessment Types</h4>
+    
+    <div class="assessment-grid">
+        <div class="assessment-item">
+            <div class="assessment-icon">✅</div>
+            <div><strong>Quiz</strong></div>
+            <small style="color: #999;">Multiple choice</small>
+        </div>
+        <div class="assessment-item">
+            <div class="assessment-icon">📝</div>
+            <div><strong>Essay</strong></div>
+            <small style="color: #999;">Free text</small>
+        </div>
+        <div class="assessment-item">
+            <div class="assessment-icon">💻</div>
+            <div><strong>Code Exercise</strong></div>
+            <small style="color: #999;">Programming task</small>
+        </div>
+        <div class="assessment-item">
+            <div class="assessment-icon">📊</div>
+            <div><strong>Project</strong></div>
+            <small style="color: #999;">Capstone</small>
+        </div>
+    </div>
+    
+    <div class="assessment-card">
+        <h4 style="margin-bottom: 20px;">➕ Create New Assessment</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Assessment Title</label>
+                <input type="text" class="form-control" placeholder="e.g., Python Fundamentals Quiz">
+            </div>
+            <div>
+                <label class="form-label">Type</label>
+                <select class="form-select">
+                    <option>Quiz</option>
+                    <option>Essay</option>
+                    <option>Code Exercise</option>
+                    <option>Project</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-control">
+            </div>
+            <div>
+                <label class="form-label">Total Points</label>
+                <input type="number" class="form-control" value="100">
+            </div>
+            <div>
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="4" placeholder="Describe the assessment..."></textarea>
+            </div>
+            <button class="btn btn-primary">Create Assessment</button>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📊 Recent Assessments</h4>
+    
+    <div class="assessment-card">
+        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>Quiz: Python Basics</strong>
+                <div style="font-size: 0.9em; color: #999;">Due: 2026-04-20 • 156 students</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                <button class="btn btn-sm btn-outline-secondary">View Submissions</button>
+            </div>
+        </div>
+        
+        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>Assignment: Data Structures Challenge</strong>
+                <div style="font-size: 0.9em; color: #999;">Due: 2026-04-18 • 145 submitted</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Grade</button>
+                <button class="btn btn-sm btn-outline-secondary">Statistics</button>
+            </div>
+        </div>
+        
+        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>Essay: Design Patterns</strong>
+                <div style="font-size: 0.9em; color: #999;">Due: 2026-04-25 • 89 submitted, 67 pending</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Grade</button>
+                <button class="btn btn-sm btn-outline-secondary">Statistics</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Dept Communications - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comms-content { padding: 20px; }
+    .comms-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .comms-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .message-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 4px solid #667eea;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+    .attachment-list { list-style: none; padding: 0; margin: 10px 0; }
+    .attachment-item { padding: 6px 0; color: #667eea; text-decoration: underline; cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid comms-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="comms-header">
+        <h1>📢 Module Communications</h1>
+        <p>Send announcements and updates to faculty and staff</p>
+    </div>
+    
+    <div class="comms-card">
+        <h4 style="margin-bottom: 20px;">✉️ Compose Message</h4>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Recipient Group</label>
+                <select class="form-select">
+                    <option>All Faculty</option>
+                    <option>All Staff</option>
+                    <option>Module Chairs</option>
+                    <option>Instructors Only</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Subject</label>
+                <input type="text" class="form-control" placeholder="Message subject...">
+            </div>
+            <div>
+                <label class="form-label">Message</label>
+                <textarea class="form-control" rows="6" placeholder="Type your message..."></textarea>
+            </div>
+            <div>
+                <label class="form-label">Attachments</label>
+                <div style="border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer;">
+                    <div style="font-size: 1.5em; margin-bottom: 8px;">📎</div>
+                    <p style="margin: 0; color: #999;">Drag files here or click to upload</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary">Send Message</button>
+                <button class="btn btn-outline-secondary">Save as Draft</button>
+            </div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">📋 Message History</h4>
+    
+    <div class="comms-card">
+        <div class="message-item">
+            <div>
+                <strong>Spring Semester Schedule Released</strong>
+                <div style="font-size: 0.9em; color: #999;">Sent to: All Faculty • 2 days ago</div>
+                <div style="margin-top: 10px; color: #666;">The Spring semester schedule is now available in the system. Please review your course assignments...</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button class="btn btn-sm btn-outline-secondary">View</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+        </div>
+        
+        <div class="message-item">
+            <div>
+                <strong>New LMS Features Available</strong>
+                <div style="font-size: 0.9em; color: #999;">Sent to: All Staff • 5 days ago</div>
+                <div style="margin-top: 10px; color: #666;">We've launched new features including AI-powered analytics and enhanced collaboration tools...</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button class="btn btn-sm btn-outline-secondary">View</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+        </div>
+        
+        <div class="message-item">
+            <div>
+                <strong>Professional Development Opportunities</strong>
+                <div style="font-size: 0.9em; color: #999;">Sent to: Module Chairs • 1 week ago</div>
+                <div style="margin-top: 10px; color: #666;">Several professional development workshops are available this month on advanced pedagogical techniques...</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button class="btn btn-sm btn-outline-secondary">View</button>
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

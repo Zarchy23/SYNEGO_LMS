@@ -1,0 +1,136 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Instructor Content Management - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .content-layout { display: grid; grid-template-columns: 250px 1fr; gap: 20px; }
+    .content-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        height: fit-content;
+    }
+    .content-main {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .header {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .tree-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+    }
+    .tree-item:hover { background: #f0f0f0; }
+    .tree-item.active { background: #9b59b6; color: white; border-radius: 6px; }
+    .content-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid #9b59b6;
+    }
+    .upload-area {
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .upload-area:hover { border-color: #9b59b6; background: #f9f8fa; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="padding: 20px;">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="header">
+        <h1>📚 Content Management</h1>
+        <p>Upload and organize course materials</p>
+    </div>
+    
+    <div class="content-layout">
+        <!-- Sidebar Navigation -->
+        <div class="content-sidebar">
+            <h5 style="margin-bottom: 15px;">Courses</h5>
+            <div class="tree-item active">📖 Python Basics</div>
+            <div style="padding-left: 25px;">
+                <div class="tree-item" style="font-size: 0.9em;">📝 Chapter 1</div>
+                <div class="tree-item" style="font-size: 0.9em;">📝 Chapter 2</div>
+            </div>
+            <div class="tree-item">📖 Advanced Python</div>
+            <div class="tree-item">📖 Web Development</div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content-main">
+            <h4 style="margin-bottom: 20px;">📖 Python Basics - Content</h4>
+            
+            <div style="margin-bottom: 30px;">
+                <h5 style="margin-bottom: 15px;">📤 Upload Content</h5>
+                <div class="upload-area">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📎</div>
+                    <p style="margin: 0; color: #666;">Drag and drop files or click to upload</p>
+                    <small style="color: #999;">Supported: PDF, DOCX, MP4, PPTX, ZIP</small>
+                </div>
+            </div>
+            
+            <div>
+                <h5 style="margin-bottom: 15px;">📋 Course Materials</h5>
+                
+                <div class="content-item">
+                    <div>
+                        <strong>Lecture Slides - Week 1</strong>
+                        <div style="font-size: 0.9em; color: #999;">lecture_week_1.pdf • 4.2 MB</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline-primary">Preview</button>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <div class="content-item">
+                    <div>
+                        <strong>Coding Examples</strong>
+                        <div style="font-size: 0.9em; color: #999;">examples.zip • 12.5 MB</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline-primary">Preview</button>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <div class="content-item">
+                    <div>
+                        <strong>Recorded Lecture</strong>
+                        <div style="font-size: 0.9em; color: #999;">lecture_recording.mp4 • 238 MB</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-outline-primary">Preview</button>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

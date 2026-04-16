@@ -1,0 +1,181 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Learner Social Dashboard - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .social-content { padding: 20px; }
+    .social-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .social-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .peer-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        border-top: 4px solid #f5576c;
+    }
+    .peer-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5em;
+        margin: 0 auto 10px;
+    }
+    .peer-name { font-weight: 700; }
+    .peer-major { color: #999; font-size: 0.9em; }
+    .group-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        border-left: 4px solid #f5576c;
+    }
+    .member-avatars { display: flex; gap: 5px; margin: 10px 0; }
+    .mini-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid social-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="social-header">
+        <h1>👥 Social Dashboard</h1>
+        <p>Connect with peers and build your learning network</p>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">🤝 My Learning Connections</h4>
+    
+    <div class="social-grid">
+        <div class="peer-card">
+            <div class="peer-avatar">SJ</div>
+            <div class="peer-name">Sarah Johnson</div>
+            <div class="peer-major">Computer Science</div>
+            <div style="margin-top: 12px; display: flex; gap: 6px;">
+                <button class="btn btn-sm btn-primary" style="flex: 1;">Message</button>
+                <button class="btn btn-sm btn-outline-secondary" style="flex: 1;">Profile</button>
+            </div>
+        </div>
+        
+        <div class="peer-card">
+            <div class="peer-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">MC</div>
+            <div class="peer-name">Michael Chen</div>
+            <div class="peer-major">Data Science</div>
+            <div style="margin-top: 12px; display: flex; gap: 6px;">
+                <button class="btn btn-sm btn-primary" style="flex: 1;">Message</button>
+                <button class="btn btn-sm btn-outline-secondary" style="flex: 1;">Profile</button>
+            </div>
+        </div>
+        
+        <div class="peer-card">
+            <div class="peer-avatar" style="background: linear-gradient(135deg, #1abc9c, #16a085);">EW</div>
+            <div class="peer-name">Emma Wilson</div>
+            <div class="peer-major">Software Engineering</div>
+            <div style="margin-top: 12px; display: flex; gap: 6px;">
+                <button class="btn btn-sm btn-primary" style="flex: 1;">Message</button>
+                <button class="btn btn-sm btn-outline-secondary" style="flex: 1;">Profile</button>
+            </div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">👥 Study Groups</h4>
+    
+    <div class="group-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div style="font-weight: 700; margin-bottom: 8px;">Advanced Python Study Group</div>
+                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">Led by Prof. Wilson • Active</div>
+                <div style="margin-bottom: 8px;">
+                    <strong style="font-size: 0.9em;">12 members</strong>
+                </div>
+                <div class="member-avatars">
+                    <div class="mini-avatar">SJ</div>
+                    <div class="mini-avatar">MC</div>
+                    <div class="mini-avatar">EW</div>
+                    <div class="mini-avatar">+9</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-sm btn-outline-primary">Join</button>
+                <button class="btn btn-sm btn-outline-secondary">View</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="group-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div style="font-weight: 700; margin-bottom: 8px;">Web Development Cohort</div>
+                <div style="color: #999; font-size: 0.9em; margin-bottom: 10px;">Peer-led • In Progress</div>
+                <div style="margin-bottom: 8px;">
+                    <strong style="font-size: 0.9em;">8 members (member)</strong>
+                </div>
+                <div class="member-avatars">
+                    <div class="mini-avatar">AR</div>
+                    <div class="mini-avatar">JL</div>
+                    <div class="mini-avatar">KP</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-sm btn-primary">Open Group</button>
+                <button class="btn btn-sm btn-outline-danger">Leave</button>
+            </div>
+        </div>
+    </div>
+    
+    <h4 style="margin-bottom: 20px;">🎯 Find Study Partners</h4>
+    
+    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label class="form-label">Subject Interest</label>
+                <select class="form-select">
+                    <option>Python Programming</option>
+                    <option>Web Development</option>
+                    <option>Data Science</option>
+                    <option>Machine Learning</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Study Level</label>
+                <select class="form-select">
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                </select>
+            </div>
+            <button class="btn btn-primary">Find Partners</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

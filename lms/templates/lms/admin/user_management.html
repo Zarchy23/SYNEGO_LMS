@@ -55,7 +55,7 @@
                             <th>User</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Department</th>
+                            <th>Module</th>
                             <th>Status</th>
                             <th>Joined</th>
                             <th>Actions</th>
@@ -81,7 +81,7 @@
                                 </td>
                                 <td>{{ user.email }}</td>
                                 <td><span class="badge bg-secondary">{{ user.get_role_display }}</span></td>
-                                <td>{{ user.department.name|default:"-" }}</td>
+                                <td>{{ user.module.name|default:"-" }}</td>
                                 <td>
                                     {% if user.is_approved %}
                                         <span class="badge bg-success">Approved</span>

@@ -1,0 +1,274 @@
+{% extends "lms/base.html" %}
+
+{% block title %}System Logs - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dashboard-layout">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_system_logs' %}
+    
+    <div class="dashboard-main">
+        <div class="system-logs-container">
+            <!-- Header Card -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px 8px 0 0;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">
+                                <i class="fas fa-history me-2"></i>System Logs
+                            </h4>
+                            <small class="opacity-75">Audit trail of all system activities and user actions</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-white text-primary">Total: {{ page_obj.paginator.count }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="card-body bg-light">
+                    <form method="GET" id="filterForm" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="actionFilter" class="form-label">Action</label>
+                            <select name="action" id="actionFilter" class="form-select form-select-sm">
+                                <option value="">All Actions</option>
+                                {% for act in actions %}
+                                    <option value="{{ act }}" {% if selected_action == act %}selected{% endif %}>{{ act }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="objectTypeFilter" class="form-label">Object Type</label>
+                            <select name="object_type" id="objectTypeFilter" class="form-select form-select-sm">
+                                <option value="">All Object Types</option>
+                                {% for obj_type in object_types %}
+                                    <option value="{{ obj_type }}" {% if selected_object_type == obj_type %}selected{% endif %}>{{ obj_type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="userFilter" class="form-label">User</label>
+                            <select name="user" id="userFilter" class="form-select form-select-sm">
+                                <option value="">All Users</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if selected_user == user.id|stringformat:"s" %}selected{% endif %}>{{ user.get_full_name|default:user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                            <a href="{% url 'lms:admin_system_logs' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-times me-1"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="alert-container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Logs Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-muted small">Date & Time</th>
+                                <th class="text-muted small">User</th>
+                                <th class="text-muted small">Action</th>
+                                <th class="text-muted small">Object Type</th>
+                                <th class="text-muted small">Object ID</th>
+                                <th class="text-muted small">Details</th>
+                                <th class="text-muted small">IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if page_obj %}
+                                {% for log in page_obj %}
+                                    <tr class="align-middle">
+                                        <td>
+                                            <small>
+                                                <span title="{{ log.created_at|date:'Y-m-d H:i:s' }}">
+                                                    {{ log.created_at|date:'M d, Y H:i' }}
+                                                </span>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if log.user %}
+                                                <div class="d-flex align-items-center">
+                                                    {% if log.user.profile.avatar %}
+                                                        <img src="{{ log.user.profile.avatar.url }}" alt="{{ log.user.username }}" class="rounded-circle me-2" style="width: 28px; height: 28px;">
+                                                    {% else %}
+                                                        <div class="rounded-circle me-2 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
+                                                            {{ log.user.username|first|upper }}
+                                                        </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <div class="small font-weight-bold">{{ log.user.get_full_name|default:log.user.username }}</div>
+                                                        <div class="text-muted" style="font-size: 11px;">{{ log.user.username }}</div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">System</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">{{ log.action }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ log.object_type }}</small>
+                                        </td>
+                                        <td>
+                                            <code class="small">{{ log.object_id }}</code>
+                                        </td>
+                                        <td>
+                                            <small>
+                                                {% if log.details %}
+                                                    <span title="{{ log.details }}">
+                                                        {{ log.details|truncatewords:8 }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted font-monospace">
+                                                {% if log.ip_address %}
+                                                    {{ log.ip_address }}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="fas fa-inbox text-muted" style="font-size: 2rem;"></i>
+                                        <p class="text-muted mt-2">No system logs found</p>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center px-4 py-3 bg-light">
+                        <div class="small text-muted">
+                            Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ page_obj.paginator.count }}</strong> logs
+                        </div>
+                        <ul class="pagination mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_object_type %}&object_type={{ selected_object_type }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_object_type %}&object_type={{ selected_object_type }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}">Previous</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                            {% endif %}
+
+                            <!-- Simple page display -->
+                            <li class="page-item active">
+                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_object_type %}&object_type={{ selected_object_type }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_object_type %}&object_type={{ selected_object_type }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}">Last</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+
+            <!-- Info Card -->
+            <div class="card mt-4 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle me-2"></i>About System Logs
+                    </h6>
+                    <p class="small text-muted mb-0">
+                        System logs track all significant actions performed in the LMS, including user activities, administrative actions, and system changes. 
+                        Use the filters above to search by action type, object type, or user. Each log entry includes a timestamp, user information, action details, 
+                        and the IP address from which the action was performed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-layout {
+        display: flex;
+    }
+
+    .dashboard-main {
+        flex: 1;
+        margin-left: 0;
+    }
+
+    .system-logs-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .font-monospace {
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        color: #d63384;
+    }
+</style>
+{% endblock %}

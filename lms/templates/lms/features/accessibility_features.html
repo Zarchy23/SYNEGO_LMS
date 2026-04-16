@@ -1,0 +1,141 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Accessibility Features - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .accessibility-content { padding: 20px; }
+    .accessibility-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .feature-item {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        border-top: 4px solid #667eea;
+    }
+    .feature-title { font-weight: 700; font-size: 1.1em; margin-bottom: 8px; }
+    .feature-desc { color: #666; margin: 10px 0; }
+    .toggle-switch {
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        background: #ddd;
+        border-radius: 12px;
+        cursor: pointer;
+        position: relative;
+    }
+    .toggle-switch.on {
+        background: #28a745;
+    }
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s;
+    }
+    .toggle-switch.on::after {
+        left: 28px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid accessibility-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="accessibility-header">
+        <h1>♿ Accessibility Features</h1>
+        <p>Customize learning environment for your needs</p>
+    </div>
+    
+    <h3 style="margin-bottom: 20px;">🎯 Available Features</h3>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">📖 Screen Reader Compatibility</div>
+                <div class="feature-desc">Full WCAG 2.1 AA compliance for screen readers like NVDA and JAWS.</div>
+            </div>
+            <label class="toggle-switch on"></label>
+        </div>
+    </div>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">🔤 Font Size & Contrast</div>
+                <div class="feature-desc">Adjust text size (50% - 200%) and enable high contrast mode.</div>
+            </div>
+            <label class="toggle-switch on"></label>
+        </div>
+    </div>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">🔊 Text-to-Speech</div>
+                <div class="feature-desc">Listen to course materials with natural speech synthesis.</div>
+            </div>
+            <label class="toggle-switch on"></label>
+        </div>
+    </div>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">📝 Captions & Transcripts</div>
+                <div class="feature-desc">All videos include captions and complete transcripts.</div>
+            </div>
+            <label class="toggle-switch on"></label>
+        </div>
+    </div>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">⌨️ Keyboard Navigation</div>
+                <div class="feature-desc">Full keyboard accessibility for all interactive elements.</div>
+            </div>
+            <label class="toggle-switch on"></label>
+        </div>
+    </div>
+    
+    <div class="feature-item">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <div class="feature-title">🎨 Dyslexia-Friendly Font</div>
+                <div class="feature-desc">OpenDyslexic font option reduces reading strain for dyslexic users.</div>
+            </div>
+            <label class="toggle-switch"></label>
+        </div>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <h3 style="margin-bottom: 20px;">💡 Tips & Resources</h3>
+        
+        <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
+            <h5 style="margin-bottom: 15px;">Keyboard Shortcuts</h5>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>Alt + S</strong> - Skip to main content</li>
+                <li><strong>Alt + N</strong> - Next section</li>
+                <li><strong>Alt + P</strong> - Previous section</li>
+                <li><strong>Alt + 0</strong> - Close menu</li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-primary" style="margin-top: 20px;">Contact Accessibility Support</button>
+    </div>
+</div>
+{% endblock %}

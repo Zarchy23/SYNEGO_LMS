@@ -1,4 +1,4 @@
-<!-- Department Head Sidebar -->
+<!-- Module Head Sidebar -->
 <aside class="dashboard-sidebar">
     <div class="text-center mb-3">
         {% if user.profile_picture %}
@@ -14,28 +14,70 @@
     <hr>
     <div class="nav flex-column">
         <a href="{% url 'lms:instructor_dashboard' %}" class="nav-link {% if active_page == 'dept_dashboard' %}active{% endif %}">
-            <i class="fas fa-tachometer-alt me-2"></i> Department Dashboard
+            <i class="fas fa-tachometer-alt me-2"></i> Module Dashboard
         </a>
         <a href="{% url 'lms:course_list' %}" class="nav-link {% if active_page == 'dept_courses' %}active{% endif %}">
-            <i class="fas fa-book me-2"></i> Department Courses
+            <i class="fas fa-book me-2"></i> Module Courses
             {% if dept_courses %}<span class="badge bg-info ms-auto">{{ dept_courses }}</span>{% endif %}
         </a>
-        <a href="#" class="nav-link">
+        <a href="{% url 'lms:admin_users' %}" class="nav-link {% if active_page == 'dept_instructors' %}active{% endif %}">
             <i class="fas fa-chalkboard me-2"></i> Instructors
         </a>
-        <a href="#" class="nav-link">
-            <i class="fas fa-users me-2"></i> Students
+        <a href="{% url 'lms:admin_users' %}" class="nav-link {% if active_page == 'dept_students' %}active{% endif %}">
+            <i class="fas fa-users me-2"></i> Module Students
             {% if dept_students %}<span class="badge bg-secondary ms-auto">{{ dept_students }}</span>{% endif %}
         </a>
         <a href="{% url 'lms:admin_enrollment_requests' %}" class="nav-link {% if active_page == 'enrollment_requests' %}active{% endif %}">
             <i class="fas fa-clipboard-list me-2"></i> Enrollment Requests
             {% if pending_requests %}<span class="badge bg-warning ms-auto">{{ pending_requests }}</span>{% endif %}
         </a>
-        <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i> Department Reports
+        <a href="{% url 'lms:admin_reports' %}" class="nav-link {% if active_page == 'dept_reports' %}active{% endif %}">
+            <i class="fas fa-chart-line me-2"></i> Module Reports
         </a>
-        <a href="#" class="nav-link">
-            <i class="fas fa-cog me-2"></i> Department Settings
+        <a href="{% url 'lms:admin_modules' %}" class="nav-link {% if active_page == 'dept_settings' %}active{% endif %}">
+            <i class="fas fa-cog me-2"></i> Module Settings
+        </a>
+        <hr>
+        <!-- Course Quality & AI -->
+        <div class="nav-section-title"><small class="text-muted fw-bold">📄 COURSE QUALITY</small></div>
+        <a href="{% url 'lms:quality_reviews' %}" class="nav-link" data-bs-toggle="tooltip" title="Review course quality">
+            <i class="fas fa-star me-2"></i> Quality Reviews
+        </a>
+        <a href="{% url 'lms:dept_ai_recommendations' %}" class="nav-link" data-bs-toggle="tooltip" title="View AI-generated content recommendations">
+            <i class="fas fa-wand-magic-sparkles me-2"></i> AI Recommendations
+        </a>
+        <hr>
+        <!-- Staff Management -->
+        <div class="nav-section-title"><small class="text-muted fw-bold">👨‍🏫 STAFF MANAGEMENT</small></div>
+        <a href="{% url 'lms:instructor_evaluations' %}" class="nav-link" data-bs-toggle="tooltip" title="Evaluate instructor performance">
+            <i class="fas fa-file-contract me-2"></i> Evaluations
+        </a>
+        <a href="{% url 'lms:instructor_performance' %}" class="nav-link" data-bs-toggle="tooltip" title="Instructor performance analytics">
+            <i class="fas fa-chart-bar me-2"></i> Performance Analytics
+        </a>
+        <a href="{% url 'lms:schedule_meetings' %}" class="nav-link" data-bs-toggle="tooltip" title="Schedule module meetings">
+            <i class="fas fa-calendar-alt me-2"></i> Schedule Meetings
+        </a>
+        <hr>
+        <!-- Budget & Resources -->
+        <div class="nav-section-title"><small class="text-muted fw-bold">💸 BUDGET & RESOURCES</small></div>
+        <a href="{% url 'lms:budget_overview' %}" class="nav-link" data-bs-toggle="tooltip" title="View module budget">
+            <i class="fas fa-chart-pie me-2"></i> Budget Overview
+        </a>
+        <a href="{% url 'lms:request_resources' %}" class="nav-link" data-bs-toggle="tooltip" title="Request resources for module">
+            <i class="fas fa-plus-circle me-2"></i> Request Resources
+        </a>
+        <a href="{% url 'lms:approve_requests' %}" class="nav-link" data-bs-toggle="tooltip" title="Approve resource requests">
+            <i class="fas fa-check-circle me-2"></i> Approve Requests
+        </a>
+        <hr>
+        <!-- Advanced Analytics -->
+        <div class="nav-section-title"><small class="text-muted fw-bold">📊 DEPARTMENT INSIGHTS</small></div>
+        <a href="{% url 'lms:cohort_comparison' %}" class="nav-link" data-bs-toggle="tooltip" title="Compare student cohorts">
+            <i class="fas fa-balance-scale me-2"></i> Cohort Comparison
+        </a>
+        <a href="{% url 'lms:cross_course_analytics' %}" class="nav-link" data-bs-toggle="tooltip" title="Cross-course analytics">
+            <i class="fas fa-layer-group me-2"></i> Cross-Course Analytics
         </a>
         <hr>
         <a href="{% url 'lms:profile' %}" class="nav-link {% if active_page == 'profile' %}active{% endif %}">

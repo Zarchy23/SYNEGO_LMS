@@ -1,0 +1,179 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}Module Insights & Analytics - Synego LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .insights-content { padding: 20px; }
+    .insights-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .metric-value { font-size: 2.5em; font-weight: 700; color: #667eea; }
+    .metric-label { color: #666; margin-top: 8px; font-size: 0.95em; }
+    .chart-placeholder {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #666;
+        font-size: 1.1em;
+    }
+    .comparison-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .comparison-table table {
+        width: 100%;
+        margin: 0;
+    }
+    .comparison-table th {
+        background: #f8f9fa;
+        padding: 15px;
+        font-weight: 700;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .comparison-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .comparison-table tr:last-child td { border-bottom: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid insights-content">
+    {% include 'lms/partials/_breadcrumb.html' %}
+    
+    <div class="insights-header">
+        <h1>📊 Module Insights & Analytics</h1>
+        <p>Cross-course analysis, cohort comparison, and module trends</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="metric-card">
+                <div class="metric-value">2,847</div>
+                <div class="metric-label">Total Students</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="metric-card">
+                <div class="metric-value">156</div>
+                <div class="metric-label">Active Courses</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="metric-card">
+                <div class="metric-value">87.2%</div>
+                <div class="metric-label">Avg Completion Rate</div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="metric-card">
+                <div class="metric-value">4.3/5</div>
+                <div class="metric-label">Avg Student Rating</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-lg-12">
+            <h3>Enrollment Trends</h3>
+            <div class="chart-placeholder">
+                📈 Enrollment Trend Chart - Ready for Chart.js Integration
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>Course Performance by Category</h3>
+            <div class="chart-placeholder">
+                📊 Course Performance Chart - Ready for Chart.js Integration
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h3>Student Distribution</h3>
+            <div class="chart-placeholder">
+                📉 Student Distribution Chart - Ready for Chart.js Integration
+            </div>
+        </div>
+    </div>
+    
+    <h3 style="margin-top: 30px;">🏆 Cohort Comparison</h3>
+    <div class="comparison-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cohort</th>
+                    <th>Enrollment</th>
+                    <th>Completion Rate</th>
+                    <th>Avg GPA</th>
+                    <th>Satisfaction</th>
+                    <th>Passing Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Cohort 2025-S</strong></td>
+                    <td>612</td>
+                    <td><span style="color: #28a745;">89.5%</span></td>
+                    <td>3.82</td>
+                    <td>4.5/5</td>
+                    <td><span style="color: #28a745;">94%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Cohort 2025-F</strong></td>
+                    <td>589</td>
+                    <td><span style="color: #ffc107;">84.2%</span></td>
+                    <td>3.65</td>
+                    <td>4.2/5</td>
+                    <td><span style="color: #ffc107;">89%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Cohort 2024-S</strong></td>
+                    <td>645</td>
+                    <td><span style="color: #28a745;">91.3%</span></td>
+                    <td>3.91</td>
+                    <td>4.6/5</td>
+                    <td><span style="color: #28a745;">96%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Cohort 2024-F</strong></td>
+                    <td>623</td>
+                    <td><span style="color: #28a745;">88.7%</span></td>
+                    <td>3.78</td>
+                    <td>4.4/5</td>
+                    <td><span style="color: #28a745;">92%</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <button class="btn btn-primary">Export Full Report</button>
+        <button class="btn btn-outline-secondary">Schedule Deep Dive</button>
+        <button class="btn btn-outline-secondary">Compare Years</button>
+    </div>
+</div>
+{% endblock %}

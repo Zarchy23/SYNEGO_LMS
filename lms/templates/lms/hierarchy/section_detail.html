@@ -1,0 +1,555 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}{{ section.name }} - Section{% endblock %}
+
+{% block extra_css %}
+<style>
+    .section-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .section-breadcrumb {
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    .section-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-box {
+        background: rgba(255,255,255,0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.85;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
+
+    .lesson-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .lesson-card {
+        background: var(--surface);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e8ecf1;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lesson-card:hover {
+        box-shadow: 0 8px 20px rgba(31, 58, 93, 0.15);
+        border-color: var(--secondary-color);
+        transform: translateY(-4px);
+    }
+
+    .lesson-card-header {
+        background: linear-gradient(135deg, var(--secondary-color), #3b9dff);
+        color: white;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .lesson-card-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .lesson-card-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .lesson-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        opacity: 0.3;
+        margin-bottom: -0.5rem;
+    }
+
+    .lesson-name {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .lesson-card-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lesson-description {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        flex: 1;
+    }
+
+    .lesson-stats {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        border-top: 1px solid #e8ecf1;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .lesson-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: var(--bg-light);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+    }
+
+    .lesson-badge.completed {
+        background: #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .lesson-badge.in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .lesson-footer {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .btn-small {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-small.primary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-small.primary:hover {
+        background: #1f69db;
+    }
+
+    .btn-small.secondary {
+        background: var(--bg-light);
+        color: var(--primary-color);
+        border: 1px solid #e8ecf1;
+    }
+
+    .btn-small.secondary:hover {
+        background: #e8ecf1;
+    }
+
+    /* List View Alternative */
+    .lesson-list-item {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e8ecf1;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .lesson-list-item:hover {
+        box-shadow: 0 4px 12px rgba(31, 58, 93, 0.1);
+        border-color: var(--secondary-color);
+    }
+
+    .lesson-list-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--secondary-color);
+        color: white;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .lesson-list-info {
+        flex: 1;
+    }
+
+    .lesson-list-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .lesson-list-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .lesson-list-progress {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 200px;
+    }
+
+    .sidebar-card {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e8ecf1;
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sidebar-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e8ecf1;
+    }
+
+    .sidebar-item:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .sidebar-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.05rem;
+    }
+
+    .tab-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #e8ecf1;
+    }
+
+    .tab-button {
+        padding: 1rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.3s;
+    }
+
+    .tab-button.active {
+        color: var(--secondary-color);
+        border-bottom-color: var(--secondary-color);
+    }
+
+    .tab-button:hover {
+        color: var(--primary-color);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'module_list' course.id %}">Modules</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'module_detail' course.id module.id %}">{{ module.name }}</a></li>
+            <li class="breadcrumb-item active">{{ section.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <div class="section-breadcrumb">{{ module.name | title }}</div>
+        <h1 class="section-title">{{ section.name }}</h1>
+        {% if section.description %}
+        <p class="mt-2 mb-0" style="opacity: 0.95;">{{ section.description }}</p>
+        {% endif %}
+
+        <div class="section-stats">
+            <div class="stat-box">
+                <div class="stat-label"><i class="fas fa-book me-2"></i>Lessons</div>
+                <div class="stat-value">{{ lessons.count }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label"><i class="fas fa-percent me-2"></i>Completion</div>
+                <div class="stat-value">{{ completion_percentage }}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label"><i class="fas fa-hourglass me-2"></i>Estimated Time</div>
+                <div class="stat-value">{{ total_minutes }}m</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- View Toggle Buttons -->
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-sm btn-outline-secondary active" onclick="switchView('grid')">
+                    <i class="fas fa-th me-2"></i>Grid View
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="switchView('list')">
+                    <i class="fas fa-list me-2"></i>List View
+                </button>
+            </div>
+
+            <!-- Grid View -->
+            <div id="grid-view" class="tab-content active">
+                {% if lessons %}
+                <div class="lesson-grid">
+                    {% for lesson in lessons %}
+                    <div class="lesson-card">
+                        <div class="lesson-card-header">
+                            <div class="lesson-card-content">
+                                <div class="lesson-number">{{ forloop.counter }}</div>
+                                <div class="lesson-name">{{ lesson.name }}</div>
+                            </div>
+                        </div>
+                        <div class="lesson-card-body">
+                            {% if lesson.description %}
+                            <p class="lesson-description">{{ lesson.description|truncatewords:15 }}</p>
+                            {% endif %}
+
+                            <div class="lesson-badge {% if lesson.completion_status == 'completed' %}completed{% elif lesson.completion_status == 'in_progress' %}in-progress{% endif %}">
+                                {{ lesson.completion_status|title }}
+                            </div>
+
+                            <div class="lesson-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    {{ lesson.estimated_minutes }}m
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-file"></i>
+                                    {{ lesson.resources.count }} files
+                                </div>
+                            </div>
+
+                            <div class="lesson-footer">
+                                <a href="{% url 'lesson_detail' course.id module.id section.id lesson.id %}" class="btn-small primary">
+                                    View Lesson
+                                </a>
+                                {% if lesson.completion_status != 'completed' %}
+                                <button class="btn-small secondary" onclick="markComplete('{{ lesson.id }}')">
+                                    Mark Done
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No lessons available in this section yet.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- List View -->
+            <div id="list-view" class="tab-content">
+                {% if lessons %}
+                <div>
+                    {% for lesson in lessons %}
+                    <div class="lesson-list-item">
+                        <div class="lesson-list-icon">
+                            {% if lesson.completion_status == 'completed' %}
+                            <i class="fas fa-check"></i>
+                            {% else %}
+                            <i class="fas fa-play"></i>
+                            {% endif %}
+                        </div>
+                        <div class="lesson-list-info">
+                            <div class="lesson-list-name">{{ lesson.name }}</div>
+                            <div class="lesson-list-meta">
+                                <i class="fas fa-clock me-1"></i>{{ lesson.estimated_minutes }} minutes
+                                • <i class="fas fa-file me-1"></i>{{ lesson.resources.count }} resources
+                            </div>
+                        </div>
+                        <div class="lesson-list-progress">
+                            <div class="progress" style="height: 6px; flex: 1;">
+                                <div class="progress-bar" role="progressbar" style="width: {% if lesson.completion_status == 'completed' %}100{% else %}{{ lesson.progress_percentage }}{% endif %}%"></div>
+                            </div>
+                            <span class="badge {% if lesson.completion_status == 'completed' %}bg-success{% elif lesson.completion_status == 'in_progress' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {{ lesson.completion_status|title }}
+                            </span>
+                        </div>
+                        <a href="{% url 'lesson_detail' course.id module.id section.id lesson.id %}" class="btn btn-sm btn-primary ms-3">
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Section Info -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-info-circle"></i>Section Info
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Module</div>
+                    <div class="sidebar-value">{{ module.name }}</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Lessons</div>
+                    <div class="sidebar-value">{{ lessons.count }}</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Total Time</div>
+                    <div class="sidebar-value">{{ total_minutes }} minutes</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-label">Status</div>
+                    <div class="sidebar-value">
+                        <span class="badge {% if section.completion_status == 'completed' %}bg-success{% elif section.completion_status == 'in_progress' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ section.completion_status|title }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">
+                    <i class="fas fa-chart-line"></i>Your Progress
+                </div>
+                <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%" 
+                        aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="text-center">
+                    <strong>{{ completed_lessons }} of {{ lessons.count }} lessons complete</strong>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar-card">
+                <a href="{% url 'module_detail' course.id module.id %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                    <i class="fas fa-chevron-left me-2"></i>Back to Module
+                </a>
+                <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="fas fa-book me-2"></i>Course Overview
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchView(view) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.getElementById(view + '-view').classList.add('active');
+    
+    document.querySelectorAll('button[onclick^="switchView"]').forEach(btn => btn.classList.remove('active'));
+    event.target.closest('button').classList.add('active');
+}
+
+function markComplete(lessonId) {
+    fetch(`/api/lessons/${lessonId}/complete/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

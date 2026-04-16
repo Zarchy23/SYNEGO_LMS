@@ -1,0 +1,175 @@
+/* Dashboard Layout - Sidebar and Main Content Positioning */
+
+/* Reset Bootstrap defaults on dashboard containers */
+.swiss-student-dashboard,
+.swiss-instructor-dashboard,
+.swiss-admin-dashboard,
+.dashboard-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    background: linear-gradient(135deg, #d9e2ff 0%, #e6d9ff 50%, #ffd9e8 100%) !important;
+    min-height: 100vh !important;
+    gap: 0 !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Sidebar Base Styles - Override Bootstrap */
+.dashboard-sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    flex: 0 0 250px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    border-right: 2px solid rgba(102, 126, 234, 0.2) !important;
+    background: white !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 100vh !important;
+    position: relative !important;
+    z-index: 1000;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+    box-shadow: 2px 0 8px rgba(102, 126, 234, 0.08);
+    height: 100vh !important;
+}
+
+/* Main Content - Flexible Area */
+.dashboard-main,
+.swiss-dashboard-main {
+    flex: 1 !important;
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 100vh !important;
+    width: auto !important;
+    min-width: 0;
+    padding: 0 40px !important;
+    margin: 0 !important;
+}
+
+.dashboard-sidebar * {
+    box-sizing: border-box;
+}
+
+.dashboard-sidebar .text-center {
+    padding: 10px 15px !important;
+}
+
+.dashboard-sidebar .nav {
+    padding: 0 10px;
+    flex-direction: column;
+}
+
+.dashboard-sidebar .nav-link {
+    color: #333 !important;
+    padding: 10px 15px !important;
+    margin: 4px 0 !important;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-sidebar .nav-link:hover {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+}
+
+.dashboard-sidebar .nav-link.active {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    border-left: 3px solid #000;
+    padding-left: 12px !important;
+}
+
+.dashboard-sidebar hr {
+    margin: 10px 0 !important;
+    border: none !important;
+    border-top: 1px solid #eee !important;
+
+/* Responsive - Sidebar Collapse on Tablet */
+@media (max-width: 1024px) {
+    .dashboard-sidebar {
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        flex: 0 0 220px !important;
+    }
+}
+
+/* Responsive - Sidebar Drawer on Mobile */
+@media (max-width: 768px) {
+    .swiss-student-dashboard,
+    .swiss-instructor-dashboard,
+    .swiss-admin-dashboard {
+        flex-direction: column !important;
+    }
+
+    .dashboard-sidebar {
+        position: fixed !important;
+        left: -250px !important;
+        top: 80px !important;
+        width: 250px !important;
+        height: calc(100vh - 80px) !important;
+        max-height: none !important;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        flex: none !important;
+    }
+
+    .dashboard-sidebar.show {
+        left: 0 !important;
+    }
+
+    .swiss-dashboard-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px 16px !important;
+        min-height: auto;
+    }
+
+    .swiss-header-section {
+        margin-bottom: 24px !important;
+    }
+
+    .swiss-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Scrollbar Styling */
+.dashboard-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+    background: #d0d0d0;
+    border-radius: 3px;
+}
+
+.dashboard-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Firefox Scrollbar */
+.dashboard-sidebar {
+    scrollbar-color: #d0d0d0 #f5f5f5;
+    scrollbar-width: thin;
+}
+
+/* Ensure flex layout works even with nested elements */
+body.has-sidebar {
+    padding: 0 !important;
+    margin: 0 !important;
+}
