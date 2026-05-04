@@ -73,7 +73,18 @@
                                 <strong>{{ course.title }}</strong>
                                 <span class="text-muted">{{ course.enrollments.count }} students</span>
                             </div>
-                            <small class="text-muted d-block">Instructor: {{ course.instructor.get_full_name }}</small>
+                            <small class="text-muted d-block">
+                                {% with instructors=course.intakes.values_list('instructor__get_full_name', flat=True)|dictsort %}
+                                    Instructors: 
+                                    {% for intake in course.intakes %}
+                                        {% if intake.instructor %}
+                                            {{ intake.instructor.get_full_name }}{% if not forloop.last %}, {% endif %}
+                                        {% endif %}
+                                    {% empty %}
+                                        Not assigned
+                                    {% endfor %}
+                                {% endwith %}
+                            </small>
                             <div class="d-flex justify-content-between small mt-2">
                                 <a href="{% url 'lms:manage_course' course.slug %}">Manage</a>
                                 <a href="{% url 'lms:course_detail' course.slug %}">View</a>

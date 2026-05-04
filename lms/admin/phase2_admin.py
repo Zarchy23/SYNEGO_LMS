@@ -18,6 +18,11 @@ from ..models import (
     # Phase 2C Assessments
     AdaptiveAssessment, AssessmentAttempt, AssessmentItem, ItemResponse,
     LearningAnalytics, PerformanceTrend, CourseAnalytics, CompetencyFramework, StudentCompetency,
+    # Phase 3 Scheduling & Certifications
+    CourseIntake, IntakeEnrollment, ClassSession, SessionAttendance,
+    CalendarEvent, CourseAdvertisement, CourseReminder,
+    CertificationProvider, Certification, ExamRegistration, 
+    StudentCertification, PartnerIntegrationLog,
 )
 
 # ==================================================
@@ -73,3 +78,25 @@ admin.site.register(PerformanceTrend)
 admin.site.register(CourseAnalytics)
 admin.site.register(CompetencyFramework)
 admin.site.register(StudentCompetency)
+
+# ==================================================
+# PHASE 3 SCHEDULING MODELS
+# ==================================================
+
+admin.site.register(CourseIntake)
+admin.site.register(IntakeEnrollment)
+admin.site.register(ClassSession)
+admin.site.register(SessionAttendance)
+admin.site.register(CalendarEvent)
+admin.site.register(CourseAdvertisement)
+admin.site.register(CourseReminder)
+
+# ==================================================
+# PHASE 3 CERTIFICATION MODELS
+# ==================================================
+
+admin.site.register(CertificationProvider)
+admin.site.register(Certification)
+admin.site.register(ExamRegistration)
+admin.site.register(StudentCertification)
+admin.site.register(PartnerIntegrationLog)

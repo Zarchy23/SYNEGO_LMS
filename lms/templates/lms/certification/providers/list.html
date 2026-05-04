@@ -1,0 +1,161 @@
+﻿<!-- lms/templates/lms/certification/providers/list.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Certification Providers - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout glass-dashboard" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_dashboard' %}
+    
+    <div class="dashboard-main" style="padding: 20px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-handshake text-primary me-2"></i>
+                Certification Providers
+            </h1>
+            <a href="{% url 'lms:create_provider' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add Provider
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Provider Type</label>
+                        <select name="type" class="form-select" onchange="this.form.submit()">
+                            <option value="">All Types</option>
+                            {% for value, label in provider_types %}
+                                <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Partnership Status</label>
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="">All Status</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary d-block">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Providers Table -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Provider</th>
+                                <th>Type</th>
+                                <th>Certifications</th>
+                                <th>Partnership</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for provider in page_obj %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if provider.logo %}
+                                                <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" style="height: 30px; width: auto; margin-right: 12px;">
+                                            {% else %}
+                                                <div class="avatar-placeholder me-2">{{ provider.name|first }}</div>
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ provider.name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ provider.short_name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ provider.get_provider_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill">{{ provider.certifications.count }}</span>
+                                    </td>
+                                    <td>
+                                        {% if provider.partnership_status == 'active' %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% elif provider.partnership_status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif provider.partnership_status == 'expired' %}
+                                            <span class="badge bg-danger">Expired</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ provider.get_partnership_status_display }}</span>
+                                        {% endif %}
+                                        <br>
+                                        <small class="text-muted">
+                                            {% if provider.partnership_start_date %}
+                                                Since {{ provider.partnership_start_date|date:"M Y" }}
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            <div><i class="fas fa-envelope"></i> {{ provider.contact_email|truncatechars:25 }}</div>
+                                            <div><i class="fas fa-phone"></i> {{ provider.contact_phone|default:"-" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'lms:edit_provider' provider.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'lms:list_certifications' %}?provider={{ provider.id }}" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-certificate"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ provider.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-handshake fa-3x text-muted mb-2"></i>
+                                        <p>No certification providers found.</p>
+                                        <a href="{% url 'lms:create_provider' %}" class="btn btn-primary">Add First Provider</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% include "lms/includes/pagination.html" %}
+
+        <style>
+        .avatar-placeholder {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-100);
+            color: var(--primary-700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        </style>
+    </div>
+</div>
+{% endblock %}

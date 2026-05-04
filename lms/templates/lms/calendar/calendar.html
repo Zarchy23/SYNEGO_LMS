@@ -1,0 +1,566 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Academic Calendar - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --calendar-event-course: #10b981;
+    --calendar-event-session: #3b82f6;
+    --calendar-event-event: #8b5cf6;
+    --calendar-event-holiday: #ef4444;
+}
+
+.calendar-container {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.calendar-header {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    color: white;
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.calendar-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.calendar-nav {
+    display: flex;
+    gap: 12px;
+}
+
+.calendar-nav-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.calendar-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #1f2937;
+    color: white;
+}
+
+.calendar-weekday {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calendar-weekday:last-child {
+    border-right: none;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day {
+    min-height: 130px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.calendar-day:hover {
+    background: #f9fafb;
+    z-index: 1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day.today {
+    background: linear-gradient(135deg, #e8f4f8, #d1e8f0);
+    border: 2px solid #1e40af;
+}
+
+.calendar-day.other-month {
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
+.calendar-day-number {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+}
+
+.calendar-day.today .calendar-day-number {
+    background: #1e40af;
+    color: white;
+}
+
+.calendar-events {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.calendar-event {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s;
+}
+
+.calendar-event:hover {
+    transform: scale(1.02);
+    filter: brightness(0.95);
+}
+
+.event-green { background: #d1fae5; color: #065f46; border-left: 3px solid #10b981; }
+.event-blue { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
+.event-purple { background: #ede9fe; color: #5b21b6; border-left: 3px solid #8b5cf6; }
+.event-holiday { background: #fee2e2; color: #991b1b; border-left: 3px solid #ef4444; }
+
+.calendar-sidebar {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.sidebar-header {
+    background: #1f2937;
+    color: white;
+    padding: 16px 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.upcoming-list {
+    padding: 16px;
+}
+
+.upcoming-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upcoming-item:hover {
+    background: #f9fafb;
+    padding-left: 8px;
+}
+
+.upcoming-time {
+    min-width: 70px;
+    text-align: center;
+}
+
+.upcoming-date {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e40af;
+}
+
+.upcoming-time-small {
+    font-size: 0.7rem;
+    color: #9ca3af;
+}
+
+.upcoming-title {
+    flex: 1;
+}
+
+.upcoming-title strong {
+    font-size: 0.875rem;
+}
+
+.upcoming-title p {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
+.event-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+}
+
+.legend-course { background: #10b981; }
+.legend-session { background: #3b82f6; }
+.legend-event { background: #8b5cf6; }
+.legend-holiday { background: #ef4444; }
+
+/* Event Modal */
+.event-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 1.5rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #9ca3af;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+@media (max-width: 992px) {
+    .calendar-day {
+        min-height: 100px;
+    }
+    .calendar-event {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .calendar-weekday {
+        font-size: 0.7rem;
+        padding: 8px;
+    }
+    .calendar-day {
+        min-height: 80px;
+    }
+    .calendar-day-number {
+        font-size: 0.7rem;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Calendar Main -->
+        <div class="col-lg-9">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h2>
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        {{ month_name }}
+                    </h2>
+                    <div class="calendar-nav">
+                        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="calendar-nav-btn">
+                            <i class="fas fa-chevron-left"></i> Prev
+                        </a>
+                        <a href="?year={% now "Y" %}&month={% now "m" %}" class="calendar-nav-btn">
+                            <i class="fas fa-calendar-day"></i> Today
+                        </a>
+                        <a href="?year={{ next_year }}&month={{ next_month }}" class="calendar-nav-btn">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="calendar-weekdays">
+                    {% for day in week_days %}
+                        <div class="calendar-weekday">{{ day }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="calendar-grid">
+                    {% for day in calendar_days %}
+                        <div class="calendar-day {% if not day.current_month %}other-month{% endif %} {% if day.is_today %}today{% endif %}" 
+                             data-date="{{ day.date|date:'Y-m-d' }}">
+                            <span class="calendar-day-number">{{ day.date|date:"j" }}</span>
+                            <div class="calendar-events">
+                                {% for event in day.events %}
+                                    <div class="calendar-event event-{{ event.color }}"
+                                         data-event='{"type":"{{ event.type }}","title":"{{ event.title|escapejs }}","description":"{{ event.description|default:''|escapejs }}","time":"{{ event.time|default:'' }}","location":"{{ event.location|default:'' }}"}'
+                                         onclick="showEventDetails(this)">
+                                        {% if event.time %}<strong>{{ event.time }}</strong> {% endif %}
+                                        {{ event.title|truncatechars:25 }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="calendar-sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-clock me-2"></i> Upcoming Events
+                </div>
+                <div class="upcoming-list">
+                    {% for session in upcoming_sessions %}
+                        <div class="upcoming-item" onclick="window.location.href='{% url 'lms:course_schedule_detail' session.intake.id %}'">
+                            <div class="upcoming-time">
+                                <div class="upcoming-date">{{ session.start_time|date:"M d" }}</div>
+                                <div class="upcoming-time-small">{{ session.start_time|date:"H:i" }}</div>
+                            </div>
+                            <div class="upcoming-title">
+                                <strong>{{ session.title }}</strong>
+                                <p>{{ session.intake.course.title }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                            <p>No upcoming events</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="event-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-course"></div>
+                        <span>Course Start</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-session"></div>
+                        <span>Class Session</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-event"></div>
+                        <span>Special Event</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-holiday"></div>
+                        <span>Holiday</span>
+                    </div>
+                </div>
+            </div>
+            
+            {% if my_schedules %}
+                <div class="calendar-sidebar mt-3">
+                    <div class="sidebar-header">
+                        <i class="fas fa-chalkboard-user me-2"></i> My Courses
+                    </div>
+                    <div class="upcoming-list">
+                        {% for schedule in my_schedules %}
+                            <div class="upcoming-item" onclick="window.location.href='{% url 'lms:course_schedule_detail' schedule.id %}'">
+                                <div class="upcoming-time">
+                                    <div class="upcoming-date">{{ schedule.start_date|date:"M d" }}</div>
+                                </div>
+                                <div class="upcoming-title">
+                                    <strong>{{ schedule.course.title }}</strong>
+                                    <p>Instructor: {{ schedule.created_by.get_full_name }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Event Modal -->
+<div class="event-modal" id="eventModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Event Details</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            <button class="btn btn-primary" id="modalActionBtn" style="display: none;">View Details</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showEventDetails(element) {
+        const eventData = JSON.parse(element.getAttribute('data-event'));
+        const modal = document.getElementById('eventModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const modalActionBtn = document.getElementById('modalActionBtn');
+        
+        modalTitle.textContent = eventData.title;
+        
+        let bodyHtml = `
+            <div class="mb-3">
+                <label class="text-muted small">Type</label>
+                <div><strong>${eventData.type.charAt(0).toUpperCase() + eventData.type.slice(1)}</strong></div>
+            </div>
+        `;
+        
+        if (eventData.time) {
+            bodyHtml += `
+                <div class="mb-3">
+                    <label class="text-muted small">Time</label>
+                    <div><strong>${eventData.time}</strong></div>
+                </div>
+            `;
+        }
+        
+        if (eventData.location) {
+            bodyHtml += `
+                <div class="mb-3">
+                    <label class="text-muted small">Location</label>
+                    <div><strong>${eventData.location}</strong></div>
+                </div>
+            `;
+        }
+        
+        if (eventData.description) {
+            bodyHtml += `
+                <div class="mb-3">
+                    <label class="text-muted small">Description</label>
+                    <div>${eventData.description}</div>
+                </div>
+            `;
+        }
+        
+        modalBody.innerHTML = bodyHtml;
+        modalActionBtn.style.display = 'none';
+        modal.classList.add('active');
+    }
+    
+    function closeModal() {
+        document.getElementById('eventModal').classList.remove('active');
+    }
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById('eventModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

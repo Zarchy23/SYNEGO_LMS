@@ -1,0 +1,208 @@
+﻿<!-- lms/templates/lms/certification/student/my_certifications.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}My Certifications - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h2 mb-4">
+        <i class="fas fa-certificate text-primary me-2"></i>
+        My Certifications
+    </h1>
+    
+    <!-- Earned Certifications -->
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-trophy text-success me-2"></i>
+                Earned Certifications
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if earned_certifications %}
+                <div class="row">
+                    {% for cert in earned_certifications %}
+                        <div class="col-md-6 mb-3">
+                            <div class="earned-cert-card">
+                                <div class="row align-items-center">
+                                    <div class="col-3 text-center">
+                                        {% if cert.certification.provider.logo %}
+                                            <img src="{{ cert.certification.provider.logo.url }}" alt="{{ cert.certification.provider.name }}" style="max-height: 50px;">
+                                        {% else %}
+                                            <i class="fas fa-certificate fa-3x text-primary"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-6">
+                                        <h6 class="mb-0">{{ cert.certification.title }}</h6>
+                                        <small class="text-muted">{{ cert.certification.provider.name }}</small>
+                                        <div>
+                                            <small class="text-success">
+                                                <i class="fas fa-check-circle"></i> Issued {{ cert.issue_date|date:"M d, Y" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="{{ cert.certificate_file.url }}" target="_blank">
+                                                    <i class="fas fa-download"></i> Download Certificate
+                                                </a></li>
+                                                <li><a class="dropdown-item" href="{{ cert.verification_url }}" target="_blank">
+                                                    <i class="fas fa-shield-alt"></i> Verify Certificate
+                                                </a></li>
+                                                <li><a class="dropdown-item" href="{{ cert.share_on_linkedin }}" target="_blank">
+                                                    <i class="fab fa-linkedin"></i> Share on LinkedIn
+                                                </a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item" href="{{ cert.badge_url }}" target="_blank">
+                                                    <i class="fas fa-badge"></i> View Digital Badge
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+                    <h5>No earned certifications yet</h5>
+                    <p class="text-muted">Complete a certification exam to earn your certificate.</p>
+                    <a href="{% url 'lms:certification_catalog' %}" class="btn btn-primary">
+                        Browse Certifications
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Exam Registrations -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-hourglass-half text-warning me-2"></i>
+                Exam Registrations
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if registrations %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Certification</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                                <th>Voucher</th>
+                                <th>Exam Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in registrations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ reg.certification.title }}</strong><br>
+                                        <small class="text-muted">{{ reg.certification.provider.name }}</small>
+                                    </td>
+                                    <td>{{ reg.registration_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if reg.status == 'pending_payment' %}
+                                            <span class="badge bg-warning">Pending Payment</span>
+                                        {% elif reg.status == 'registered' %}
+                                            <span class="badge bg-info">Registered</span>
+                                        {% elif reg.status == 'voucher_issued' %}
+                                            <span class="badge bg-success">Voucher Issued</span>
+                                        {% elif reg.status == 'exam_scheduled' %}
+                                            <span class="badge bg-primary">Exam Scheduled</span>
+                                        {% elif reg.status == 'passed' %}
+                                            <span class="badge bg-success">Passed</span>
+                                        {% elif reg.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% elif reg.status == 'certificate_issued' %}
+                                            <span class="badge bg-success">Certificate Issued</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ reg.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.voucher_code %}
+                                            <code>{{ reg.voucher_code }}</code>
+                                            <br>
+                                            <small class="text-muted">Expires: {{ reg.voucher_expiry|date:"M d, Y" }}</small>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.exam_date %}
+                                            {{ reg.exam_date|date:"M d, Y H:i" }}
+                                        {% else %}
+                                            Not scheduled
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.status == 'voucher_issued' %}
+                                            <a href="{{ reg.certification.provider.website }}" target="_blank" class="btn btn-sm btn-primary">
+                                                Schedule Exam
+                                            </a>
+                                        {% elif reg.status == 'pending_payment' %}
+                                            <button class="btn btn-sm btn-warning">Make Payment</button>
+                                        {% elif reg.status == 'certificate_issued' %}
+                                            <a href="{{ reg.certificate_file.url }}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-download"></i> Certificate
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h5>No exam registrations</h5>
+                    <p class="text-muted">You haven't registered for any certification exams yet.</p>
+                    <a href="{% url 'lms:certification_catalog' %}" class="btn btn-primary">
+                        Browse Certifications
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Certification Path -->
+    <div class="mt-4 text-center">
+        <div class="alert alert-light">
+            <i class="fas fa-graduation-cap me-2"></i>
+            <strong>Pro Tip:</strong> Many certifications offer discounted retake vouchers. Contact us for more information.
+        </div>
+    </div>
+</div>
+
+<style>
+.earned-cert-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    transition: all 0.2s;
+}
+
+.earned-cert-card:hover {
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.dropdown-menu {
+    min-width: 200px;
+}
+</style>
+{% endblock %}

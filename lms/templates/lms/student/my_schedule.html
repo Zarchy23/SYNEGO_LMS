@@ -1,0 +1,286 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}My Schedule - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+.schedule-header {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    border-radius: 1.5rem;
+    padding: 32px;
+    color: white;
+    margin-bottom: 32px;
+}
+
+.attendance-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+}
+
+.circle-bg {
+    stroke: #e5e7eb;
+}
+
+.circle-progress {
+    stroke: #059669;
+    stroke-dasharray: 283;
+    transition: stroke-dashoffset 0.5s;
+}
+
+.enrollment-card {
+    background: white;
+    border-radius: 0.75rem;
+    border-left: 4px solid #1e40af;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+}
+
+.enrollment-card.waitlist {
+    border-left-color: #f59e0b;
+}
+
+.upcoming-session-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.upcoming-session-card:hover {
+    transform: translateX(8px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.session-time-badge {
+    background: #eff6ff;
+    padding: 12px;
+    border-radius: 0.75rem;
+    text-align: center;
+    min-width: 80px;
+}
+
+.session-time-badge .date {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.session-time-badge .time {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+.join-btn {
+    margin-left: auto;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 1rem;
+}
+
+@media (max-width: 768px) {
+    .upcoming-session-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .join-btn {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="schedule-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">My Learning Schedule</h1>
+                <p class="mb-0 opacity-75">Track your enrolled courses, upcoming sessions, and attendance</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'lms:calendar' %}" class="btn btn-light">
+                    <i class="fas fa-calendar-alt me-2"></i> View Full Calendar
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Attendance Stats -->
+        <div class="col-md-4">
+            <div class="attendance-card">
+                <div class="attendance-circle">
+                    <svg viewBox="0 0 100 100" class="w-100 h-100">
+                        <circle cx="50" cy="50" r="45" fill="none" class="circle-bg" stroke-width="8"/>
+                        <circle cx="50" cy="50" r="45" fill="none" class="circle-progress" 
+                                stroke-width="8" stroke-linecap="round"
+                                stroke-dashoffset="{{ attendance_remaining }}"
+                                transform="rotate(-90 50 50)"/>
+                    </svg>
+                </div>
+                <h2 class="mb-1">{{ attendance_rate|floatformat:0 }}%</h2>
+                <p class="text-muted mb-0">Overall Attendance</p>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="col-md-8">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="attendance-card text-start">
+                        <i class="fas fa-book-open fa-2x text-primary mb-2"></i>
+                        <h3 class="mb-0">{{ enrollments|length }}</h3>
+                        <p class="text-muted mb-0">Active Courses</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="attendance-card text-start">
+                        <i class="fas fa-chalkboard-user fa-2x text-primary mb-2"></i>
+                        <h3 class="mb-0">{{ upcoming_sessions|length }}</h3>
+                        <p class="text-muted mb-0">Upcoming Sessions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4 g-4">
+        <!-- Enrolled Courses -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                        My Enrolled Courses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for enrollment in enrollments %}
+                        <div class="enrollment-card {% if enrollment.status == 'waitlisted' %}waitlist{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ enrollment.schedule.course.title }}</h6>
+                                    <p class="small text-muted mb-2">
+                                        {{ enrollment.schedule.start_date|date:"M d, Y" }} - 
+                                        {{ enrollment.schedule.end_date|date:"M d, Y" }}
+                                    </p>
+                                    <div class="d-flex gap-3 small">
+                                        <span>
+                                            <i class="fas fa-clock text-muted me-1"></i>
+                                            {{ enrollment.schedule.session_duration_hours }}h/week
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-globe text-muted me-1"></i>
+                                            {{ enrollment.schedule.get_delivery_mode_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    {% if enrollment.status == 'waitlisted' %}
+                                        <span class="badge bg-warning">Waitlisted</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-primary" style="width: 50%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <small class="text-muted">Course Progress</small>
+                                    <small>50%</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                            <p>You are not enrolled in any courses yet.</p>
+                            <a href="{% url 'lms:upcoming_courses' %}" class="btn btn-primary">
+                                Browse Courses
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Sessions -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2 text-primary"></i>
+                        Upcoming Sessions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for session in upcoming_sessions %}
+                        <div class="upcoming-session-card">
+                            <div class="session-time-badge">
+                                <div class="date">{{ session.start_time|date:"d M" }}</div>
+                                <div class="time">{{ session.start_time|date:"H:i" }}</div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ session.title }}</h6>
+                                <p class="small text-muted mb-0">
+                                    {{ session.schedule.course.title }}
+                                </p>
+                            </div>
+                            {% if session.meeting_link %}
+                                <a href="{{ session.meeting_link }}" target="_blank" class="btn btn-sm btn-primary join-btn">
+                                    <i class="fas fa-video me-1"></i> Join
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-secondary join-btn" disabled>
+                                    <i class="fas fa-map-marker-alt me-1"></i> In Person
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                            <p>No upcoming sessions scheduled.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animate attendance circle
+    document.addEventListener('DOMContentLoaded', function() {
+        const circle = document.querySelector('.circle-progress');
+        if (circle) {
+            const rate = {{ attendance_rate|floatformat:0 }};
+            const circumference = 283;
+            const offset = circumference - (rate / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+    });
+</script>
+{% endblock %}

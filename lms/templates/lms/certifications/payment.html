@@ -1,0 +1,120 @@
+{% extends "lms/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Process Payment - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-credit-card fa-3x text-primary mb-3"></i>
+                    <h2 class="h4">Complete Your Payment</h2>
+                    <p class="text-muted">{{ registration.certification.title }}</p>
+                </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <p class="mb-0">Exam Voucher</p>
+                        </div>
+                        <div class="col-auto">
+                            <h5 class="mb-0 text-primary">${{ amount }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+                    <strong>Total Amount Due:</strong>
+                    <h4 class="mb-0 text-success">${{ amount }}</h4>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <form method="post" class="card">
+                {% csrf_token %}
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Payment Method Options -->
+                    <div class="mb-4">
+                        {% for radio in form.payment_method %}
+                            <div class="form-check mb-3">
+                                {{ radio.tag }}
+                                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                    {% if radio.choice_value == 'credit_card' %}
+                                        <i class="fas fa-credit-card"></i> Credit Card
+                                    {% elif radio.choice_value == 'debit_card' %}
+                                        <i class="fas fa-credit-card"></i> Debit Card
+                                    {% elif radio.choice_value == 'paypal' %}
+                                        <i class="fab fa-paypal"></i> PayPal
+                                    {% elif radio.choice_value == 'bank_transfer' %}
+                                        <i class="fas fa-university"></i> Bank Transfer
+                                    {% endif %}
+                                </label>
+                            </div>
+                        {% endfor %}
+                        {% if form.payment_method.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.payment_method.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Hidden Amount Field -->
+                    {{ form.amount }}
+
+                    <!-- Reference Number -->
+                    <div class="mb-3">
+                        <label class="form-label">Payment Reference (Optional)</label>
+                        {{ form.reference_number }}
+                        <small class="form-text text-muted">
+                            Enter your transaction ID or receipt number if available.
+                        </small>
+                        {% if form.reference_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.reference_number.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="alert alert-info m-3 mb-0">
+                    <strong>
+                        <i class="fas fa-shield-alt"></i> Your payment is secure.
+                    </strong>
+                    <p class="mb-0 small mt-2">
+                        All transactions are encrypted and processed securely. You will receive a confirmation email with your exam voucher code.
+                    </p>
+                </div>
+
+                <!-- Submit -->
+                <div class="card-footer bg-light">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-lock"></i> Complete Payment (${{ amount }})
+                    </button>
+                </div>
+            </form>
+
+            <!-- Back Link -->
+            <div class="text-center mt-4">
+                <a href="{% url 'lms:certification_detail' registration.certification.id %}">
+                    Back to Certification
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

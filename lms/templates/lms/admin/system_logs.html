@@ -7,6 +7,15 @@
     {% include "lms/partials/_sidebar.html" with active_page='admin_system_logs' %}
     
     <div class="dashboard-main">
+        <!-- Navigation Button -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <a href="{% url 'lms:admin_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
         <div class="system-logs-container">
             <!-- Header Card -->
             <div class="card mb-4 border-0 shadow-sm">

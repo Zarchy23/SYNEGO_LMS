@@ -1,0 +1,440 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Assignments - Instructor{% endblock %}
+
+{% block content %}
+<div class="swiss-instructor-dashboard">
+    <div class="swiss-dashboard-main" style="margin-left: 0; width: 100%;">
+        <!-- Welcome Header -->
+        <div class="swiss-header-section">
+            <div class="swiss-header-title">
+                <h1>Assignments</h1>
+                <p>View and manage all assignments for your courses</p>
+            </div>
+            <div class="swiss-header-actions">
+                {% with first_course=courses.first %}
+                    {% if first_course %}
+                        <a href="{% url 'lms:create_assignment' first_course.slug %}" class="swiss-header-btn">
+                            <i class="fas fa-plus"></i> New Assignment
+                        </a>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="swiss-section">
+            <div class="swiss-filter-bar">
+                <form method="get" class="swiss-filter-form">
+                    <div class="swiss-filter-group">
+                        <label for="course-filter">Course:</label>
+                        <select id="course-filter" name="course">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                                <option value="{{ course.slug }}" {% if selected_course == course.slug %}selected{% endif %}>
+                                    {{ course.title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="swiss-filter-group">
+                        <label for="status-filter">Status:</label>
+                        <select id="status-filter" name="status">
+                            <option value="">All Assignments</option>
+                            <option value="open" {% if selected_status == 'open' %}selected{% endif %}>Open</option>
+                            <option value="closed" {% if selected_status == 'closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="swiss-filter-btn">Filter</button>
+                    <a href="{% url 'lms:instructor_assignments' %}" class="swiss-filter-reset">Reset</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assignments Section -->
+        <div class="swiss-section">
+            <div class="swiss-section-header">
+                <h2>All Assignments ({{ assignments.count }} total)</h2>
+            </div>
+            <div class="swiss-section-body">
+                {% if page_obj %}
+                    <div class="swiss-table-responsive">
+                        <table class="swiss-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Course</th>
+                                    <th>Due Date</th>
+                                    <th>Submissions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in assignment_data %}
+                                    {% with assignment=item.assignment %}
+                                    <tr>
+                                        <td class="swiss-table-title">
+                                            <strong>{{ assignment.title }}</strong>
+                                        </td>
+                                        <td>{{ assignment.course.title }}</td>
+                                        <td>{{ assignment.due_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <div class="swiss-submission-stats">
+                                                <div class="swiss-stat-badge">
+                                                    <span class="swiss-stat-number">{{ item.submission_count }}</span>
+                                                    <span class="swiss-stat-label">submitted</span>
+                                                </div>
+                                                <div class="swiss-stat-badge swiss-stat-graded">
+                                                    <span class="swiss-stat-number">{{ item.graded_count }}</span>
+                                                    <span class="swiss-stat-label">graded</span>
+                                                </div>
+                                                {% if item.pending_count > 0 %}
+                                                    <div class="swiss-stat-badge swiss-stat-pending">
+                                                        <span class="swiss-stat-number">{{ item.pending_count }}</span>
+                                                        <span class="swiss-stat-label">pending</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if item.is_closed %}
+                                                <span class="swiss-badge swiss-badge-danger">Closed</span>
+                                            {% elif item.is_due_soon %}
+                                                <span class="swiss-badge swiss-badge-warning">Due Soon</span>
+                                            {% else %}
+                                                <span class="swiss-badge swiss-badge-success">Open</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="swiss-table-actions">
+                                            <a href="{% url 'lms:assignment_detail' assignment.id %}" class="swiss-table-link" title="View assignment details">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="{% url 'lms:submission_list' assignment.id %}" class="swiss-table-link" title="View all submissions">
+                                                <i class="fas fa-list"></i> Submissions
+                                            </a>
+                                            <a href="{% url 'lms:edit_assignment' assignment.id %}" class="swiss-table-link" title="Edit this assignment">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="{% url 'lms:assignment_analytics' assignment.id %}" class="swiss-table-link" title="View analytics">
+                                                <i class="fas fa-chart-bar"></i> Analytics
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <div class="swiss-pagination">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1" class="swiss-pagination-link">First</a>
+                                <a href="?page={{ page_obj.previous_page_number }}" class="swiss-pagination-link">Previous</a>
+                            {% endif %}
+
+                            <div class="swiss-pagination-info">
+                                Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong>
+                            </div>
+
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}" class="swiss-pagination-link">Next</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}" class="swiss-pagination-link">Last</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="swiss-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No assignments found.</p>
+                        {% if courses %}
+                            <p class="swiss-empty-hint">
+                                <a href="{% url 'lms:create_assignment' courses.first.slug %}">Create your first assignment</a>
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .swiss-filter-bar {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        border: 1px solid #dee2e6;
+    }
+
+    .swiss-filter-form {
+        display: flex;
+        gap: 16px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .swiss-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .swiss-filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        text-transform: uppercase;
+    }
+
+    .swiss-filter-group select {
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .swiss-filter-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .swiss-filter-btn {
+        padding: 8px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 14px;
+    }
+
+    .swiss-filter-btn:hover {
+        background: #0056b3;
+    }
+
+    .swiss-filter-reset {
+        padding: 8px 20px;
+        background: #f8f9fa;
+        color: #495057;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 14px;
+        border: 1px solid #dee2e6;
+        display: inline-block;
+    }
+
+    .swiss-filter-reset:hover {
+        background: #e2e6ea;
+    }
+
+    .swiss-table-responsive {
+        overflow-x: auto;
+    }
+
+    .swiss-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .swiss-table thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .swiss-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+        font-size: 14px;
+    }
+
+    .swiss-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle;
+    }
+
+    .swiss-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .swiss-table-title {
+        font-weight: 500;
+    }
+
+    .swiss-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .swiss-badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .swiss-badge-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .swiss-badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .swiss-submission-stats {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .swiss-stat-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #e7f3ff;
+        color: #004085;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .swiss-stat-graded {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .swiss-stat-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .swiss-stat-number {
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .swiss-stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        opacity: 0.8;
+    }
+
+    .swiss-submission-count {
+        display: inline-block;
+        background: #e7f3ff;
+        color: #004085;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .swiss-table-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .swiss-table-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 13px;
+        transition: background 0.2s;
+    }
+
+    .swiss-table-link:hover {
+        background: #0056b3;
+        color: white;
+    }
+
+    .swiss-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .swiss-pagination-link {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        color: #007bff;
+        text-decoration: none;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .swiss-pagination-link:hover {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .swiss-pagination-info {
+        font-size: 14px;
+        color: #495057;
+        padding: 0 16px;
+    }
+
+    .swiss-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .swiss-empty i {
+        font-size: 48px;
+        color: #ddd;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .swiss-empty p {
+        margin: 8px 0;
+    }
+
+    .swiss-empty-hint a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .swiss-empty-hint a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

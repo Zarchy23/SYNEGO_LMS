@@ -1,5 +1,65 @@
 """
-Enterprise learner feature views for AI, Blockchain, VR/AR, Collaboration, etc.
+Views for Enterprise Learner Features
+"""
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+
+@require_http_methods(["GET"])
+def knowledge_state_view(request):
+    """Knowledge state tracking"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def ai_recommendations_view(request):
+    """AI recommendations for learners"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET", "POST"])
+def ai_assistant_view(request):
+    """AI assistant for learners"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def vr_sessions_view(request):
+    """VR learning sessions"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def ar_simulations_view(request):
+    """AR simulations"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def study_groups_view(request):
+    """Study groups collaboration"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def peer_reviews_view(request):
+    """Peer reviews"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def learning_analytics_view(request):
+    """Learning analytics"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def predictions_view(request):
+    """Performance predictions"""
+    return JsonResponse({'message': 'Feature coming soon'})
+"""
+Enterprise learner feature views for AI, VR/AR, Collaboration, etc.
+Note: Blockchain and Credentials features have been removed.
 """
 
 from django.shortcuts import render
@@ -141,65 +201,6 @@ def peer_reviews_view(request):
         ],
     }
     return render(request, 'lms/features/learner_collaboration.html', context)
-
-
-# ============================================================================
-# BLOCKCHAIN & CREDENTIALS
-# ============================================================================
-
-@login_required
-@learner_required
-def verified_certificates_view(request):
-    """View blockchain-verified certificates"""
-    context = {
-        'active_page': 'verified_certificates',
-        'page_title': 'Verified Certificates',
-        'certificates': [
-            {'course': 'Introduction to Python', 'issued': '2026-03-15', 'blockchain': 'Ethereum', 'txid': '0x742d35...', 'verified': True},
-            {'course': 'Data Science Fundamentals', 'issued': '2026-04-01', 'blockchain': 'Polygon', 'txid': '0x8a2c04...', 'verified': True},
-            {'course': 'Web Development Bootcamp', 'issued': '2026-04-10', 'blockchain': 'Ethereum', 'txid': '0x5f1b62...', 'verified': True},
-        ],
-    }
-    return render(request, 'lms/features/learner_credentials.html', context)
-
-
-@login_required
-@learner_required
-def nft_badges_view(request):
-    """View NFT badges and achievements"""
-    context = {
-        'active_page': 'nft_badges',
-        'page_title': 'NFT Badges & Achievements',
-        'badges': [
-            {'name': 'Perfect Score Badge', 'date_earned': '2026-04-01', 'nft_id': 'badge_001', 'rarity': 'Rare'},
-            {'name': 'Peer Helper Badge', 'date_earned': '2026-04-05', 'nft_id': 'badge_002', 'rarity': 'Common'},
-            {'name': 'Quick Learner Badge', 'date_earned': '2026-04-08', 'nft_id': 'badge_003', 'rarity': 'Rare'},
-            {'name': 'Code Master Badge', 'date_earned': '2026-04-12', 'nft_id': 'badge_004', 'rarity': 'Epic'},
-        ],
-    }
-    return render(request, 'lms/features/learner_credentials.html', context)
-
-
-@login_required
-@learner_required
-def my_wallet_view(request):
-    """Manage crypto wallet for NFTs and badges"""
-    context = {
-        'active_page': 'my_wallet',
-        'page_title': 'My Crypto Wallet',
-        'wallet': {
-            'address': '0x742d35Cc6634C0532925a3b844Bc9e7595f...',
-            'network': 'Ethereum / Polygon',
-            'balance': '12.5 ETH',
-            'nfts_owned': 15,
-        },
-        'transaction_history': [
-            {'type': 'Badge Received', 'date': '2026-04-12', 'detail': 'Code Master NFT Badge'},
-            {'type': 'Certificate Minted', 'date': '2026-04-10', 'detail': 'Web Dev Bootcamp Certificate'},
-            {'type': 'Transfer', 'date': '2026-04-01', 'detail': 'Sent 1 NFT to peer'},
-        ],
-    }
-    return render(request, 'lms/features/learner_credentials.html', context)
 
 
 # ============================================================================

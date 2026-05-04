@@ -1,0 +1,150 @@
+﻿<!-- lms/templates/lms/certification/providers/create.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Add Certification Provider - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout glass-dashboard" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_dashboard' %}
+    
+    <div class="dashboard-main" style="padding: 20px;">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Add Certification Provider
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Provider Name *</label>
+                            <input type="text" name="name" class="form-control" required>
+                            <small class="text-muted">e.g., "CompTIA", "EC-Council", "ISACA"</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Short Name *</label>
+                            <input type="text" name="short_name" class="form-control" required>
+                            <small class="text-muted">e.g., "CompTIA", "CEH", "CISSP"</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Provider Type</label>
+                            <select name="provider_type" class="form-select">
+                                <option value="global">🌍 Global Certification Body</option>
+                                <option value="regional">🌍 Regional/African Body</option>
+                                <option value="local">🇿🇼 Zimbabwean Body</option>
+                                <option value="vendor">🏢 Vendor-Specific</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Partnership Status</label>
+                            <select name="partnership_status" class="form-select">
+                                <option value="pending">Pending Approval</option>
+                                <option value="active">Active Partner</option>
+                                <option value="expired">Expired</option>
+                                <option value="terminated">Terminated</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Website</label>
+                            <input type="url" name="website" class="form-control" placeholder="https://...">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Logo</label>
+                            <input type="file" name="logo" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Partnership Agreement</label>
+                            <input type="file" name="partnership_agreement" class="form-control" accept=".pdf">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">Contact Information</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Contact Person</label>
+                            <input type="text" name="contact_person" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" name="contact_email" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Contact Phone</label>
+                            <input type="text" name="contact_phone" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">API Integration (Optional)</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">API Endpoint</label>
+                            <input type="url" name="api_endpoint" class="form-control" placeholder="https://api.provider.com/v1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Webhook URL</label>
+                            <input type="url" name="webhook_url" class="form-control" placeholder="https://yourdomain.com/webhook/provider/">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">API Key</label>
+                            <input type="text" name="api_key" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">API Secret</label>
+                            <input type="password" name="api_secret" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="requires_voucher" class="form-check-input" id="requiresVoucher" checked>
+                                <label class="form-check-label" for="requiresVoucher">Requires exam voucher purchase</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Default Voucher Price ($)</label>
+                            <input type="number" name="voucher_price" class="form-control" step="0.01" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_active" class="form-check-input" id="isActive" checked>
+                                <label class="form-check-label" for="isActive">Active</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'lms:list_providers' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Create Provider
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

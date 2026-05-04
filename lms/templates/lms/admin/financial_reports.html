@@ -1,0 +1,899 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Financial Reports - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .authenticated-page {
+        padding: 20px;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        color: #1f3a5d;
+        font-weight: 700;
+    }
+
+    .report-type-cards {
+        margin-bottom: 30px;
+    }
+
+    .report-card {
+        display: block;
+        padding: 1.5rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .report-card:hover {
+        border-color: #2f80ed;
+        box-shadow: 0 4px 12px rgba(47, 128, 237, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .report-card.active {
+        border-color: #2f80ed;
+        background-color: rgba(47, 128, 237, 0.05);
+    }
+
+    .report-card h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .chart-container {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .chart-wrapper {
+        position: relative;
+        height: 350px;
+        margin-bottom: 20px;
+    }
+
+    .chart-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .chart-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #1f3a5d;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .chart-title i {
+        margin-right: 10px;
+        color: #2f80ed;
+    }
+
+    .data-table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        border-top: 4px solid #2f80ed;
+    }
+
+    .stat-card.success {
+        border-top-color: #28a745;
+    }
+
+    .stat-card.danger {
+        border-top-color: #dc3545;
+    }
+
+    .stat-card.info {
+        border-top-color: #17a2b8;
+    }
+
+    .stat-card i {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        color: #2f80ed;
+    }
+
+    .stat-card.success i {
+        color: #28a745;
+    }
+
+    .stat-card.danger i {
+        color: #dc3545;
+    }
+
+    .stat-card.info i {
+        color: #17a2b8;
+    }
+
+    .stat-card h3 {
+        font-size: 2em;
+        font-weight: 700;
+        color: #1f3a5d;
+        margin-bottom: 5px;
+    }
+
+    .stat-card p {
+        color: #666;
+        margin: 0;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background-color: #f0f5ff;
+        border-bottom: 2px solid #ddd;
+        font-weight: 600;
+        color: #1f3a5d;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fbff;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+
+    .download-btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .currency {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .filter-group {
+        background: #f0f5ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-group .form-control {
+        max-width: 200px;
+    }
+
+    .filter-group button {
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="authenticated-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-dollar-sign me-2"></i>Financial Reports</h1>
+        <p>Comprehensive financial analysis and revenue tracking</p>
+    </div>
+
+    <!-- Report Type Selection -->
+    <div class="report-type-cards mb-4">
+        <div class="row">
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=revenue" class="report-card {% if report_type == 'revenue' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-chart-line fa-2x mb-2 text-success"></i>
+                        <h6>Revenue Report</h6>
+                        <small class="text-muted">Track total income and revenue trends</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=expenses" class="report-card {% if report_type == 'expenses' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-credit-card fa-2x mb-2 text-danger"></i>
+                        <h6>Expenses Report</h6>
+                        <small class="text-muted">Monitor operational expenses</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=profit" class="report-card {% if report_type == 'profit' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-wallet fa-2x mb-2 text-primary"></i>
+                        <h6>Profit & Loss</h6>
+                        <small class="text-muted">Net profit and margin analysis</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=payments" class="report-card {% if report_type == 'payments' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-money-check fa-2x mb-2 text-info"></i>
+                        <h6>Student Payments</h6>
+                        <small class="text-muted">Payment tracking and status</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=invoices" class="report-card {% if report_type == 'invoices' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-receipt fa-2x mb-2 text-warning"></i>
+                        <h6>Invoices</h6>
+                        <small class="text-muted">Invoice generation and tracking</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="?type=refunds" class="report-card {% if report_type == 'refunds' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-undo fa-2x mb-2 text-secondary"></i>
+                        <h6>Refunds Report</h6>
+                        <small class="text-muted">Refund processing and status</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-group">
+        <label for="dateRange" style="font-weight: 600; margin: 0;">Filter by Date:</label>
+        <input type="date" id="startDate" class="form-control" placeholder="Start Date">
+        <input type="date" id="endDate" class="form-control" placeholder="End Date">
+        <button class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+        <button class="btn btn-outline-secondary" onclick="resetFilter()">Reset</button>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card success">
+            <i class="fas fa-arrow-up"></i>
+            <h3>$45,230.50</h3>
+            <p>Total Revenue</p>
+        </div>
+        <div class="stat-card danger">
+            <i class="fas fa-arrow-down"></i>
+            <h3>$12,540.75</h3>
+            <p>Total Expenses</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>$32,689.75</h3>
+            <p>Net Profit</p>
+        </div>
+        <div class="stat-card info">
+            <i class="fas fa-percent"></i>
+            <h3>72.3%</h3>
+            <p>Profit Margin</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    {% if report_type == 'revenue' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-line-chart"></i>Monthly Revenue Trend
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Revenue by Course
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="coursePieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'expenses' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Expenses by Category
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="expensesChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-doughnut"></i>Expense Distribution
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="expensesPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'profit' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-line-chart"></i>Profit & Loss Overview
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Monthly P&L Comparison
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="plComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'payments' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Payment Status Distribution
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="paymentStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Payments by Month
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="paymentMonthChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'invoices' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Invoice Status
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="invoiceStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-line-chart"></i>Invoice Amount Trend
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="invoiceAmountChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'refunds' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Refunds by Month
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="refundsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Refund Reasons
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="refundReasonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Data Table -->
+    <div class="data-table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h5 class="mb-0">
+                <i class="fas fa-table me-2"></i>
+                {% if report_type == 'revenue' %}Revenue Details{% elif report_type == 'expenses' %}Expense Details{% elif report_type == 'profit' %}Profit & Loss Details{% elif report_type == 'payments' %}Payment Details{% elif report_type == 'invoices' %}Invoice Details{% elif report_type == 'refunds' %}Refund Details{% endif %}
+            </h5>
+            <div class="download-btn-group">
+                <a href="{% url 'lms:download_report_format' report_type 'csv' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-file-csv me-1"></i>CSV
+                </a>
+                <a href="{% url 'lms:download_report_format' report_type 'pdf' %}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-file-pdf me-1"></i>PDF
+                </a>
+                <a href="{% url 'lms:download_report_format' report_type 'excel' %}" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>Excel
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        {% if report_type == 'revenue' %}
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Course/Item</th>
+                            <th class="text-right">Amount</th>
+                            <th>Status</th>
+                        {% elif report_type == 'expenses' %}
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th class="text-right">Amount</th>
+                            <th>Approved By</th>
+                        {% elif report_type == 'profit' %}
+                            <th>Period</th>
+                            <th class="text-right">Revenue</th>
+                            <th class="text-right">Expenses</th>
+                            <th class="text-right">Profit</th>
+                            <th>Margin %</th>
+                        {% elif report_type == 'payments' %}
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th class="text-right">Amount</th>
+                            <th>Status</th>
+                        {% elif report_type == 'invoices' %}
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th class="text-right">Amount</th>
+                            <th>Status</th>
+                        {% elif report_type == 'refunds' %}
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Reason</th>
+                            <th class="text-right">Amount</th>
+                            <th>Status</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% if report_type == 'revenue' %}
+                            <td>2026-04-28</td>
+                            <td>Course Enrollment</td>
+                            <td>Python Basics</td>
+                            <td class="text-right"><span class="currency">$499.00</span></td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        {% elif report_type == 'expenses' %}
+                            <td>2026-04-25</td>
+                            <td>Operational</td>
+                            <td>Server maintenance</td>
+                            <td class="text-right"><span class="currency">$250.00</span></td>
+                            <td>Admin</td>
+                        {% elif report_type == 'profit' %}
+                            <td>April 2026</td>
+                            <td class="text-right"><span class="currency">$15,230.50</span></td>
+                            <td class="text-right"><span class="currency">$5,540.75</span></td>
+                            <td class="text-right"><span class="currency">$9,689.75</span></td>
+                            <td>63.6%</td>
+                        {% elif report_type == 'payments' %}
+                            <td>2026-04-28</td>
+                            <td>John Doe</td>
+                            <td>Advanced Python</td>
+                            <td class="text-right"><span class="currency">$599.00</span></td>
+                            <td><span class="badge bg-success">Paid</span></td>
+                        {% elif report_type == 'invoices' %}
+                            <td>INV-2026-001</td>
+                            <td>2026-04-20</td>
+                            <td>Jane Smith</td>
+                            <td class="text-right"><span class="currency">$899.00</span></td>
+                            <td><span class="badge bg-info">Pending</span></td>
+                        {% elif report_type == 'refunds' %}
+                            <td>2026-04-15</td>
+                            <td>Bob Johnson</td>
+                            <td>Course not suitable</td>
+                            <td class="text-right"><span class="currency">$399.00</span></td>
+                            <td><span class="badge bg-warning">Processing</span></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        {% if report_type == 'revenue' %}
+                            <td>2026-04-27</td>
+                            <td>Course Enrollment</td>
+                            <td>Web Development</td>
+                            <td class="text-right"><span class="currency">$699.00</span></td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        {% elif report_type == 'expenses' %}
+                            <td>2026-04-24</td>
+                            <td>Software</td>
+                            <td>Learning Management System License</td>
+                            <td class="text-right"><span class="currency">$1,200.00</span></td>
+                            <td>Finance Manager</td>
+                        {% elif report_type == 'profit' %}
+                            <td>March 2026</td>
+                            <td class="text-right"><span class="currency">$12,890.00</span></td>
+                            <td class="text-right"><span class="currency">$4,200.00</span></td>
+                            <td class="text-right"><span class="currency">$8,690.00</span></td>
+                            <td>67.4%</td>
+                        {% elif report_type == 'payments' %}
+                            <td>2026-04-27</td>
+                            <td>Alice Brown</td>
+                            <td>Data Science Basics</td>
+                            <td class="text-right"><span class="currency">$799.00</span></td>
+                            <td><span class="badge bg-success">Paid</span></td>
+                        {% elif report_type == 'invoices' %}
+                            <td>INV-2026-002</td>
+                            <td>2026-04-19</td>
+                            <td>Michael Wilson</td>
+                            <td class="text-right"><span class="currency">$549.00</span></td>
+                            <td><span class="badge bg-success">Paid</span></td>
+                        {% elif report_type == 'refunds' %}
+                            <td>2026-04-10</td>
+                            <td>Sarah Davis</td>
+                            <td>Technical issues</td>
+                            <td class="text-right"><span class="currency">$299.00</span></td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 12, weight: '600' },
+                    color: '#1f3a5d',
+                    padding: 15
+                }
+            }
+        }
+    };
+
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Total Revenue',
+                    data: [8500, 10200, 9800, 15230, 13450, 16800],
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#28a745',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Course Revenue Pie Chart
+    const coursePieCtx = document.getElementById('coursePieChart');
+    if (coursePieCtx) {
+        new Chart(coursePieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Python Courses', 'Web Development', 'Data Science', 'Mobile Dev'],
+                datasets: [{
+                    data: [35, 25, 25, 15],
+                    backgroundColor: ['#2f80ed', '#28a745', '#ffc107', '#17a2b8'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Expenses Chart
+    const expensesCtx = document.getElementById('expensesChart');
+    if (expensesCtx) {
+        new Chart(expensesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Salaries', 'Infrastructure', 'Marketing', 'Software', 'Maintenance'],
+                datasets: [{
+                    label: 'Monthly Expenses',
+                    data: [4500, 2800, 1500, 1200, 800],
+                    backgroundColor: '#dc3545',
+                    borderColor: '#c82333',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Expenses Pie Chart
+    const expensesPieCtx = document.getElementById('expensesPieChart');
+    if (expensesPieCtx) {
+        new Chart(expensesPieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Salaries', 'Infrastructure', 'Marketing', 'Software', 'Maintenance'],
+                datasets: [{
+                    data: [45, 28, 15, 12, 8],
+                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6f42c1', '#6c757d'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Profit Chart
+    const profitCtx = document.getElementById('profitChart');
+    if (profitCtx) {
+        new Chart(profitCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Net Profit',
+                    data: [4500, 5800, 6200, 9689, 8950, 12500],
+                    borderColor: '#2f80ed',
+                    backgroundColor: 'rgba(47, 128, 237, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#2f80ed',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // P&L Comparison Chart
+    const plCtx = document.getElementById('plComparisonChart');
+    if (plCtx) {
+        new Chart(plCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [8500, 10200, 9800, 15230, 13450, 16800],
+                    backgroundColor: '#28a745',
+                    borderColor: '#20c997',
+                    borderWidth: 1
+                }, {
+                    label: 'Expenses',
+                    data: [4000, 4400, 3600, 5541, 4500, 4300],
+                    backgroundColor: '#dc3545',
+                    borderColor: '#c82333',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Payment Status Chart
+    const paymentCtx = document.getElementById('paymentStatusChart');
+    if (paymentCtx) {
+        new Chart(paymentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Paid', 'Pending', 'Overdue'],
+                datasets: [{
+                    data: [70, 20, 10],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Payment by Month Chart
+    const paymentMonthCtx = document.getElementById('paymentMonthChart');
+    if (paymentMonthCtx) {
+        new Chart(paymentMonthCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Payments Received',
+                    data: [7500, 8200, 7800, 13230, 11450, 14800],
+                    backgroundColor: '#17a2b8',
+                    borderColor: '#0f6674',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Invoice Status Chart
+    const invoiceCtx = document.getElementById('invoiceStatusChart');
+    if (invoiceCtx) {
+        new Chart(invoiceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Paid', 'Pending', 'Overdue', 'Cancelled'],
+                datasets: [{
+                    data: [45, 35, 15, 5],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6c757d'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Invoice Amount Chart
+    const invoiceAmountCtx = document.getElementById('invoiceAmountChart');
+    if (invoiceAmountCtx) {
+        new Chart(invoiceAmountCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [{
+                    label: 'Invoice Value',
+                    data: [5000, 7500, 6800, 9200, 8500, 10300],
+                    borderColor: '#ffc107',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ffc107',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Refunds Chart
+    const refundsCtx = document.getElementById('refundsChart');
+    if (refundsCtx) {
+        new Chart(refundsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Refund Amount',
+                    data: [1200, 800, 1500, 900, 600, 400],
+                    backgroundColor: '#6c757d',
+                    borderColor: '#5a6268',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666', callback: function(value) { return '$' + value; } }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Refund Reason Chart
+    const refundReasonCtx = document.getElementById('refundReasonChart');
+    if (refundReasonCtx) {
+        new Chart(refundReasonCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Not Suitable', 'Technical Issues', 'Personal Reasons', 'Duplicate Payment'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6c757d'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+});
+
+function applyFilter() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    if (startDate || endDate) {
+        alert('Filter applied: ' + startDate + ' to ' + endDate);
+    }
+}
+
+function resetFilter() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    alert('Filters reset');
+}
+</script>
+{% endblock %}

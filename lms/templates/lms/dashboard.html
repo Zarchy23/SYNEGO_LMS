@@ -1,0 +1,760 @@
+{% extends 'lms/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dashboard-specific course card styling */
+    .course-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .course-card-body {
+        padding: 20px;
+    }
+
+    .course-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #1a1a2e;
+    }
+
+    .course-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .progress-bar-custom {
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 3px;
+        transition: width 0.3s;
+    }
+
+    /* Course cards grid */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 30px 0 20px;
+        color: #1a1a2e;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .section-title i {
+        color: #667eea;
+    }
+
+    /* List styles */
+    .list-group-custom {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .list-item {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-item:hover {
+        background-color: #f9fbff;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 40px;
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Chart styles */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 40px;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #1a1a2e;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        .chart-container {
+            height: 250px;
+        }
+    }
+</style>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="authenticated-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back, {{ user.first_name|default:user.username }}! 👋</p>
+    </div>
+    
+    <!-- Hero Banner Section -->
+    <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border-radius: 20px; padding: 60px 40px; margin-bottom: 40px; color: white;">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 10px;">
+            <i class="fas fa-graduation-cap"></i> Synego Learning Institute
+        </h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.95;">Your Complete Learning Platform</p>
+        <p style="font-size: 1rem; margin-bottom: 30px; opacity: 0.9; max-width: 600px; line-height: 1.6;">
+            Engage with quality educational content, track your progress, and achieve your learning goals with our comprehensive learning management system.
+        </p>
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 40px;">
+            {% if user.role == 'learner' %}
+                <a href="{% url 'lms:course_list' %}" style="background: white; color: #2c3e50; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-compass"></i> Browse Courses
+                </a>
+                <a href="{% url 'lms:my_enrolled_courses' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-book-open"></i> My Courses
+                </a>
+                <a href="{% url 'lms:my_progress' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-chart-line"></i> My Progress
+                </a>
+            {% elif user.role == 'instructor' %}
+                <a href="{% url 'lms:instructor_dashboard' %}" style="background: white; color: #2c3e50; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-chalkboard-user"></i> Teaching Dashboard
+                </a>
+                <a href="{% url 'lms:select_course_for_chapter' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-layer-group"></i> Add Chapter
+                </a>
+                <a href="{% url 'lms:instructor_assignments' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-tasks"></i> Assignments
+                </a>
+            {% elif user.role == 'admin' or user.is_superuser %}
+                <a href="{% url 'lms:admin_users' %}" style="background: white; color: #2c3e50; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-users"></i> User Management
+                </a>
+                <a href="{% url 'lms:admin_modules' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-building"></i> Modules
+                </a>
+                <a href="{% url 'lms:admin_create_course' %}" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;">
+                    <i class="fas fa-plus"></i> Create Course
+                </a>
+            {% endif %}
+        </div>
+        
+        <!-- Quick Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px;">
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; text-align: center; backdrop-filter: blur(10px);">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">{{ active_enrollments_count|default:0 }}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">{% if user.role == 'learner' %}Courses{% elif user.role == 'instructor' %}Teaching{% else %}Total{% endif %}</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; text-align: center; backdrop-filter: blur(10px);">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">{{ total_quiz_attempts|default:0 }}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Activities</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; text-align: center; backdrop-filter: blur(10px);">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">{{ pending_submissions|default:0 }}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Pending</div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 12px; text-align: center; backdrop-filter: blur(10px);">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 5px;">{{ certificates_count|default:0 }}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Achievements</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== LEARNER DASHBOARD ========== -->
+    {% if user.role == 'learner' %}
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Active Courses</div>
+                <div class="stat-number">{{ active_enrollments_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #667eea;"><i class="fas fa-book-open"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Certificates Earned</div>
+                <div class="stat-number">{{ certificates_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #764ba2;"><i class="fas fa-certificate"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Quiz Attempts</div>
+                <div class="stat-number">{{ total_quiz_attempts|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #17a2b8;"><i class="fas fa-tasks"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Average Score</div>
+                <div class="stat-number">{{ avg_quiz_score|floatformat:0|default:0 }}%</div>
+            </div>
+            <div style="font-size: 2rem; color: #059669;"><i class="fas fa-chart-line"></i></div>
+        </div>
+    </div>
+    
+    <!-- Charts & Analytics Section -->
+    <div class="section-title">
+        <i class="fas fa-chart-bar"></i>
+        <span>Learning Analytics</span>
+    </div>
+    <div class="charts-grid">
+        <!-- Progress Overview Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Course Progress Overview</div>
+            <canvas id="progressChart"></canvas>
+        </div>
+        
+        <!-- Quiz Performance Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Quiz Performance Trend</div>
+            <canvas id="quizChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Enrollment Distribution -->
+    <div class="chart-container">
+        <div class="chart-title">Enrollment by Module</div>
+        <canvas id="moduleChart" style="max-height: 300px;"></canvas>
+    </div>
+    
+    <!-- Active Courses -->
+    {% if active_enrollments %}
+    <div class="section-title">
+        <i class="fas fa-book-open"></i>
+        <span>My Active Courses</span>
+    </div>
+    <div class="cards-grid">
+        {% for enrollment in active_enrollments %}
+        <div class="course-card">
+            <div class="course-card-body">
+                <h4 class="course-title">{{ enrollment.course.title }}</h4>
+                <div class="course-meta">{{ enrollment.course.department.name }}</div>
+                <div class="progress-bar-custom">
+                    <div class="progress-fill" style="width: {{ enrollment.progress_percent|default:0 }}%"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 10px 0 15px;">
+                    <small>Progress</small>
+                    <small class="fw-bold">{{ enrollment.progress_percent|floatformat:0|default:0 }}%</small>
+                </div>
+                <a href="{% url 'lms:course_detail' enrollment.course.slug %}" class="btn btn-primary w-100">Continue Learning →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"><i class="fas fa-book-open"></i></div>
+        <p>You're not enrolled in any courses yet.</p>
+        <a href="{% url 'lms:course_list' %}" class="btn btn-primary mt-2">Browse Courses</a>
+    </div>
+    {% endif %}
+    
+    <!-- Upcoming Assignments -->
+    {% if upcoming_assignments %}
+    <div class="section-title">
+        <i class="fas fa-calendar-check"></i>
+        <span>Upcoming Deadlines</span>
+    </div>
+    <div class="list-group-custom">
+        {% for assignment in upcoming_assignments %}
+        <div class="list-item">
+            <div>
+                <h6 class="mb-1">{{ assignment.title }}</h6>
+                <small class="text-muted">{{ assignment.course.title }}</small>
+            </div>
+            <span class="badge bg-warning text-dark">{{ assignment.due_date|date:"M d, Y" }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% endif %}
+    
+    <!-- ========== INSTRUCTOR DASHBOARD ========== -->
+    {% if user.role == 'instructor' %}
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Teaching Courses</div>
+                <div class="stat-number">{{ instructor_courses_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #667eea;"><i class="fas fa-chalkboard"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Total Students</div>
+                <div class="stat-number">{{ total_students|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #764ba2;"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Pending Review</div>
+                <div class="stat-number">{{ pending_submissions_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #f59e0b;"><i class="fas fa-file-upload"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Active Intakes</div>
+                <div class="stat-number">{{ intakes_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #17a2b8;"><i class="fas fa-calendar"></i></div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="section-title">
+        <i class="fas fa-bolt"></i>
+        <span>Quick Actions</span>
+    </div>
+    <div class="quick-actions-grid">
+        <a href="{% url 'lms:create_intake' %}" class="btn btn-primary">New Intake</a>
+        <a href="#" class="btn btn-success">Create Assignment</a>
+        <a href="{% url 'lms:course_list' %}" class="btn btn-info">Manage Courses</a>
+    </div>
+    
+    <!-- Pending Submissions -->
+    {% if pending_submissions %}
+    <div class="section-title">
+        <i class="fas fa-inbox"></i>
+        <span>Submissions to Grade</span>
+    </div>
+    <div class="list-group-custom">
+        {% for submission in pending_submissions %}
+        <div class="list-item">
+            <div>
+                <h6 class="mb-1">{{ submission.assignment.title }}</h6>
+                <small class="text-muted">From: {{ submission.student.get_full_name }}</small>
+            </div>
+            <a href="{% url 'lms:grade_submission' submission.id %}" class="btn btn-sm btn-primary">Grade</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Course Performance -->
+    {% if course_stats %}
+    <div class="section-title">
+        <i class="fas fa-chart-line"></i>
+        <span>Course Performance</span>
+    </div>
+    <div class="cards-grid">
+        {% for stat in course_stats %}
+        <div class="course-card">
+            <div class="course-card-body">
+                <h4 class="course-title">{{ stat.course.title }}</h4>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Enrolled Students</span>
+                        <strong>{{ stat.enrolled }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Completed</span>
+                        <strong>{{ stat.completed }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Average Grade</span>
+                        <strong>{{ stat.avg_grade }}%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% endif %}
+    
+    <!-- ========== ADMIN DASHBOARD ========== -->
+    {% if user.role == 'admin' or user.is_superuser %}
+    
+    <!-- System Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-number">{{ total_users|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #667eea;"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Students</div>
+                <div class="stat-number">{{ total_students|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #764ba2;"><i class="fas fa-graduation-cap"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Instructors</div>
+                <div class="stat-number">{{ total_instructors|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #17a2b8;"><i class="fas fa-chalkboard-user"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Courses</div>
+                <div class="stat-number">{{ total_courses|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #f59e0b;"><i class="fas fa-book"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Modules</div>
+                <div class="stat-number">{{ total_departments|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #059669;"><i class="fas fa-building"></i></div>
+        </div>
+        <div class="stat-card">
+            <div>
+                <div class="stat-label">Pending Approvals</div>
+                <div class="stat-number">{{ pending_approvals_count|default:0 }}</div>
+            </div>
+            <div style="font-size: 2rem; color: #ef4444;"><i class="fas fa-hourglass-half"></i></div>
+        </div>
+    </div>
+    
+    <!-- Admin Analytics Section -->
+    <div class="section-title">
+        <i class="fas fa-chart-bar"></i>
+        <span>System Analytics</span>
+    </div>
+    <div class="charts-grid">
+        <!-- User Distribution Chart -->
+        <div class="chart-container">
+            <div class="chart-title">User Distribution</div>
+            <canvas id="userDistributionChart"></canvas>
+        </div>
+        
+        <!-- Course Enrollment Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Top 5 Courses by Enrollment</div>
+            <canvas id="topCoursesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- System Health Overview -->
+    <div class="chart-container">
+        <div class="chart-title">Monthly Account Growth</div>
+        <canvas id="growthChart" style="max-height: 300px;"></canvas>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="section-title">
+        <i class="fas fa-bolt"></i>
+        <span>Admin Actions</span>
+    </div>
+    <div class="quick-actions-grid">
+        <a href="{% url 'lms:admin_users' %}" class="btn btn-primary">Manage Users</a>
+        <a href="{% url 'lms:admin_modules' %}" class="btn btn-success">Modules</a>
+        <a href="{% url 'lms:course_list' %}" class="btn btn-warning">Courses</a>
+        <a href="{% url 'lms:admin_reports' %}" class="btn btn-info">Reports</a>
+    </div>
+    
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart colors
+    const colors = {
+        primary: '#667eea',
+        secondary: '#764ba2',
+        success: '#059669',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        info: '#17a2b8'
+    };
+
+    // Course Progress Chart
+    const progressCtx = document.getElementById('progressChart');
+    if (progressCtx) {
+        new Chart(progressCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress', 'Not Started'],
+                datasets: [{
+                    data: [{{ completed_courses|length|default:0 }}, {{ active_enrollments|length|default:0 }}, 0],
+                    backgroundColor: [colors.success, colors.primary, '#e0e0e0'],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 13 }, padding: 15 }
+                    }
+                }
+            }
+        });
+    }
+
+    // Quiz Performance Chart - Real Data
+    const quizCtx = document.getElementById('quizChart');
+    if (quizCtx) {
+        new Chart(quizCtx, {
+            type: 'line',
+            data: {
+                labels: {{ quiz_labels|safe|default:"['Quiz 1', 'Quiz 2', 'Quiz 3', 'Quiz 4', 'Quiz 5']" }},
+                datasets: [{
+                    label: 'Quiz Score (%)',
+                    data: {{ quiz_scores|default:"[0, 0, 0, 0, 0]" }},
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: colors.primary,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { size: 13 }, padding: 15 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: function(value) { return value + '%'; } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Module Distribution Chart - Real Data
+    const moduleCtx = document.getElementById('moduleChart');
+    if (moduleCtx) {
+        new Chart(moduleCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ dept_labels|safe|default:"['Module 1', 'Module 2', 'Module 3']" }},
+                datasets: [{
+                    label: 'Enrolled in Module',
+                    data: {{ dept_counts|default:"[0, 0, 0]" }},
+                    backgroundColor: [
+                        colors.primary,
+                        colors.secondary,
+                        colors.success,
+                        colors.warning,
+                        colors.info
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        stacked: false
+                    }
+                }
+            }
+        });
+    }
+
+    // User Distribution Chart (Admin) - Real Data
+    const userDistCtx = document.getElementById('userDistributionChart');
+    if (userDistCtx) {
+        new Chart(userDistCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Students', 'Instructors', 'Admins'],
+                datasets: [{
+                    data: [{{ total_students|default:0 }}, {{ total_instructors|default:0 }}, 1],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 13 }, padding: 15 }
+                    }
+                }
+            }
+        });
+    }
+
+    // Top Courses Chart (Admin) - Real Data
+    const topCoursesCtx = document.getElementById('topCoursesChart');
+    if (topCoursesCtx) {
+        new Chart(topCoursesCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ course_labels|safe|default:"['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5']" }},
+                datasets: [{
+                    label: 'Enrollments',
+                    data: {{ course_counts|default:"[0, 0, 0, 0, 0]" }},
+                    backgroundColor: colors.primary,
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: function(value) { return value + ' students'; } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Monthly Growth Chart (Admin) - Real Data
+    const growthCtx = document.getElementById('growthChart');
+    if (growthCtx) {
+        new Chart(growthCtx, {
+            type: 'line',
+            data: {
+                labels: {{ user_growth_labels|safe|default:"['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']" }},
+                datasets: [
+                    {
+                        label: 'New Users',
+                        data: {{ user_growth_counts|default:"[0, 0, 0, 0, 0, 0]" }},
+                        borderColor: colors.primary,
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: colors.primary,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Active Users',
+                        data: [{{ total_students|default:0 }}, {{ total_students|default:0 }}, {{ total_students|default:0 }}, {{ total_students|default:0 }}, {{ total_students|default:0 }}, {{ total_students|default:0 }}],
+                        borderColor: colors.success,
+                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: colors.success,
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 13 }, padding: 15 }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

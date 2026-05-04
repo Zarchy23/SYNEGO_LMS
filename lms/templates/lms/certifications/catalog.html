@@ -1,0 +1,181 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Certification Catalog - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <h1 class="h2 mb-2">Certification Catalog</h1>
+            <p class="text-muted">Expand your skills with industry-recognized certifications from leading providers.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Filters</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="d-flex flex-column gap-3">
+                        <!-- Search -->
+                        <div>
+                            <label class="form-label">Search</label>
+                            <input type="text" name="q" class="form-control form-control-sm" 
+                                   value="{{ search_query }}" placeholder="Certification name...">
+                        </div>
+
+                        <!-- Provider Filter -->
+                        <div>
+                            <label class="form-label">Provider</label>
+                            <select name="provider" class="form-select form-select-sm">
+                                <option value="">All Providers</option>
+                                {% for provider in providers %}
+                                    <option value="{{ provider.id }}" {% if provider.id|stringformat:"s" == selected_provider %}selected{% endif %}>
+                                        {{ provider.short_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Difficulty Filter -->
+                        <div>
+                            <label class="form-label">Difficulty</label>
+                            <select name="difficulty" class="form-select form-select-sm">
+                                <option value="">All Levels</option>
+                                {% for value, label in difficulty_choices %}
+                                    <option value="{{ value }}" {% if value == selected_difficulty %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                        <a href="{% url 'lms:certification_catalog' %}" class="btn btn-sm btn-outline-secondary">
+                            Clear Filters
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            {% if certifications %}
+                <div class="row">
+                    {% for cert in certifications %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 cert-card">
+                                {% if cert.logo %}
+                                    <div class="cert-logo bg-light p-3" style="height: 120px; overflow: hidden;">
+                                        <img src="{{ cert.logo.url }}" alt="{{ cert.provider.name }}" 
+                                             class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                                    </div>
+                                {% endif %}
+
+                                <div class="card-body d-flex flex-column">
+                                    {% if cert.is_featured %}
+                                        <span class="badge bg-warning text-dark mb-2 align-self-start">
+                                            <i class="fas fa-star"></i> Featured
+                                        </span>
+                                    {% endif %}
+
+                                    <h6 class="card-title">{{ cert.title }}</h6>
+                                    <p class="text-muted small mb-2">{{ cert.provider.name }}</p>
+
+                                    <div class="mb-3">
+                                        <span class="badge bg-info">{{ cert.get_difficulty_display }}</span>
+                                        <span class="badge bg-light text-dark">{{ cert.exam_duration_minutes }}m</span>
+                                        <span class="badge bg-light text-dark">{{ cert.number_of_questions }} Q</span>
+                                    </div>
+
+                                    <p class="card-text small text-muted flex-grow-1">
+                                        {{ cert.description|truncatewords:20 }}
+                                    </p>
+
+                                    <div class="mt-auto">
+                                        {% if cert.id in user_registrations %}
+                                            <button class="btn btn-sm btn-success w-100" disabled>
+                                                <i class="fas fa-check"></i> Already Registered
+                                            </button>
+                                        {% else %}
+                                            <a href="{% url 'lms:certification_detail' cert.id %}" 
+                                               class="btn btn-sm btn-primary w-100">
+                                                <i class="fas fa-eye"></i> View Details
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No certifications found matching your criteria.</p>
+                    <a href="{% url 'lms:certification_catalog' %}" class="btn btn-outline-primary">
+                        Clear Filters
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .cert-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #dee2e6;
+    }
+
+    .cert-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .cert-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{% endblock %}

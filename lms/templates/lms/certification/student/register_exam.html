@@ -1,0 +1,162 @@
+﻿<!-- lms/templates/lms/certification/student/register_exam.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Register for {{ certification.title }} - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Exam Registration: {{ certification.title }}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <small class="text-muted">Provider</small>
+                                <h6 class="mb-0">{{ certification.provider.name }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <small class="text-muted">Exam Code</small>
+                                <h6 class="mb-0">{{ certification.exam_code|default:certification.code }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <div class="info-box">
+                                <small class="text-muted">Duration</small>
+                                <h6 class="mb-0">{{ certification.exam_duration_minutes }} minutes</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <div class="info-box">
+                                <small class="text-muted">Passing Score</small>
+                                <h6 class="mb-0">{{ certification.passing_score_display }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Course Intake Selection -->
+                        {% if certification.synego_course %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-calendar-alt me-1"></i> Select Course Intake
+                                </label>
+                                <select name="course_intake" class="form-select">
+                                    <option value="">I want to take the exam only</option>
+                                    {% for intake in certification.synego_course.intakes.all %}
+                                        {% if intake.status == 'open' or intake.status == 'upcoming' %}
+                                            <option value="{{ intake.id }}">
+                                                {{ intake.title }} - {{ intake.course_start_date|date:"M d, Y" }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Choose an intake if you want to take the training course</small>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Exam Location -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-1"></i> Exam Location
+                            </label>
+                            <select name="exam_location" class="form-select" required>
+                                <option value="">Select testing location</option>
+                                <option value="Online (Proctored)">💻 Online (Proctored) - Take from home</option>
+                                <option value="Synego Institute - Harare">🏛️ Synego Institute - Harare</option>
+                                <option value="Synego Institute - Bulawayo">🏛️ Synego Institute - Bulawayo</option>
+                                <option value="Partner Testing Center - Mutare">🏛️ Partner Testing Center - Mutare</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Exam Language -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-language me-1"></i> Exam Language
+                            </label>
+                            <select name="exam_language" class="form-select" required>
+                                <option value="English">English</option>
+                                <option value="French">French</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="German">German</option>
+                                <option value="Japanese">Japanese</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Price Summary -->
+                        <div class="alert alert-light border mt-4">
+                            <h6 class="mb-3">Order Summary</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Exam Voucher ({{ certification.title }})</span>
+                                <span class="fw-bold">${{ certification.exam_voucher_price }}</span>
+                            </div>
+                            {% if certification.training_material_price %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Training Materials (Optional)</span>
+                                    <span>${{ certification.training_material_price }}</span>
+                                </div>
+                            {% endif %}
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">Total Amount</span>
+                                <span class="h5 text-primary mb-0">${{ certification.exam_voucher_price }}</span>
+                            </div>
+                            <small class="text-muted">* Training materials can be purchased separately</small>
+                        </div>
+                        
+                        <!-- Terms -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I confirm that the information provided is accurate and I agree to the 
+                                <a href="#">exam policies</a> and <a href="#">terms of service</a>.
+                            </label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lms:certification_detail' certification.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-credit-card me-2"></i> Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>What happens after registration?</strong>
+                <ul class="mb-0 mt-2">
+                    <li>You'll receive a payment confirmation email</li>
+                    <li>Exam voucher will be sent within 24 hours of payment verification</li>
+                    <li>Schedule your exam with the provider using the voucher code</li>
+                    <li>Receive digital certificate upon passing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-box {
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+}
+</style>
+{% endblock %}

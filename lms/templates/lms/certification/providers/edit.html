@@ -1,0 +1,166 @@
+﻿<!-- lms/templates/lms/certification/providers/edit.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Edit Certification Provider - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout glass-dashboard" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_dashboard' %}
+    
+    <div class="dashboard-main" style="padding: 20px;">
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">
+            <i class="fas fa-edit text-primary me-2"></i>
+            Edit Provider: {{ provider.name }}
+        </h4>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Provider Name *</label>
+                    <input type="text" name="name" class="form-control" value="{{ provider.name }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Short Name *</label>
+                    <input type="text" name="short_name" class="form-control" value="{{ provider.short_name }}" required>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Provider Type</label>
+                    <select name="provider_type" class="form-select">
+                        <option value="global" {% if provider.provider_type == 'global' %}selected{% endif %}>🌍 Global Certification Body</option>
+                        <option value="regional" {% if provider.provider_type == 'regional' %}selected{% endif %}>🌍 Regional/African Body</option>
+                        <option value="local" {% if provider.provider_type == 'local' %}selected{% endif %}>🇿🇼 Zimbabwean Body</option>
+                        <option value="vendor" {% if provider.provider_type == 'vendor' %}selected{% endif %}>🏢 Vendor-Specific</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Partnership Status</label>
+                    <select name="partnership_status" class="form-select">
+                        <option value="pending" {% if provider.partnership_status == 'pending' %}selected{% endif %}>Pending Approval</option>
+                        <option value="active" {% if provider.partnership_status == 'active' %}selected{% endif %}>Active Partner</option>
+                        <option value="expired" {% if provider.partnership_status == 'expired' %}selected{% endif %}>Expired</option>
+                        <option value="terminated" {% if provider.partnership_status == 'terminated' %}selected{% endif %}>Terminated</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Website</label>
+                    <input type="url" name="website" class="form-control" value="{{ provider.website }}" placeholder="https://...">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Logo</label>
+                    {% if provider.logo %}
+                        <div class="mb-2">
+                            <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" style="max-height: 80px;">
+                            <a href="{{ provider.logo.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+                        </div>
+                    {% endif %}
+                    <input type="file" name="logo" class="form-control" accept="image/*">
+                    <small class="text-muted">Upload new logo to replace current</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Partnership Agreement</label>
+                    {% if provider.partnership_agreement %}
+                        <div class="mb-2">
+                            <a href="{{ provider.partnership_agreement.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i> Download Current
+                            </a>
+                        </div>
+                    {% endif %}
+                    <input type="file" name="partnership_agreement" class="form-control" accept=".pdf">
+                    <small class="text-muted">Upload new document to replace current</small>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <textarea name="description" class="form-control" rows="3">{{ provider.description }}</textarea>
+            </div>
+            
+            <h5 class="mt-4 mb-3">Contact Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Contact Person</label>
+                    <input type="text" name="contact_person" class="form-control" value="{{ provider.contact_person|default:'' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Contact Email</label>
+                    <input type="email" name="contact_email" class="form-control" value="{{ provider.contact_email|default:'' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Contact Phone</label>
+                    <input type="text" name="contact_phone" class="form-control" value="{{ provider.contact_phone|default:'' }}">
+                </div>
+            </div>
+            
+            <h5 class="mt-4 mb-3">API Integration (Optional)</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">API Endpoint</label>
+                    <input type="url" name="api_endpoint" class="form-control" value="{{ provider.api_endpoint|default:'' }}" placeholder="https://api.provider.com/v1">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Webhook URL</label>
+                    <input type="url" name="webhook_url" class="form-control" value="{{ provider.webhook_url|default:'' }}" placeholder="https://yourdomain.com/webhook/provider/">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">API Key</label>
+                    <input type="text" name="api_key" class="form-control" placeholder="Leave blank to keep current value">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">API Secret</label>
+                    <input type="password" name="api_secret" class="form-control" placeholder="Leave blank to keep current value">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="requires_voucher" class="form-check-input" id="requiresVoucher" {% if provider.requires_voucher %}checked{% endif %}>
+                        <label class="form-check-label" for="requiresVoucher">Requires exam voucher purchase</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Default Voucher Price ($)</label>
+                    <input type="number" name="voucher_price" class="form-control" step="0.01" value="{{ provider.voucher_price }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {% if provider.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Last Updated:</strong> {{ provider.updated_at|date:"M d, Y H:i" }}
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'lms:list_providers' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

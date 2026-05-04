@@ -334,7 +334,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' course.slug %}">{{ course.title }}</a></li>
             <li class="breadcrumb-item"><a href="{% url 'module_list' course.id %}">Modules</a></li>
             <li class="breadcrumb-item"><a href="{% url 'module_detail' course.id module.id %}">{{ module.name }}</a></li>
             <li class="breadcrumb-item active">{{ section.name }}</li>
@@ -519,7 +519,7 @@
                 <a href="{% url 'module_detail' course.id module.id %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
                     <i class="fas fa-chevron-left me-2"></i>Back to Module
                 </a>
-                <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary btn-sm w-100">
+                <a href="{% url 'lms:course_detail' course.slug %}" class="btn btn-outline-secondary btn-sm w-100">
                     <i class="fas fa-book me-2"></i>Course Overview
                 </a>
             </div>

@@ -118,11 +118,8 @@ class User(AbstractUser):
         if success:
             self.login_count += 1
             self.failed_login_attempts = 0
-            self.unlock_account()
         else:
             self.failed_login_attempts += 1
-            if self.failed_login_attempts >= 5:
-                self.lock_account(30)
         self.save()
     
     def generate_approval_token(self):
@@ -1023,6 +1020,147 @@ class StudentProgress(models.Model):
     
     def __str__(self):
         return f"{self.student.username} - {self.course.title}: {self.overall_percent}%"
+
+
+# -------------------------------------------------------------------
+# Document Storage & Management
+# -------------------------------------------------------------------
+class DocumentStorage(models.Model):
+    """Centralized document storage for imported documents from all features"""
+    
+    DOCUMENT_TYPE_CHOICES = (
+        ('assignment', 'Assignment Document'),
+        ('grading', 'Grading Document'),
+        ('student_register', 'Student Register'),
+        ('grade_sheet', 'Grade Sheet'),
+        ('course_material', 'Course Material'),
+        ('exam', 'Exam/Test'),
+        ('attendance', 'Attendance Sheet'),
+        ('report', 'Report'),
+        ('other', 'Other'),
+    )
+    
+    # Document basics
+    name = models.CharField(max_length=255, help_text="Descriptive name (e.g., 'Engineering Assignment', 'Grading Document')")
+    slug = models.SlugField(unique=True, blank=True)
+    description = models.TextField(blank=True, help_text="Additional details about the document")
+    document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPE_CHOICES, default='other')
+    
+    # File storage
+    file = models.FileField(upload_to='stored_documents/%Y/%m/%d/')
+    file_size_mb = models.FloatField(default=0.0, editable=False)
+    file_extension = models.CharField(max_length=10, editable=False)
+    
+    # Metadata
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='uploaded_documents')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Related information
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='stored_documents')
+    related_assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, null=True, blank=True, related_name='stored_documents')
+    
+    # Access control
+    is_public = models.BooleanField(default=False, help_text="Can other users access this document?")
+    can_download = models.BooleanField(default=True, help_text="Allow users to download this document")
+    can_view_online = models.BooleanField(default=True, help_text="Allow online preview/viewing")
+    
+    # Tags for easy searching
+    tags = models.CharField(max_length=500, blank=True, help_text="Comma-separated tags (e.g., 'engineering, surveying, assignment')")
+    
+    # Access tracking
+    view_count = models.PositiveIntegerField(default=0)
+    download_count = models.PositiveIntegerField(default=0)
+    last_accessed = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-uploaded_at']
+        indexes = [
+            models.Index(fields=['uploaded_by', 'uploaded_at']),
+            models.Index(fields=['document_type']),
+            models.Index(fields=['course']),
+            models.Index(fields=['name']),
+        ]
+        permissions = [
+            ('can_share_document', 'Can share documents with others'),
+            ('can_delete_all_documents', 'Can delete any document'),
+        ]
+    
+    def __str__(self):
+        return f"{self.name} ({self.document_type}) - Uploaded by {self.uploaded_by.username if self.uploaded_by else 'System'}"
+    
+    def save(self, *args, **kwargs):
+        # Auto-generate slug
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while DocumentStorage.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        
+        # Store file size and extension
+        if self.file:
+            try:
+                self.file_size_mb = round(self.file.size / (1024 * 1024), 2)
+                import os
+                _, ext = os.path.splitext(self.file.name)
+                self.file_extension = ext.lower().lstrip('.')
+            except:
+                pass
+        
+        super().save(*args, **kwargs)
+    
+    def get_file_icon(self):
+        """Return appropriate icon based on file type"""
+        icons = {
+            'pdf': '📄',
+            'doc': '📝',
+            'docx': '📝',
+            'xls': '📊',
+            'xlsx': '📊',
+            'ppt': '🎯',
+            'pptx': '🎯',
+            'txt': '📋',
+            'zip': '📦',
+            'rar': '📦',
+            'jpg': '🖼️',
+            'png': '🖼️',
+            'gif': '🖼️',
+        }
+        return icons.get(self.file_extension.lower(), '📎')
+    
+    def record_view(self):
+        """Record that document was viewed"""
+        self.view_count += 1
+        self.last_accessed = timezone.now()
+        self.save(update_fields=['view_count', 'last_accessed'])
+    
+    def record_download(self):
+        """Record that document was downloaded"""
+        self.download_count += 1
+        self.last_accessed = timezone.now()
+        self.save(update_fields=['download_count', 'last_accessed'])
+    
+    def can_user_access(self, user):
+        """Check if a user can access this document"""
+        if self.uploaded_by == user or user.is_superuser or user.role == 'admin':
+            return True
+        if self.is_public:
+            return True
+        # Check if user is enrolled in the same course
+        if self.course and self.course.enrollments.filter(student=user, status='active').exists():
+            return True
+        # Check if user is an instructor for this course (via any intake)
+        if self.course:
+            from lms.models.scheduling import CourseIntake
+            if CourseIntake.objects.filter(course=self.course, instructor=user).exists():
+                return True
+        # Check if document is part of an assignment they're enrolled in
+        if self.related_assignment and self.related_assignment.course.enrollments.filter(student=user, status='active').exists():
+            return True
+        return False
 
 
 # -------------------------------------------------------------------

@@ -1,0 +1,234 @@
+{% extends "lms/base.html" %}
+
+{% block title %}My Certifications - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="h2 mb-4">My Certifications</h1>
+
+    <!-- Nav Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="registrations-tab" data-bs-toggle="tab" data-bs-target="#registrations"
+                    type="button" role="tab" aria-controls="registrations" aria-selected="true">
+                <i class="fas fa-clipboard-list"></i> My Registrations
+                <span class="badge bg-primary ms-2">{{ all_registrations.count }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="earned-tab" data-bs-toggle="tab" data-bs-target="#earned"
+                    type="button" role="tab" aria-controls="earned" aria-selected="false">
+                <i class="fas fa-certificate"></i> Earned Certificates
+                <span class="badge bg-success ms-2">{{ earned_certifications.count }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Exam Registrations Tab -->
+        <div class="tab-pane fade show active" id="registrations" role="tabpanel">
+            {% if registrations %}
+                <!-- Filter -->
+                <form method="get" class="mb-3" id="filterForm">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">Filter by Status:</label>
+                            <select name="status" class="form-select" onchange="document.getElementById('filterForm').submit();">
+                                <option value="">All Statuses</option>
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Registrations Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Certification</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                                <th>Exam Date</th>
+                                <th>Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in registrations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ reg.certification.title }}</strong>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ reg.certification.provider.short_name }}</small>
+                                    </td>
+                                    <td>
+                                        {% if reg.status == 'passed' %}
+                                            <span class="badge bg-success">Passed</span>
+                                        {% elif reg.status == 'certificate_issued' %}
+                                            <span class="badge bg-success">Certificate Issued</span>
+                                        {% elif reg.status == 'exam_completed' %}
+                                            <span class="badge bg-info">Exam Completed</span>
+                                        {% elif reg.status == 'exam_scheduled' %}
+                                            <span class="badge bg-primary">Scheduled</span>
+                                        {% elif reg.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% elif reg.status == 'pending_payment' or reg.status == 'payment_verified' %}
+                                            <span class="badge bg-warning text-dark">Payment Pending</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ reg.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.exam_date %}
+                                            {{ reg.exam_date|date:"M d, Y" }}
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.exam_percentage %}
+                                            <strong class="{% if reg.passed %}text-success{% else %}text-danger{% endif %}">
+                                                {{ reg.exam_percentage }}%
+                                            </strong>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'lms:certification_detail' reg.certification.id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                        {% if reg.certificate_file %}
+                                            <a href="{{ reg.certificate_file.url }}" class="btn btn-sm btn-outline-success" download>
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">You haven't registered for any certifications yet.</p>
+                    <a href="{% url 'lms:certification_catalog' %}" class="btn btn-primary">
+                        <i class="fas fa-browse"></i> Browse Certifications
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Earned Certificates Tab -->
+        <div class="tab-pane fade" id="earned" role="tabpanel">
+            {% if earned_certifications %}
+                <div class="row">
+                    {% for cert in earned_certifications %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <i class="fas fa-certificate fa-2x text-success me-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-0">{{ cert.certification.title }}</h6>
+                                            <small class="text-muted">{{ cert.certification.provider.name }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <p class="mb-1">
+                                            <strong>Certificate #:</strong> {{ cert.certificate_number }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Issued:</strong> {{ cert.issue_date|date:"M d, Y" }}
+                                        </p>
+                                        <p class="mb-3">
+                                            <strong>Valid Until:</strong> {{ cert.expiry_date|date:"M d, Y" }}
+                                        </p>
+                                    </div>
+
+                                    <div class="btn-group w-100" role="group">
+                                        {% if cert.verification_url %}
+                                            <a href="{{ cert.verification_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-check-circle"></i> Verify
+                                            </a>
+                                        {% endif %}
+                                        {% if cert.badge_url %}
+                                            <a href="{{ cert.badge_url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-image"></i> Badge
+                                            </a>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if cert.certification.title %}
+                                        <button class="btn btn-sm btn-outline-secondary w-100 mt-2" 
+                                                onclick="shareLinkd('{{ cert.credential_id }}', '{{ cert.certificate_number }}')">
+                                            <i class="fas fa-share-alt"></i> Share on LinkedIn
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">You haven't earned any certificates yet.</p>
+                    <p class="text-muted small">Pass your certification exam to earn a certificate here.</p>
+                    <a href="{% url 'lms:certification_catalog' %}" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Find Certifications
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function shareLinked(credentialId, certNumber) {
+        const url = `https://linkedin.com/in/achievements/${credentialId}`;
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+    }
+</script>
+{% endblock %}

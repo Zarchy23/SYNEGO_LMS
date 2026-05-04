@@ -1,4 +1,39 @@
 """
+Views for Enterprise Instructor Features
+"""
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+
+@require_http_methods(["GET", "POST"])
+def generate_questions_view(request):
+    """Generate AI questions for assignments"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET"])
+def adaptive_learning_view(request):
+    """Adaptive learning view"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["POST"])
+def ai_essay_scoring_view(request):
+    """AI essay scoring view"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET", "POST"])
+def create_vr_session_view(request):
+    """Create VR session view"""
+    return JsonResponse({'message': 'Feature coming soon'})
+
+
+@require_http_methods(["GET", "POST"])
+def create_ar_simulation_view(request):
+    """Create AR simulation view"""
+    return JsonResponse({'message': 'Feature coming soon'})
+"""
 Enterprise instructor feature views for AI tools, VR/AR, Advanced Assessment, etc.
 """
 
@@ -134,43 +169,6 @@ def proctoring_view(request):
         ],
     }
     return render(request, 'lms/features/instructor_assessment_tools.html', context)
-
-
-# ============================================================================
-# BLOCKCHAIN & CREDENTIALS
-# ============================================================================
-
-@login_required
-@instructor_required
-def issue_certificates_view(request):
-    """Issue blockchain certificates to students"""
-    context = {
-        'active_page': 'issue_certificates',
-        'page_title': 'Issue Blockchain Certificates',
-        'courses': [
-            {'id': 1, 'name': 'Introduction to Python', 'completed_students': 12},
-            {'id': 2, 'name': 'Data Science 101', 'completed_students': 8},
-            {'id': 3, 'name': 'Web Development', 'completed_students': 15},
-        ],
-    }
-    return render(request, 'lms/features/instructor_credentials.html', context)
-
-
-@login_required
-@instructor_required
-def mint_badges_view(request):
-    """Mint NFT badges for student achievements"""
-    context = {
-        'active_page': 'mint_badges',
-        'page_title': 'Mint NFT Badges',
-        'badge_categories': [
-            {'name': 'Perfect Score', 'description': 'Achieved 100% on assignment', 'created': True},
-            {'name': 'Quick Learner', 'description': 'Completed course in record time', 'created': True},
-            {'name': 'Peer Helper', 'description': 'Helped 10+ classmates', 'created': False},
-            {'name': 'Code Master', 'description': 'Perfect score on coding challenges', 'created': True},
-        ],
-    }
-    return render(request, 'lms/features/instructor_credentials.html', context)
 
 
 # ============================================================================

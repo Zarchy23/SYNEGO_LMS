@@ -1,0 +1,225 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}{{ intake.title }} - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'lms:index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:upcoming_courses' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' intake.course.slug %}">{{ intake.course.title }}</a></li>
+            <li class="breadcrumb-item active">{{ intake.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Course Header -->
+            <div class="card mb-4" style="border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #2f80ed, #1c4578); color: white; padding: 32px;">
+                    <h1 class="display-5 fw-bold mb-2">{{ intake.course.title }}</h1>
+                    <p class="lead mb-0">{{ intake.title }}</p>
+                </div>
+                
+                <div class="card-body" style="background: #f9fafb;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-alt fa-2x text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted">Course Duration</small>
+                                    <p class="mb-0 fw-bold">{{ intake.formatted_date_range }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock fa-2x text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted">Schedule</small>
+                                    <p class="mb-0 fw-bold">{{ intake.formatted_schedule }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-globe fa-2x text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted">Delivery Mode</small>
+                                    <p class="mb-0 fw-bold">{{ intake.get_delivery_mode_display }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-hourglass-half fa-2x text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted">Total Hours</small>
+                                    <p class="mb-0 fw-bold">{{ intake.total_hours }} hours</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Description -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>About This Course</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ intake.course.description }}</p>
+                    {% if intake.description %}
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">About This Intake</h6>
+                            {{ intake.description }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sessions -->
+            {% if sessions %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Course Sessions</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for session in sessions %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ session.title }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i> 
+                                        {{ session.start_time|date:"M d, g:i A" }} - {{ session.end_time|date:"g:i A" }}
+                                    </small>
+                                </div>
+                                {% if session.is_upcoming %}
+                                    <span class="badge bg-warning">Upcoming</span>
+                                {% elif session.is_ongoing %}
+                                    <span class="badge bg-success">In Progress</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Past</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Enrollment Card -->
+            <div class="card mb-4" style="box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Enrollment Details</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Status -->
+                    <div class="mb-3">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0">
+                            <span class="badge bg-{{ intake.status|default:'warning' }}">
+                                {{ intake.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="mb-3">
+                        <small class="text-muted">Price</small>
+                        <div class="d-flex align-items-baseline gap-2">
+                            {% if intake.is_early_bird_available %}
+                                <span class="text-decoration-line-through text-muted">${{ intake.regular_price }}</span>
+                                <span class="h4 text-primary mb-0">${{ intake.early_bird_price }}</span>
+                                <span class="badge bg-warning">Early Bird</span>
+                            {% else %}
+                                <span class="h4 text-primary mb-0">${{ intake.regular_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-2">Available Spots</small>
+                        <div class="progress" style="height:20px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {% widthratio intake.current_enrolled intake.max_students 100 %}%;" 
+                                 aria-valuenow="{{ intake.current_enrolled }}" aria-valuemin="0" 
+                                 aria-valuemax="{{ intake.max_students }}">
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ intake.available_spots }} / {{ intake.max_students }} spots available</small>
+                    </div>
+
+                    <!-- Registration Info -->
+                    <div class="mb-3 p-3" style="background: #f9fafb; border-radius: 8px;">
+                        <small class="text-muted d-block">Registration Period</small>
+                        <p class="mb-0 small fw-bold">
+                            {{ intake.registration_start_date|date:"M d, Y" }} - {{ intake.registration_end_date|date:"M d, Y" }}
+                        </p>
+                    </div>
+
+                    <!-- Enroll Button -->
+                    {% if intake.status == 'open' %}
+                        <a href="#" class="btn btn-primary w-100">
+                            <i class="fas fa-shopping-cart me-2"></i> Enroll Now
+                        </a>
+                    {% elif intake.status == 'full' %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="fas fa-ban me-2"></i> Course Full
+                        </button>
+                    {% elif intake.status == 'upcoming' %}
+                        <button class="btn btn-outline-primary w-100" disabled>
+                            <i class="fas fa-clock me-2"></i> Registration Coming Soon
+                        </button>
+                    {% else %}
+                        <a href="{% url 'lms:course_detail' intake.course.slug %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-eye me-2"></i> View Other Intakes
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Instructor Info -->
+            {% if intake.instructor %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chalkboard-user me-2 text-primary"></i>Instructor</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if intake.instructor.profile_image %}
+                        <img src="{{ intake.instructor.profile_image.url }}" alt="{{ intake.instructor.get_full_name }}" 
+                             class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <h6>{{ intake.instructor.get_full_name }}</h6>
+                    <p class="text-muted small">{{ intake.instructor.profile.bio|default:"Expert Instructor" }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-warning { background-color: #f59e0b !important; }
+.text-primary { color: #2f80ed !important; }
+.btn-primary { background-color: #2f80ed; border-color: #2f80ed; }
+.btn-primary:hover { background-color: #1c4578; border-color: #1c4578; }
+</style>
+{% endblock %}

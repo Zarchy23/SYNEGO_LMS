@@ -306,7 +306,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' course.slug %}">{{ course.title }}</a></li>
             <li class="breadcrumb-item active">Learning Paths</li>
         </ol>
     </nav>
@@ -503,7 +503,7 @@
                     </div>
                     <div class="empty-state-title">No Learning Paths Available</div>
                     <p class="empty-state-text">There are no learning paths available for this course yet.</p>
-                    <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm">
+                    <a href="{% url 'lms:course_detail' course.slug %}" class="btn btn-primary btn-sm">
                         <i class="fas fa-arrow-left me-2"></i>Back to Course
                     </a>
                 </div>

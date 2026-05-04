@@ -12,17 +12,6 @@
     --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
 }
 
-/* Dashboard Container */
-.glass-dashboard {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9)) fixed;
-    backdrop-filter: blur(10px);
-    min-height: 100vh;
-}
-
-.dashboard-main {
-    color: white;
-}
-
 /* Welcome Section */
 .glass-welcome {
     background: var(--glass-bg);
@@ -342,25 +331,7 @@
 .glass-activity-list {
     padding: 20px;
     max-height: 400px;
-    overflow-y: auto;
-}
-
-.glass-activity-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.glass-activity-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-}
-
-.glass-activity-list::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.4);
-    border-radius: 10px;
-}
-
-.glass-activity-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.6);
+    overflow: hidden;
 }
 
 .glass-activity-item {

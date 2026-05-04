@@ -1,9 +1,19 @@
 {% extends "lms/base.html" %}
+{% load lms_extras %}
 
 {% block title %}{{ course.title }} - Synego Institute{% endblock %}
 
 {% block content %}
 <div class="container py-4">
+    <!-- Navigation Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
     <!-- Course Header -->
     <div class="row mb-4">
         <div class="col-lg-8">
@@ -115,6 +125,90 @@
             </div>
         </div>
     </div>
+    
+    <!-- Scheduled Classes for this Course -->
+    {% if course_schedules %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Scheduled Live Classes</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Join structured live training sessions for this course:</p>
+                    <div class="row">
+                        {% for schedule in course_schedules|slice:":3" %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                        <h6 class="mb-0">{{ schedule.title }}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ schedule.start_date|date:"M d, Y" }} to {{ schedule.end_date|date:"M d, Y" }}
+                                            </small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <span class="badge" style="background: {% if schedule.delivery_mode == 'online' %}#3b82f6{% elif schedule.delivery_mode == 'in_person' %}#10b981{% else %}#f59e0b{% endif %}; color: white;">
+                                                {% if schedule.delivery_mode == 'online' %}
+                                                    <i class="fas fa-video"></i> Online Live
+                                                {% elif schedule.delivery_mode == 'in_person' %}
+                                                    <i class="fas fa-building"></i> In-Person
+                                                {% else %}
+                                                    <i class="fas fa-users"></i> Hybrid
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Capacity:</small>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" style="width: {% widthratio schedule.current_enrolled schedule.max_capacity 100 %}%; background: {% if schedule.current_enrolled >= schedule.max_capacity %}#ef4444{% elif schedule.current_enrolled > schedule.max_capacity|mul:0.8 %}#f59e0b{% else %}#10b981{% endif %};" aria-valuenow="{{ schedule.current_enrolled }}" aria-valuemin="0" aria-valuemax="{{ schedule.max_capacity }}">
+                                                    {{ schedule.current_enrolled }}/{{ schedule.max_capacity }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if schedule.regular_price %}
+                                        <div class="my-3">
+                                            {% if schedule.early_bird_price and schedule.early_bird_deadline > now %}
+                                                <div class="text-success fw-bold">
+                                                    <i class="fas fa-bolt"></i> Early Bird: ${{ schedule.early_bird_price }}
+                                                </div>
+                                                <small class="text-muted">Regular: <s>${{ schedule.regular_price }}</s></small>
+                                            {% else %}
+                                                <div class="fw-bold">${{ schedule.regular_price }}</div>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer bg-white">
+                                        {% if schedule.current_enrolled >= schedule.max_capacity %}
+                                            <button class="btn btn-outline-secondary w-100 btn-sm" disabled>
+                                                Fully Booked
+                                            </button>
+                                        {% else %}
+                                            <a href="{% url 'lms:course_schedule_detail' schedule.id %}" class="btn btn-success w-100 btn-sm">
+                                                <i class="fas fa-sign-in-alt me-1"></i>Enroll in Schedule
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if course_schedules|length > 3 %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'lms:upcoming_courses' %}?course={{ course.slug }}" class="btn btn-outline-primary btn-sm">
+                            View All Schedules
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     
     <!-- Course Curriculum -->
     <div class="row mb-4" id="chapters">

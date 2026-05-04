@@ -1,0 +1,645 @@
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar" id="sidebar">
+    <!-- Profile Section -->
+    <div class="sidebar-profile">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile" class="sidebar-avatar">
+        {% else %}
+            <div class="sidebar-avatar-placeholder">
+                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+            </div>
+        {% endif %}
+        <div class="sidebar-name">{{ user.get_full_name|default:user.username }}</div>
+        <div class="sidebar-role">{{ user.get_role_display }}</div>
+    </div>
+    
+    <!-- Navigation - STUDENT/LEARNER -->
+    {% if user.role == 'learner' %}
+    <nav class="sidebar-nav">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="{% url 'lms:unified_dashboard' %}" class="nav-link {% if 'dashboard' in request.path %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </a>
+        </li>
+        
+        <!-- Courses -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-book"></i>
+                Courses
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:course_list' %}" class="nav-link">
+                        <i class="fas fa-list"></i> Browse Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:my_enrolled_courses' %}" class="nav-link">
+                        <i class="fas fa-check-circle"></i> My Enrolled
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:upcoming_courses' %}" class="nav-link">
+                        <i class="fas fa-clock"></i> Upcoming Courses
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Assessments & Quizzes -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-question-circle"></i>
+                Assessments
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:my_grades' %}" class="nav-link">
+                        <i class="fas fa-star"></i> My Grades
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> My Quizzes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-file-alt"></i> Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clock"></i> Upcoming Deadlines
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Certificates -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-certificate"></i>
+                Certificates
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> My Certificates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Profile -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:profile' %}" class="nav-link">
+                        <i class="fas fa-user-circle"></i> My Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:edit_profile' %}" class="nav-link">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </nav>
+    
+    <!-- Navigation - INSTRUCTOR -->
+    {% elif user.role == 'instructor' %}
+    <nav class="sidebar-nav">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="{% url 'lms:unified_dashboard' %}" class="nav-link {% if 'dashboard' in request.path %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </a>
+        </li>
+        
+        <!-- Courses -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-book"></i>
+                Courses
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:course_list' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All My Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Course
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-edit"></i> Edit Course
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users"></i> Students
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Assignments -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-file-alt"></i>
+                Assignments
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_add_module' %}" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Assignment
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-inbox"></i> Submissions to Grade
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Quizzes -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-question-circle"></i>
+                Quizzes
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Quizzes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Quiz
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Class Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-chalkboard"></i>
+                Class Management
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clipboard"></i> Take Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> Attendance Reports
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Grades -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-star"></i>
+                Grades
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> Student Grades
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-edit"></i> Submit Grades
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Profile -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:profile' %}" class="nav-link">
+                        <i class="fas fa-user-circle"></i> My Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:edit_profile' %}" class="nav-link">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </nav>
+    
+    <!-- Navigation - ADMIN/SUPERUSER -->
+    {% elif user.role == 'admin' or user.is_superuser %}
+    <nav class="sidebar-nav">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="{% url 'lms:unified_dashboard' %}" class="nav-link {% if 'dashboard' in request.path %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </a>
+        </li>
+        
+        <!-- Profile Section -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:profile' %}" class="nav-link">
+                        <i class="fas fa-user-circle"></i> My Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:edit_profile' %}" class="nav-link">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- User Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-users"></i>
+                User Management
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_users' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_add_student' %}" class="nav-link">
+                        <i class="fas fa-plus"></i> Add Student
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Module/Department Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-building"></i>
+                Modules
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_modules' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All Modules
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_add_module' %}" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Module
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Course Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-book"></i>
+                Courses
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:course_list' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Course
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-edit"></i> Edit Course
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Enrollment Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-file-invoice"></i>
+                Enrollment
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:manage_intakes' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All Intakes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:create_intake' %}" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Intake
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Reports & Analytics -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-chart-bar"></i>
+                Reports
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_reports' %}" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> All Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-download"></i> Download Reports
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Assignment & Grading -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-file-alt"></i>
+                Assignments
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Assignment
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-inbox"></i> Submissions to Grade
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Quiz Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-question-circle"></i>
+                Quizzes
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Quizzes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Quiz
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-question"></i> Add Questions
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Student Progress & Grades -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-star"></i>
+                Grades & Progress
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-line"></i> Overall Progress
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Grades
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-exclamation-triangle"></i> At-Risk Alerts
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Certificates -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-certificate"></i>
+                Certificates
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Certificates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Issue Certificate
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-check"></i> Verify Certificate
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Course Advertising -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-megaphone"></i>
+                Advertising
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Ad
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> All Advertisements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-tags"></i> Promo Codes
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Class Management -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-chalkboard"></i>
+                Class Management
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clipboard"></i> Take Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-list"></i> Attendance Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-calendar-day"></i> Today's Sessions
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Calendar & Scheduling -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-calendar-alt"></i>
+                Calendar & Scheduling
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:manage_intakes' %}" class="nav-link">
+                        <i class="fas fa-list"></i> All Course Intakes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:create_intake' %}" class="nav-link">
+                        <i class="fas fa-plus"></i> Create Intake
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:upcoming_courses' %}" class="nav-link">
+                        <i class="fas fa-book"></i> Upcoming Courses
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Notifications -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-inbox"></i> All Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-megaphone"></i> Send Announcement
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- System Configuration -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-cogs"></i>
+                Settings
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_system_settings' %}" class="nav-link">
+                        <i class="fas fa-sliders-h"></i> System Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'lms:admin_system_logs' %}" class="nav-link">
+                        <i class="fas fa-history"></i> System Logs
+                    </a>
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Help & Support -->
+        <li class="nav-item has-submenu">
+            <a class="nav-link" style="cursor: pointer;">
+                <i class="fas fa-question-circle"></i>
+                Help
+            </a>
+            <ul class="nav-submenu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </nav>
+    {% endif %}
+    
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <a href="{% url 'lms:logout' %}">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+        </a>
+    </div>
+</aside>

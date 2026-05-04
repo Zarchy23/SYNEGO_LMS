@@ -4,6 +4,18 @@
 
 {% block content %}
 <div class="container py-4">
+    <!-- Navigation Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'lms:course_detail' course.slug %}" class="btn btn-outline-secondary">
+                <i class="fas fa-book me-1"></i> Back to Course
+            </a>
+        </div>
+    </div>
+
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -16,21 +28,92 @@
         <!-- Main Content -->
         <div class="col-lg-8">
             <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h3 class="mb-0">{{ assignment.title }}</h3>
-                    <div class="mt-2">
-                        <span class="badge bg-secondary">{{ assignment.get_assignment_type_display }}</span>
-                        <span class="badge {% if assignment.is_overdue %}bg-danger{% else %}bg-warning{% endif %}">
-                            Due: {{ assignment.due_date|date:"M d, Y H:i" }}
+                <div class="card-header bg-white border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h2 class="mb-0" style="color: #333; font-weight: 600;">
+                                <i class="fas fa-file-alt me-2" style="color: #667eea;"></i>{{ assignment.title }}
+                            </h2>
+                        </div>
+                        <div class="col-auto">
+                            {% if assignment.enable_plagiarism_check %}
+                                <span class="badge bg-warning text-dark" title="Plagiarism checking enabled">
+                                    <i class="fas fa-shield-alt me-1"></i>Plagiarism Check
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Assignment Status Badges -->
+                    <div class="mt-3 d-flex flex-wrap gap-2">
+                        <span class="badge bg-secondary" style="font-size: 13px; padding: 6px 12px;">
+                            <i class="fas fa-users me-1"></i>{{ assignment.get_assignment_type_display }}
+                        </span>
+                        <span class="badge {% if assignment.is_overdue %}bg-danger{% elif is_overdue %}bg-warning{% else %}bg-success{% endif %}" style="font-size: 13px; padding: 6px 12px;">
+                            <i class="fas fa-calendar-alt me-1"></i>Due: {{ assignment.due_date|date:"M d, Y H:i" }}
                         </span>
                         {% if assignment.soft_deadline %}
-                            <span class="badge bg-info">Late deadline: {{ assignment.soft_deadline|date:"M d, Y H:i" }}</span>
+                            <span class="badge bg-info" style="font-size: 13px; padding: 6px 12px;">
+                                <i class="fas fa-hourglass-end me-1"></i>Late Deadline: {{ assignment.soft_deadline|date:"M d, Y H:i" }}
+                            </span>
+                            <span class="badge bg-warning text-dark" style="font-size: 13px; padding: 6px 12px;">
+                                <i class="fas fa-percent me-1"></i>Late Penalty: {{ assignment.late_penalty_percent }}% per day
+                            </span>
                         {% endif %}
+                        <span class="badge bg-primary" style="font-size: 13px; padding: 6px 12px;">
+                            <i class="fas fa-star me-1"></i>Total Points: {{ assignment.total_points }}
+                        </span>
                     </div>
                 </div>
                 <div class="card-body">
-                    <h5>Description</h5>
-                    <p>{{ assignment.description|linebreaks }}</p>
+                    <!-- Assignment Description -->
+                    <div class="mb-4">
+                        <h5 style="color: #333; font-weight: 600; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                            <i class="fas fa-align-left me-2" style="color: #667eea;"></i>Description
+                        </h5>
+                        <div style="background-color: #f9f9f9; padding: 20px; border-radius: 6px; line-height: 1.8; color: #555;">
+                            {{ assignment.description|linebreaks }}
+                        </div>
+                    </div>
+                    
+                    <!-- Assignment Documents Section -->
+                    {% if related_documents %}
+                        <div class="mb-4">
+                            <h5 style="color: #333; font-weight: 600; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                                <i class="fas fa-file-download me-2" style="color: #28a745;"></i>📎 Assignment Documents
+                            </h5>
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-info-circle me-1"></i>Download the documents below. You will need these to complete the assignment.
+                            </p>
+                            <div style="display: grid; gap: 12px;">
+                                {% for doc in related_documents %}
+                                    <div style="background-color: #f9f9f9; border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'; this.style.borderColor='#667eea';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#dee2e6';">
+                                        <div style="flex: 1;">
+                                            <h6 class="mb-2" style="color: #333; font-weight: 600;">
+                                                <i class="fas fa-file-doc me-2" style="color: #667eea;"></i>{{ doc.name }}
+                                            </h6>
+                                            <div style="display: flex; gap: 15px; font-size: 12px; color: #999;">
+                                                <span><i class="fas fa-tag me-1"></i>{{ doc.get_document_type_display }}</span>
+                                                <span><i class="fas fa-database me-1"></i>{{ doc.file_size_mb|floatformat:2 }}MB</span>
+                                                <span><i class="fas fa-calendar-alt me-1"></i>{{ doc.uploaded_at|date:"M d, Y" }}</span>
+                                            </div>
+                                            {% if doc.description %}
+                                                <p class="mt-2 mb-0 text-muted" style="font-size: 13px;">{{ doc.description|truncatewords:30 }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <a href="{% url 'lms:document_download' doc.slug %}" class="btn btn-success ms-3" style="white-space: nowrap;">
+                                            <i class="fas fa-download me-1"></i>Download
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>No documents attached</strong> - Complete this assignment based on the description and instructions above.
+                        </div>
+                    {% endif %}
                     
                     {% if assignment.rubric.criteria %}
                         <h5 class="mt-4">Grading Rubric</h5>
@@ -66,86 +149,113 @@
         
         <!-- Submission Section -->
         <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Your Submission</h5>
+            {% if is_instructor or is_admin %}
+                <!-- Instructor/Admin View -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Assignment Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Instructor/Admin View</strong> - You are viewing this as an instructor or admin.
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'lms:edit_assignment' assignment.id %}" class="btn btn-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Assignment
+                            </a>
+                            <a href="{% url 'lms:submission_list' assignment.id %}" class="btn btn-success">
+                                <i class="fas fa-list me-2"></i>View Submissions
+                            </a>
+                            <a href="{% url 'lms:assignment_analytics' assignment.id %}" class="btn btn-info">
+                                <i class="fas fa-chart-bar me-2"></i>View Analytics
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    {% if submission.status == 'graded' %}
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Graded!</strong> You received {{ submission.grade }}%
-                        </div>
-                        {% if submission.feedback %}
-                            <h6>Feedback:</h6>
-                            <p>{{ submission.feedback }}</p>
-                        {% endif %}
-                        <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-eye me-2"></i>View Submission
-                        </a>
-                        
-                    {% elif submission.status == 'submitted' %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-hourglass-half me-2"></i>
-                            <strong>Submitted!</strong> Waiting for grading.
-                        </div>
-                        <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-eye me-2"></i>View Submission
-                        </a>
-                        
-                    {% elif submission.status == 'returned' %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-undo me-2"></i>
-                            <strong>Returned for Revision</strong>
-                            <hr>
-                            {{ submission.feedback|truncatewords:30 }}
-                        </div>
-                        <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label class="form-label">Update your submission</label>
-                                <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}">
-                                <small class="text-muted">Max file size: {{ assignment.max_file_size_mb }}MB</small>
+            {% elif submission %}
+                <!-- Student View -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Your Submission</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if submission.status == 'graded' %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Graded!</strong> You received {{ submission.grade }}%
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-sync-alt me-2"></i>Resubmit
-                            </button>
-                        </form>
-                        
-                    {% else %}
-                        <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            
-                            {% if assignment.enable_plagiarism_check %}
-                                <div class="alert alert-info">
-                                    <i class="fas fa-shield-alt me-2"></i>
-                                    Plagiarism check is enabled for this assignment.
-                                </div>
+                            {% if submission.feedback %}
+                                <h6>Feedback:</h6>
+                                <p>{{ submission.feedback }}</p>
                             {% endif %}
+                            <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Submission
+                            </a>
                             
-                            <div class="mb-3">
-                                <label class="form-label">Upload File</label>
-                                <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}" required>
-                                <small class="text-muted">Allowed: {{ assignment.allowed_file_types }} | Max: {{ assignment.max_file_size_mb }}MB</small>
+                        {% elif submission.status == 'submitted' %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-hourglass-half me-2"></i>
+                                <strong>Submitted!</strong> Waiting for grading.
                             </div>
+                            <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Submission
+                            </a>
                             
-                            {% if assignment.chapter.template_doc_id %}
+                        {% elif submission.status == 'returned' %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-undo me-2"></i>
+                                <strong>Returned for Revision</strong>
+                                <hr>
+                                {{ submission.feedback|truncatewords:30 }}
+                            </div>
+                            <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}">
+                                {% csrf_token %}
                                 <div class="mb-3">
-                                    <label class="form-label">Or use Google Doc</label>
-                                    <input type="text" name="google_doc_id" class="form-control" placeholder="Enter Google Doc ID">
-                                    <a href="{% url 'lms:create_google_doc' assignment.id %}" class="btn btn-sm btn-outline-danger mt-2" target="_blank">
-                                        <i class="fab fa-google me-1"></i>Create from Template
-                                    </a>
+                                    <label class="form-label">Update your submission</label>
+                                    <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}">
+                                    <small class="text-muted">Max file size: {{ assignment.max_file_size_mb }}MB</small>
                                 </div>
-                            {% endif %}
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-sync-alt me-2"></i>Resubmit
+                                </button>
+                            </form>
                             
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-paper-plane me-2"></i>Submit Assignment
-                            </button>
-                        </form>
-                    {% endif %}
+                        {% else %}
+                            <form method="post" action="{% url 'lms:submit_assignment' assignment.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                {% if assignment.enable_plagiarism_check %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-shield-alt me-2"></i>
+                                        Plagiarism check is enabled for this assignment.
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Upload File</label>
+                                    <input type="file" name="submitted_file" class="form-control" accept="{{ assignment.allowed_file_types }}" required>
+                                    <small class="text-muted">Allowed: {{ assignment.allowed_file_types }} | Max: {{ assignment.max_file_size_mb }}MB</small>
+                                </div>
+                                
+                                {% if assignment.chapter.template_doc_id %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Or use Google Doc</label>
+                                        <input type="text" name="google_doc_id" class="form-control" placeholder="Enter Google Doc ID">
+                                        <a href="{% url 'lms:create_google_doc' assignment.id %}" class="btn btn-sm btn-outline-danger mt-2" target="_blank">
+                                            <i class="fab fa-google me-1"></i>Create from Template
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Assignment
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             
             <!-- Assignment Info -->
             <div class="card">

@@ -4,6 +4,15 @@
 
 {% block content %}
 <div class="container py-5">
+    <!-- Navigation Buttons -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-8">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Certificate Card -->

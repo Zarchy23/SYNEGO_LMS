@@ -41,24 +41,14 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
     
-    actions = ['approve_users', 'lock_users', 'unlock_users', 'send_welcome_email']
+    actions = ['approve_users', 'send_welcome_email']
     
     def approve_users(self, request, queryset):
         queryset.update(is_approved=True)
         self.message_user(request, f"{queryset.count()} users approved.")
     approve_users.short_description = "Approve selected users"
     
-    def lock_users(self, request, queryset):
-        for user in queryset:
-            user.lock_account(30)
-        self.message_user(request, f"{queryset.count()} users locked.")
-    lock_users.short_description = "Lock selected users (30 min)"
-    
-    def unlock_users(self, request, queryset):
-        for user in queryset:
-            user.unlock_account()
-        self.message_user(request, f"{queryset.count()} users unlocked.")
-    unlock_users.short_description = "Unlock selected users"
+
     
     def send_welcome_email(self, request, queryset):
         # This would integrate with your email system

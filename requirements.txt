@@ -45,7 +45,11 @@ qrcode
 
 # Data Processing & Reporting
 openpyxl  # Excel export
+python-docx  # Word document generation
+matplotlib  # Chart generation for reports
 pandas # Data analysis for reports
+PyPDF2  # PDF parsing for document import
+PyPDF2  # PDF parsing for document import
 xlwt # Old Excel format
 
 # REST API (if needed)
@@ -78,4 +82,38 @@ whitenoise
 
 # Deployment
 django-heroku  # For Heroku deployment
-django-s3-storage  # For AWS S3 static/media files
+django-s3-storage  # For AWS S3 static/media filesEnvironment:
+
+
+Request Method: GET
+Request URL: http://127.0.0.1:8000/dashboard/
+
+Django Version: 5.2.13
+Python Version: 3.14.3
+Installed Applications:
+['django.contrib.admin',
+ 'django.contrib.auth',
+ 'django.contrib.contenttypes',
+ 'django.contrib.sessions',
+ 'django.contrib.messages',
+ 'django.contrib.staticfiles',
+ 'django.contrib.sites',
+ 'lms.apps.LmsConfig',
+ 'crispy_forms',
+ 'crispy_bootstrap5',
+ 'allauth',
+ 'allauth.account',
+ 'allauth.socialaccount',
+ 'allauth.socialaccount.providers.google']
+Installed Middleware:
+['django.middleware.security.SecurityMiddleware',
+ 'django.contrib.sessions.middleware.SessionMiddleware',
+ 'django.middleware.common.CommonMiddleware',
+ 'django.middleware.csrf.CsrfViewMiddleware',
+ 'allauth.account.middleware.AccountMiddleware',
+ 'django.contrib.auth.middleware.AuthenticationMiddleware',
+ 'django.contrib.messages.middleware.MessageMiddleware',
+ 'django.middleware.clickjacking.XFrameOptionsMiddleware']
+
+
+

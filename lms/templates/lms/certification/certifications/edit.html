@@ -1,0 +1,204 @@
+﻿<!-- lms/templates/lms/certification/certifications/edit.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Edit Certification - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout glass-dashboard" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_dashboard' %}
+    
+    <div class="dashboard-main" style="padding: 20px;">
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">
+            <i class="fas fa-edit text-primary me-2"></i>
+            Edit Certification: {{ certification.title }}
+        </h4>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <h5 class="mb-3">Basic Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Provider</label>
+                    <div class="form-control-plaintext fw-bold">
+                        {{ certification.provider.name }}
+                    </div>
+                    <small class="text-muted">(Cannot be changed after creation)</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Certification Code</label>
+                    <input type="text" name="code" class="form-control" value="{{ certification.code }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Title *</label>
+                    <input type="text" name="title" class="form-control" value="{{ certification.title }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Full Title</label>
+                    <input type="text" name="full_title" class="form-control" value="{{ certification.full_title|default:'' }}">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description *</label>
+                <textarea name="description" class="form-control" rows="3" required>{{ certification.description }}</textarea>
+            </div>
+            
+            <!-- Exam Details -->
+            <h5 class="mt-4 mb-3">Exam Details</h5>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Difficulty Level *</label>
+                    <select name="difficulty" class="form-select" required>
+                        <option value="beginner" {% if certification.difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if certification.difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if certification.difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                        <option value="expert" {% if certification.difficulty == 'expert' %}selected{% endif %}>Expert</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Duration (minutes) *</label>
+                    <input type="number" name="exam_duration_minutes" class="form-control" value="{{ certification.exam_duration_minutes }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Number of Questions *</label>
+                    <input type="number" name="number_of_questions" class="form-control" value="{{ certification.number_of_questions }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Passing Score %</label>
+                    <input type="number" name="passing_percentage" class="form-control" min="0" max="100" value="{{ certification.passing_percentage }}">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Exam Code</label>
+                <input type="text" name="exam_code" class="form-control" value="{{ certification.exam_code|default:'' }}">
+            </div>
+            
+            <!-- Validity & Renewal -->
+            <h5 class="mt-4 mb-3">Validity & Renewal</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Valid For (Years) *</label>
+                    <input type="number" name="validity_years" class="form-control" value="{{ certification.validity_years }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">CEUs Required for Renewal</label>
+                    <input type="number" name="continuing_education_units" class="form-control" value="{{ certification.continuing_education_units }}">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Renewal Requirements</label>
+                <textarea name="renewal_requirements" class="form-control" rows="2">{{ certification.renewal_requirements|default:'' }}</textarea>
+            </div>
+            
+            <!-- Synego Course Mapping -->
+            <h5 class="mt-4 mb-3">Synego Course Mapping (Optional)</h5>
+            <div class="mb-3">
+                <label class="form-label">Recommended Training Course</label>
+                <select name="synego_course" class="form-select">
+                    <option value="">-- No course mapping --</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}" {% if certification.synego_course.id == course.id %}selected{% endif %}>{{ course.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Pricing -->
+            <h5 class="mt-4 mb-3">Pricing</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Exam Voucher Price *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" name="exam_voucher_price" class="form-control" step="0.01" value="{{ certification.exam_voucher_price }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Training Materials Price (Optional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" name="training_material_price" class="form-control" step="0.01" value="{{ certification.training_material_price|default:0 }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Media & Documents -->
+            <h5 class="mt-4 mb-3">Media & Documents</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Logo</label>
+                    {% if certification.logo %}
+                        <div class="mb-2">
+                            <img src="{{ certification.logo.url }}" alt="{{ certification.title }}" style="max-height: 80px;">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="logo" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Featured Image</label>
+                    {% if certification.featured_image %}
+                        <div class="mb-2">
+                            <img src="{{ certification.featured_image.url }}" alt="{{ certification.title }}" style="max-height: 80px;">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="featured_image" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Syllabus (PDF)</label>
+                    {% if certification.syllabus_pdf %}
+                        <div class="mb-2">
+                            <a href="{{ certification.syllabus_pdf.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    {% endif %}
+                    <input type="file" name="syllabus_pdf" class="form-control" accept=".pdf">
+                </div>
+            </div>
+            
+            <!-- Status -->
+            <h5 class="mt-4 mb-3">Status</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {% if certification.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured" {% if certification.is_featured %}checked{% endif %}>
+                        <label class="form-check-label" for="isFeatured">Featured on catalog</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Last Updated:</strong> {{ certification.updated_at|date:"M d, Y H:i" }}
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'lms:list_certifications' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

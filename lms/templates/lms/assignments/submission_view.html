@@ -1,0 +1,193 @@
+{% extends "lms/base.html" %}
+{% load lms_extras %}
+
+{% block title %}Submission - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'lms:my_grades' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Grades
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Submission Details -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{{ assignment.title }}</h5>
+                    <small class="text-muted">{{ assignment.course.title }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Submitted:</strong>
+                            <p>{{ submission.submitted_at|date:"M d, Y \a\t g:i A" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong>
+                            <p>
+                                {% if submission.grade %}
+                                    <span class="badge bg-success">Graded</span>
+                                {% elif submission.status == 'submitted' %}
+                                    <span class="badge bg-info">Submitted</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{{ submission.status }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Submitted Content -->
+                    {% if submission.submitted_file %}
+                        <div class="mb-4">
+                            <strong>Submitted File:</strong>
+                            <div class="mt-2">
+                                <a href="{{ submission.submitted_file.url }}" class="btn btn-sm btn-primary" download>
+                                    <i class="fas fa-download"></i> Download Submission
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if submission.google_doc_id %}
+                        <div class="mb-4">
+                            <strong>Google Doc:</strong>
+                            <div class="mt-2">
+                                <a href="https://docs.google.com/document/d/{{ submission.google_doc_id }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> View in Google Docs
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if submission.submission_text %}
+                        <div class="mb-4">
+                            <strong>Submission Text:</strong>
+                            <div class="alert alert-light mt-2">
+                                {{ submission.submission_text|linebreaks }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Grading & Feedback -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i> Grading & Feedback
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if submission.grade %}
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <strong>Score:</strong>
+                                <p class="h4">
+                                    <span class="text-success">{{ submission.grade }}%</span>
+                                    <small class="text-muted">out of 100</small>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Points:</strong>
+                                <p class="h4">
+                                    {% if submission.points_earned %}
+                                        <span class="text-success">{{ submission.points_earned }}/{{ assignment.total_points }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endif %}
+
+                    {% if submission.feedback %}
+                        <div class="mb-4">
+                            <strong><i class="fas fa-comment"></i> Instructor Feedback:</strong>
+                            <div class="alert alert-info mt-3">
+                                {{ submission.feedback|linebreaks }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle"></i> No feedback provided yet.
+                        </p>
+                    {% endif %}
+
+                    <!-- Rubric Scores -->
+                    {% if submission.rubric_scores and assignment.rubric %}
+                        <hr>
+                        <div class="mb-4">
+                            <strong><i class="fas fa-clipboard-list"></i> Rubric Breakdown:</strong>
+                            <div class="mt-3">
+                                {% for criterion, score in submission.rubric_scores.items %}
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-md-8">
+                                            <span>{{ criterion }}</span>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <span class="badge bg-primary">{{ score }} pts</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Graded By -->
+                    {% if submission.graded_by %}
+                        <hr>
+                        <small class="text-muted">
+                            Graded by: <strong>{{ submission.graded_by.get_full_name }}</strong>
+                            on {{ submission.graded_at|date:"M d, Y \a\t g:i A" }}
+                        </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Assignment Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">COURSE</small>
+                        <p class="mb-0"><strong>{{ assignment.course.title }}</strong></p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">TOTAL POINTS</small>
+                        <p class="mb-0"><strong>{{ assignment.total_points }}</strong></p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">DUE DATE</small>
+                        <p class="mb-0"><strong>{{ assignment.due_date|date:"M d, Y" }}</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'lms:my_grades' %}" class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="fas fa-list"></i> View All Grades
+                    </a>
+                    <a href="{% url 'lms:course_detail' submission.assignment.course.slug %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-book"></i> Back to Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

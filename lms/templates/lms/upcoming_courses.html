@@ -1,0 +1,176 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Upcoming Courses - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="mb-5">
+        <h2 class="display-5 fw-bold mb-3">Upcoming Course Intakes</h2>
+        <p class="lead text-muted">Find and register for our upcoming courses</p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" name="q" class="form-control" placeholder="Search courses..." 
+                           value="{{ search_query|default:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="delivery" class="form-select">
+                        <option value="">All Delivery Methods</option>
+                        {% for code, label in delivery_choices %}
+                            <option value="{{ code }}" {% if code == selected_delivery %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Intakes Grid -->
+    <div class="row g-4">
+        {% for intake in page_obj %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100" style="border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s;">
+                <!-- Status Badge -->
+                <span class="badge position-absolute top-0 end-0 m-3 bg-{{ intake.status|default:'warning' }}" 
+                      style="z-index: 10;">
+                    {{ intake.get_status_display }}
+                </span>
+
+                <!-- Date Banner -->
+                <div style="background: linear-gradient(135deg, #2f80ed, #1c4578); color: white; padding: 16px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <small>Starts</small>
+                            <p class="mb-0 fw-bold">{{ intake.course_start_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div>
+                            <small>Ends</small>
+                            <p class="mb-0 fw-bold">{{ intake.course_end_date|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ intake.course.title }}</h5>
+                    <p class="card-text small text-muted">{{ intake.title }}</p>
+                    
+                    <!-- Schedule Info -->
+                    <div class="mb-3 small">
+                        <div class="mb-2">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            <strong>{{ intake.formatted_schedule }}</strong>
+                        </div>
+                        <div class="mb-2">
+                            <i class="fas fa-globe text-primary me-2"></i>
+                            {{ intake.get_delivery_mode_display }}
+                        </div>
+                        <div>
+                            <i class="fas fa-hourglass-half text-primary me-2"></i>
+                            {{ intake.duration_weeks }} weeks ({{ intake.total_hours }} hours)
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="mb-3">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {% widthratio intake.current_enrolled intake.max_students 100 %}%;">
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            {{ intake.available_spots }} / {{ intake.max_students }} spots available
+                        </small>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="mb-3">
+                        {% if intake.is_early_bird_available %}
+                            <span class="text-decoration-line-through text-muted">${{ intake.regular_price }}</span>
+                            <span class="h5 text-primary mb-0">${{ intake.early_bird_price }}</span>
+                            <span class="badge bg-warning">Early Bird</span>
+                        {% else %}
+                            <span class="h5 text-primary mb-0">${{ intake.regular_price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-top">
+                    <a href="{% url 'lms:intake_detail' intake.id %}" class="btn btn-primary w-100">
+                        {% if intake.status == 'open' %}
+                            <i class="fas fa-shopping-cart me-2"></i> Enroll
+                        {% else %}
+                            <i class="fas fa-info-circle me-2"></i> View Details
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-inbox fa-3x mb-3 d-block opacity-50"></i>
+                <p class="mb-0">No upcoming courses found. Please try different search criteria.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'lms:upcoming_courses' %}?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'lms:upcoming_courses' %}?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="{% url 'lms:upcoming_courses' %}?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'lms:upcoming_courses' %}?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'lms:upcoming_courses' %}?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; }
+.bg-upcoming { background-color: #f59e0b !important; }
+.bg-open { background-color: #10b981 !important; }
+.bg-in_progress { background-color: #3b82f6 !important; }
+.bg-completed { background-color: #6b7280 !important; }
+.bg-full { background-color: #ef4444 !important; }
+.text-primary { color: #2f80ed !important; }
+.btn-primary { background-color: #2f80ed; border-color: #2f80ed; }
+.btn-primary:hover { background-color: #1c4578; border-color: #1c4578; }
+</style>
+{% endblock %}

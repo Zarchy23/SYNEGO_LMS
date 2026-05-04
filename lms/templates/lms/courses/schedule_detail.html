@@ -1,0 +1,444 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}{{ schedule.course.title }} - {{ schedule.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.schedule-hero {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    border-radius: 1.5rem;
+    padding: 40px;
+    color: white;
+    margin-bottom: 32px;
+}
+
+.schedule-hero-badge {
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+}
+
+.schedule-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.schedule-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.schedule-hero-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.price-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+}
+
+.price-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e40af;
+}
+
+.price-original {
+    text-decoration: line-through;
+    color: #d1d5db;
+    font-size: 1rem;
+    margin-left: 8px;
+}
+
+.early-bird-note {
+    background: #fef3c7;
+    padding: 12px;
+    border-radius: 0.75rem;
+    margin: 16px 0;
+    font-size: 0.8rem;
+}
+
+.enroll-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.session-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.session-timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e5e7eb;
+}
+
+.session-item {
+    position: relative;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 0.75rem;
+}
+
+.session-marker {
+    position: absolute;
+    left: -30px;
+    top: 16px;
+    width: 20px;
+    height: 20px;
+    background: #1e40af;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #1e40af;
+}
+
+.session-upcoming .session-marker {
+    background: #059669;
+    box-shadow: 0 0 0 2px #059669;
+}
+
+.session-past .session-marker {
+    background: #9ca3af;
+    box-shadow: 0 0 0 2px #9ca3af;
+}
+
+.session-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.session-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.session-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-lecture { background: #dbeafe; color: #1e40af; }
+.badge-practical { background: #d1fae5; color: #065f46; }
+.badge-workshop { background: #fef3c7; color: #92400e; }
+.badge-assessment { background: #fee2e2; color: #991b1b; }
+
+.status-open { background: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; }
+.status-upcoming { background: rgba(59, 130, 246, 0.2) !important; color: #3b82f6 !important; }
+.status-in_progress { background: rgba(245, 158, 11, 0.2) !important; color: #f59e0b !important; }
+.status-completed { background: rgba(107, 114, 128, 0.2) !important; color: #6b7280 !important; }
+.status-cancelled { background: rgba(239, 68, 68, 0.2) !important; color: #ef4444 !important; }
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.info-card {
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 16px;
+}
+
+.info-card i {
+    font-size: 1.5rem;
+    color: #1e40af;
+    margin-bottom: 12px;
+}
+
+.info-card h4 {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.info-card p {
+    font-weight: 600;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .schedule-hero {
+        padding: 24px;
+    }
+    .schedule-hero h1 {
+        font-size: 1.5rem;
+    }
+    .session-timeline {
+        padding-left: 20px;
+    }
+    .session-marker {
+        left: -20px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'lms:course_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i> View All Courses
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Hero Section -->
+            <div class="schedule-hero">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+                    <div class="schedule-hero-badge">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        {{ schedule.get_delivery_mode_display }}
+                    </div>
+                    <div class="schedule-hero-badge" style="background: {% if schedule.status == 'open' %}rgba(16, 185, 129, 0.3); color: #10b981;{% elif schedule.status == 'upcoming' %}rgba(59, 130, 246, 0.3); color: #3b82f6;{% elif schedule.status == 'in_progress' %}rgba(245, 158, 11, 0.3); color: #f59e0b;{% elif schedule.status == 'completed' %}rgba(107, 114, 128, 0.3); color: #6b7280;{% else %}rgba(239, 68, 68, 0.3); color: #ef4444;{% endif %}">
+                        {{ schedule.get_status_display }}
+                    </div>
+                </div>
+                <h1>{{ schedule.course.title }}</h1>
+                <p>{{ schedule.description|default:schedule.course.description }}</p>
+                <div class="schedule-hero-meta">
+                    <div class="schedule-hero-meta-item">
+                        <i class="fas fa-calendar-week fa-lg"></i>
+                        <div>
+                            <div><strong>{{ schedule.start_date|date:"F j, Y" }}</strong></div>
+                            <small>Start Date</small>
+                        </div>
+                    </div>
+                    <div class="schedule-hero-meta-item">
+                        <i class="fas fa-flag-checkered fa-lg"></i>
+                        <div>
+                            <div><strong>{{ schedule.end_date|date:"F j, Y" }}</strong></div>
+                            <small>End Date</small>
+                        </div>
+                    </div>
+                    <div class="schedule-hero-meta-item">
+                        <i class="fas fa-clock fa-lg"></i>
+                        <div>
+                            <div><strong>{{ schedule.session_duration_hours }} hours</strong></div>
+                            <small>Per Session</small>
+                        </div>
+                    </div>
+                    <div class="schedule-hero-meta-item">
+                        <i class="fas fa-users fa-lg"></i>
+                        <div>
+                            <div><strong>{{ schedule.available_spots }} / {{ schedule.max_capacity }}</strong></div>
+                            <small>Spots Available</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Requirements -->
+            {% if schedule.requirements %}
+                <div class="mb-4">
+                    <h3 class="section-title">
+                        <i class="fas fa-clipboard-list me-2"></i> Requirements
+                    </h3>
+                    <div class="card">
+                        <div class="card-body">
+                            {{ schedule.requirements|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- What to Expect -->
+            {% if schedule.what_to_expect %}
+                <div class="mb-4">
+                    <h3 class="section-title">
+                        <i class="fas fa-star me-2"></i> What to Expect
+                    </h3>
+                    <div class="card">
+                        <div class="card-body">
+                            {{ schedule.what_to_expect|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Session Schedule -->
+            <div class="mb-4">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-week me-2"></i> Session Schedule
+                </h3>
+                <div class="session-timeline">
+                    {% for session in sessions %}
+                        <div class="session-item {% if session.is_upcoming %}session-upcoming{% elif session.is_past %}session-past{% endif %}">
+                            <div class="session-marker"></div>
+                            <div class="session-title">{{ session.title }}</div>
+                            <div class="session-time">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ session.start_time|date:"l, F j, Y" }} at {{ session.start_time|date:"g:i A" }} - {{ session.end_time|date:"g:i A" }}
+                            </div>
+                            <div>
+                                <span class="session-type-badge badge-{{ session.session_type }}">
+                                    {{ session.get_session_type_display }}
+                                </span>
+                                {% if session.meeting_link %}
+                                    <a href="{{ session.meeting_link }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="fas fa-video me-1"></i> Join Session
+                                    </a>
+                                {% endif %}
+                            </div>
+                            {% if session.description %}
+                                <div class="mt-2 small text-muted">{{ session.description }}</div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar fa-3x mb-2"></i>
+                            <p>Sessions will be announced soon.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="price-card">
+                <div class="text-center mb-3">
+                    {% if schedule.is_early_bird_available %}
+                        <span class="badge bg-warning mb-2">🔥 Early Bird Special</span>
+                    {% endif %}
+                    <div>
+                        <span class="price-amount">${{ schedule.current_price }}</span>
+                        {% if schedule.is_early_bird_available %}
+                            <span class="price-original">${{ schedule.regular_price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if schedule.is_early_bird_available %}
+                    <div class="early-bird-note text-center">
+                        <i class="fas fa-clock me-1"></i>
+                        Early bird pricing ends {{ schedule.early_bird_deadline|date:"F j, Y" }}
+                    </div>
+                {% endif %}
+                
+                {% if is_enrolled %}
+                    <div class="alert alert-success text-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        You are enrolled in this course!
+                    </div>
+                    <a href="{% url 'lms:my_schedule' %}" class="btn btn-primary enroll-btn">
+                        <i class="fas fa-calendar-alt me-2"></i> View My Schedule
+                    </a>
+                {% elif schedule.status != 'open' %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Registration for this course is currently <strong>{{ schedule.get_status_display|lower }}</strong>. 
+                        {% if schedule.status == 'upcoming' %}
+                            Check back soon when registration opens!
+                        {% elif schedule.status == 'in_progress' %}
+                            The course is already in progress. Contact the instructor to see if late enrollment is available.
+                        {% elif schedule.status == 'completed' %}
+                            This course has already completed.
+                        {% elif schedule.status == 'cancelled' %}
+                            This course has been cancelled.
+                        {% endif %}
+                    </div>
+                {% elif schedule.is_full %}
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-hourglass-half me-2"></i>
+                        This course is full. Join the waitlist!
+                    </div>
+                    <form method="post" action="{% url 'lms:enroll_in_schedule' schedule.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning enroll-btn">
+                            <i class="fas fa-list me-2"></i> Join Waitlist
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'lms:enroll_in_schedule' schedule.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary enroll-btn">
+                            <i class="fas fa-shopping-cart me-2"></i> Enroll Now
+                        </button>
+                    </form>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="info-grid-sidebar">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Course Code:</span>
+                        <strong>{{ schedule.course.code }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Department:</span>
+                        <strong>{{ schedule.course.department.name }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Duration:</span>
+                        <strong>{{ schedule.course.duration }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Certificate:</span>
+                        <strong>{% if schedule.certification_provided %}✓ Included{% else %}Optional{% endif %}</strong>
+                    </div>
+                </div>
+                
+                {% if schedule.venue %}
+                    <hr>
+                    <div class="text-center">
+                        <i class="fas fa-map-marker-alt text-primary mb-2"></i>
+                        <p class="small mb-0">{{ schedule.venue }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if schedule.meeting_link %}
+                    <hr>
+                    <div class="text-center">
+                        <i class="fas fa-video text-primary mb-2"></i>
+                        <p class="small mb-0">Online sessions via <br>{{ schedule.meeting_link|truncatechars:30 }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

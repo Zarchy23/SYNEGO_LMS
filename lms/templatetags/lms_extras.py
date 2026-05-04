@@ -16,3 +16,12 @@ def as_percentage(value):
         return f"{float(value):.1f}%"
     except (TypeError, ValueError):
         return "0.0%"
+
+
+@register.filter
+def mul(value, arg):
+    """Multiply value by arg"""
+    try:
+        return float(value) * float(arg)
+    except (TypeError, ValueError):
+        return 0

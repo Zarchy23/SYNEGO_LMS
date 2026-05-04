@@ -1,259 +1,772 @@
 ﻿{% extends "lms/base.html" %}
+{% load static %}
 
-{% block title %}Synego Institute - Learn, Grow, Succeed{% endblock %}
+{% block title %}Synego Institute - Quality Education for Tomorrow's Leaders{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Remove default body padding for full-screen hero */
-    body {
-        padding-top: 0 !important;
-    }
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #1c4578, #102139);
+    border-radius: 16px;
+    padding: 60px 40px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
 
-    /* Full-screen hero section */
-    .hero-fullscreen {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-image: linear-gradient(135deg, rgba(16, 33, 57, 0.88), rgba(28, 69, 120, 0.85)), 
-                          url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2000&q=80');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        position: relative;
-        overflow: hidden;
-        margin-top: 80px;
-    }
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='rgba(255,255,255,0.05)' d='M10,50 L90,50 M50,10 L50,90' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: 20px 20px;
+}
 
-    /* Animated background overlay */
-    .hero-fullscreen::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 36%);
-        pointer-events: none;
-    }
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
 
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        width: 100%;
+.hero-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 40px;
+    font-size: 0.875rem;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+/* Upcoming Intakes Section */
+.intake-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.intake-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.intake-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.status-open { background: #10b981; color: white; }
+.status-upcoming { background: #f59e0b; color: white; }
+.status-full { background: #ef4444; color: white; }
+.status-in_progress { background: #3b82f6; color: white; }
+
+.intake-date-banner {
+    background: linear-gradient(135deg, #2f80ed, #1c4578);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.intake-date-icon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.intake-date-icon i {
+    font-size: 1.5rem;
+}
+
+.intake-date-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.intake-label {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.intake-date {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.intake-body {
+    padding: 20px;
+}
+
+.intake-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.intake-meta {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+    font-size: 0.8rem;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.intake-meta i {
+    width: 16px;
+    color: #2f80ed;
+}
+
+.intake-schedule {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.intake-schedule-item {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+.intake-schedule-label {
+    font-size: 0.7rem;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.intake-schedule-value {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.intake-price {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.price-current {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2f80ed;
+}
+
+.price-original {
+    text-decoration: line-through;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.early-bird-tag {
+    background: #fef3c7;
+    color: #d97706;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.btn-enroll {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+    background: #374151;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.countdown-title {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.countdown-numbers {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.countdown-block {
+    text-align: center;
+}
+
+.countdown-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+    min-width: 40px;
+}
+
+.countdown-label {
+    font-size: 0.6rem;
+    opacity: 0.7;
+}
+
+/* Featured Section */
+.featured-section {
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #2f80ed;
+    border-radius: 3px;
+}
+
+/* Stats Section */
+.stats-section {
+    background: linear-gradient(135deg, #374151, #1f2937);
+    border-radius: 16px;
+    padding: 48px;
+    color: white;
+    margin-bottom: 60px;
+}
+
+.stat-card {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 32px 24px;
+    }
+    .intake-schedule {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .intake-date-banner {
+        flex-direction: column;
         text-align: center;
-        color: white;
-        padding: 2rem;
-        animation: fadeInUp 1s ease-out;
     }
+    .stats-section {
+        padding: 32px 24px;
+    }
+    .stat-number {
+        font-size: 1.75rem;
+    }
+}
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* Full-screen hero section */
+.hero-fullscreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(135deg, rgba(16, 33, 57, 0.88), rgba(28, 69, 120, 0.85)), 
+                      url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+    margin-top: 80px;
+}
+
+/* Animated background overlay */
+.hero-fullscreen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 25%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 36%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    text-align: center;
+    color: white;
+    padding: 2rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-content h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    letter-spacing: -0.02em;
+}
+
+.hero-content p {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-weight: 400;
+}
+
+.hero-search-wrapper {
+    max-width: 900px;
+    margin: 0 auto 2.5rem;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.hero-search {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    padding: 1.25rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.hero-search .form-control,
+.hero-search .form-select {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    min-height: 50px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.hero-search .form-control::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.hero-search .form-control:focus,
+.hero-search .form-select:focus {
+    background: white;
+    border: 2px solid #2f80ed;
+    box-shadow: 0 0 0 0 rgba(47, 128, 237, 0.1);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 1.4s ease-out;
+}
+
+.hero-btn {
+    padding: 0.85rem 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.hero-btn-primary {
+    background: #2f80ed;
+    color: white;
+    border-color: #2f80ed;
+}
+
+.hero-btn-primary:hover {
+    background: white;
+    color: #2f80ed;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(47, 128, 237, 0.4);
+}
+
+.hero-btn-secondary {
+    background: transparent;
+    color: white;
+}
+
+.hero-btn-secondary:hover {
+    background: white;
+    color: #1f3a5d;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    z-index: 10;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+}
+
+.scroll-icon {
+    width: 30px;
+    height: 45px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    position: relative;
+}
+
+.scroll-icon::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    left: 50%;
+    top: 10px;
+    margin-left: -1px;
+    animation: scrolling 1.5s infinite;
+}
+
+@keyframes scrolling {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(10px); }
+}
+
+/* Remove default body padding for full-screen hero */
+body {
+    padding-top: 0 !important;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--bg-dark);
+    color: rgba(255,255,255,0.84);
+}
+
+.footer a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #ffffff;
+}
+
+.border-white-10 {
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+.text-white-50 {
+    color: rgba(255,255,255,0.5);
+}
+
+@media (max-width: 768px) {
+    .hero-fullscreen {
+        margin-top: 70px;
+        min-height: calc(100vh - 70px);
     }
 
     .hero-content h1 {
-        font-size: clamp(2.5rem, 5vw, 4rem);
-        font-weight: 800;
-        line-height: 1.1;
-        margin-bottom: 1.5rem;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
     }
 
     .hero-content p {
-        font-size: clamp(1rem, 2vw, 1.2rem);
-        color: rgba(255, 255, 255, 0.95);
-        max-width: 700px;
-        margin: 0 auto 2.5rem;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        font-weight: 400;
-    }
-
-    .hero-search-wrapper {
-        max-width: 900px;
-        margin: 0 auto 2.5rem;
-        animation: fadeInUp 1.2s ease-out;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
     }
 
     .hero-search {
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 16px;
-        padding: 1.25rem;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 0.75rem;
     }
 
     .hero-search .form-control,
     .hero-search .form-select {
-        background: rgba(255, 255, 255, 0.95);
-        border: none;
-        min-height: 50px;
-        border-radius: 8px;
-        font-weight: 500;
-    }
-
-    .hero-search .form-control::placeholder {
-        color: rgba(0, 0, 0, 0.4);
-    }
-
-    .hero-search .form-control:focus,
-    .hero-search .form-select:focus {
-        background: white;
-        border: 2px solid #2f80ed;
-        box-shadow: 0 0 0 0 rgba(47, 128, 237, 0.1);
+        min-height: 44px;
+        font-size: 0.95rem;
     }
 
     .hero-buttons {
-        display: flex;
-        gap: 1.25rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        animation: fadeInUp 1.4s ease-out;
+        gap: 0.75rem;
     }
 
     .hero-btn {
-        padding: 0.85rem 2.5rem;
-        font-size: 1.05rem;
-        font-weight: 600;
-        border-radius: 50px;
-        border: 2px solid white;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.95rem;
     }
-
-    .hero-btn-primary {
-        background: #2f80ed;
-        color: white;
-        border-color: #2f80ed;
-    }
-
-    .hero-btn-primary:hover {
-        background: white;
-        color: #2f80ed;
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(47, 128, 237, 0.4);
-    }
-
-    .hero-btn-secondary {
-        background: transparent;
-        color: white;
-    }
-
-    .hero-btn-secondary:hover {
-        background: white;
-        color: #1f3a5d;
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Scroll indicator */
-    .scroll-indicator {
-        position: absolute;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        animation: bounce 2s infinite;
-        z-index: 10;
-    }
-
-    @keyframes bounce {
-        0%, 100% { transform: translateX(-50%) translateY(0); }
-        50% { transform: translateX(-50%) translateY(10px); }
-    }
-
-    .scroll-icon {
-        width: 30px;
-        height: 45px;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-        position: relative;
-    }
-
-    .scroll-icon::after {
-        content: '';
-        position: absolute;
-        width: 2px;
-        height: 10px;
-        background: rgba(255, 255, 255, 0.7);
-        left: 50%;
-        top: 10px;
-        margin-left: -1px;
-        animation: scrolling 1.5s infinite;
-    }
-
-    @keyframes scrolling {
-        0% { opacity: 1; transform: translateY(0); }
-        100% { opacity: 0; transform: translateY(10px); }
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .hero-fullscreen {
-            margin-top: 70px;
-            min-height: calc(100vh - 70px);
-        }
-
-        .hero-content h1 {
-            margin-bottom: 1rem;
-        }
-
-        .hero-content p {
-            margin-bottom: 1.5rem;
-            font-size: 1rem;
-        }
-
-        .hero-search {
-            padding: 0.75rem;
-        }
-
-        .hero-search .form-control,
-        .hero-search .form-select {
-            min-height: 44px;
-            font-size: 0.95rem;
-        }
-
-        .hero-buttons {
-            gap: 0.75rem;
-        }
-
-        .hero-btn {
-            padding: 0.7rem 1.5rem;
-            font-size: 0.95rem;
-        }
-    }
-
-    /* Footer styles */
-    .footer {
-        background-color: var(--bg-dark);
-        color: rgba(255,255,255,0.84);
-    }
-
-    .footer a {
-        color: rgba(255,255,255,0.75);
-        text-decoration: none;
-    }
-
-    .footer a:hover {
-        color: #ffffff;
-    }
-
-    .border-white-10 {
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-
-    .text-white-50 {
-        color: rgba(255,255,255,0.5);
-    }
+}
 </style>
 {% endblock %}
 
-{% block content %}
+{% block public_content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content text-center">
+        <span class="hero-badge">
+            <i class="fas fa-award me-2"></i> Zimbabwe's Premier Training Institute
+        </span>
+        <h1 class="display-4 fw-bold mb-3">Welcome to Synego<br>Training Institute</h1>
+        <p class="lead mb-4" style="opacity: 0.9;">Empowering minds, building futures with quality education and professional training</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'lms:upcoming_courses' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-calendar-alt me-2"></i> View All Courses
+            </a>
+            <a href="{% url 'lms:register' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-user-graduate me-2"></i> Get Started
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Course Intakes Section -->
+{% if upcoming_intakes %}
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                Upcoming Course Intakes
+            </h2>
+            <a href="{% url 'lms:upcoming_courses' %}" class="btn btn-outline-primary">
+                View All <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        
+        <div class="row">
+            {% for intake in upcoming_intakes|slice:":6" %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="intake-card">
+                        <div class="intake-status status-{{ intake.status }}">
+                            {{ intake.get_status_display }}
+                        </div>
+                        <div class="intake-date-banner">
+                            <div class="intake-date-icon">
+                                <i class="fas fa-calendar-week"></i>
+                                <div class="intake-date-text">
+                                    <span class="intake-label">Course Starts</span>
+                                    <span class="intake-date">{{ intake.course_start_date|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                            <div class="intake-date-icon">
+                                <i class="fas fa-flag-checkered"></i>
+                                <div class="intake-date-text">
+                                    <span class="intake-label">Course Ends</span>
+                                    <span class="intake-date">{{ intake.course_end_date|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="intake-body">
+                            <h4 class="intake-title">{{ intake.course.title }}</h4>
+                            <div class="intake-meta">
+                                <span><i class="fas fa-clock"></i> {{ intake.formatted_schedule }}</span>
+                                <span><i class="fas fa-globe"></i> {{ intake.get_delivery_mode_display }}</span>
+                            </div>
+                            <p class="text-muted small">{{ intake.course.description|truncatewords:20 }}</p>
+                            
+                            <div class="intake-schedule">
+                                <div class="intake-schedule-item">
+                                    <div class="intake-schedule-label">Registration</div>
+                                    <div class="intake-schedule-value">
+                                        {{ intake.registration_start_date|date:"M d" }}<br>- {{ intake.registration_end_date|date:"M d" }}
+                                    </div>
+                                </div>
+                                <div class="intake-schedule-item">
+                                    <div class="intake-schedule-label">Duration</div>
+                                    <div class="intake-schedule-value">{{ intake.duration_weeks }}<br>weeks</div>
+                                </div>
+                                <div class="intake-schedule-item">
+                                    <div class="intake-schedule-label">Spots Left</div>
+                                    <div class="intake-schedule-value">{{ intake.available_spots }}<br>/{{ intake.max_students }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="intake-price">
+                                {% if intake.is_early_bird_available %}
+                                    <span class="price-original">${{ intake.regular_price }}</span>
+                                    <span class="price-current">${{ intake.early_bird_price }}</span>
+                                    <span class="early-bird-tag">
+                                        <i class="fas fa-tag"></i> Early Bird
+                                    </span>
+                                {% else %}
+                                    <span class="price-current">${{ intake.regular_price }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <a href="{% url 'lms:intake_detail' intake.id %}" class="btn btn-primary btn-enroll">
+                                {% if intake.status == 'open' %}
+                                    <i class="fas fa-shopping-cart me-2"></i> Enroll Now
+                                {% elif intake.status == 'in_progress' %}
+                                    <i class="fas fa-play me-2"></i> Join Course
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2"></i> View Details
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_students }}+</div>
+                <div class="stat-label">Students Trained</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_courses }}+</div>
+                <div class="stat-label">Courses Offered</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_instructors }}+</div>
+                <div class="stat-label">Expert Instructors</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.completion_rate }}%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Modules/Departments -->
+{% if departments %}
+<section class="mb-5">
+    <h2 class="section-title">
+        <i class="fas fa-building me-2"></i>
+        Our Departments
+    </h2>
+    <div class="row">
+        {% for dept in departments %}
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">{{ dept.name }}</h5>
+                        <p class="card-text small text-muted">{{ dept.description|truncatewords:15 }}</p>
+                        <a href="{% url 'lms:module_detail' dept.slug %}" class="btn btn-sm btn-outline-primary">Explore</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<script>
+// Countdown timers
+function updateCountdowns() {
+    document.querySelectorAll('.countdown-timer').forEach(timer => {
+        const targetDate = timer.dataset.startDate;
+        const registrationStart = timer.dataset.registrationStart;
+        
+        let target;
+        if (targetDate) {
+            target = new Date(targetDate).getTime();
+        } else if (registrationStart) {
+            target = new Date(registrationStart).getTime();
+        } else {
+            return;
+        }
+        
+        const now = new Date().getTime();
+        const distance = target - now;
+        
+        if (distance < 0) {
+            timer.style.display = 'none';
+            return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        const daysEl = timer.querySelector('.days');
+        const hoursEl = timer.querySelector('.hours');
+        const minutesEl = timer.querySelector('.minutes');
+        const secondsEl = timer.querySelector('.seconds');
+        
+        if (daysEl) daysEl.textContent = days;
+        if (hoursEl) hoursEl.textContent = hours;
+        if (minutesEl) minutesEl.textContent = minutes;
+        if (secondsEl) secondsEl.textContent = seconds;
+    });
+}
+
+if (document.readyState !== 'loading') {
+    updateCountdowns();
+} else {
+    document.addEventListener('DOMContentLoaded', updateCountdowns);
+}
+setInterval(updateCountdowns, 1000);
+</script>
+
 <section class="hero-fullscreen">
     <div class="hero-content">
         <h1>Learn. Grow. Succeed.</h1>

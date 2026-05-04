@@ -56,11 +56,10 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if submission.feedback %}
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="popover" 
-                                                title="Feedback" data-bs-content="{{ submission.feedback }}">
+                                    {% if submission.feedback or submission.grade %}
+                                        <a href="{% url 'lms:view_submission' submission.id %}" class="btn btn-sm btn-info">
                                             <i class="fas fa-comment"></i> View
-                                        </button>
+                                        </a>
                                     {% else %}
                                         —
                                     {% endif %}
@@ -94,12 +93,6 @@
                 row.style.display = 'none';
             }
         });
-    });
-    
-    // Initialize popovers
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl)
     });
 </script>
 {% endblock %}

@@ -1,0 +1,336 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Certification Programs - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">🎓 Global Certification Programs</h1>
+        <p class="lead text-muted">Earn internationally recognized certifications from leading providers</p>
+    </div>
+    
+    <!-- Partners Section -->
+    <div class="partners-section mb-5">
+        <h3 class="mb-4">Our Certification Partners</h3>
+        <div class="row g-4">
+            {% for provider in providers %}
+                <div class="col-md-3 col-6">
+                    <div class="partner-card text-center p-3">
+                        {% if provider.logo %}
+                            <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="img-fluid" style="height: 60px;">
+                        {% else %}
+                            <i class="fas fa-building fa-3x text-primary"></i>
+                        {% endif %}
+                        <h6 class="mt-2">{{ provider.name }}</h6>
+                        <small class="text-muted">{{ provider.get_provider_type_display }}</small>
+                        <p class="small mt-2">{{ provider.get_certification_count }} programs</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Search & Filter Section -->
+    <div class="search-filter-section mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-6">
+                <form method="get" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control" placeholder="Search certifications..." value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-3">
+                <form method="get">
+                    <select name="difficulty" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if request.GET.difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if request.GET.difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if request.GET.difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                        <option value="expert" {% if request.GET.difficulty == 'expert' %}selected{% endif %}>Expert</option>
+                    </select>
+                </form>
+            </div>
+            <div class="col-md-3">
+                <form method="get">
+                    <select name="provider" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Providers</option>
+                        {% for provider in providers %}
+                            <option value="{{ provider.id }}" {% if request.GET.provider|add:"0" == provider.id %}selected{% endif %}>{{ provider.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Featured Certifications -->
+    {% if featured %}
+        <div class="featured-section mb-5">
+            <h3 class="mb-4"><span class="badge bg-danger">🔥 Featured</span></h3>
+            <div class="row">
+                {% for cert in featured %}
+                    <div class="col-md-4 mb-4">
+                        <div class="cert-card h-100">
+                            <div class="cert-header">
+                                {% if cert.provider.logo %}
+                                    <img src="{{ cert.provider.logo.url }}" alt="{{ cert.provider.name }}" class="provider-logo">
+                                {% endif %}
+                                <span class="difficulty-badge difficulty-{{ cert.difficulty }}">
+                                    {{ cert.get_difficulty_display }}
+                                </span>
+                            </div>
+                            <div class="cert-body">
+                                <h5>{{ cert.title }}</h5>
+                                <p class="small text-muted">{{ cert.provider.name }}</p>
+                                <p class="cert-description">{{ cert.description|truncatewords:20 }}</p>
+                                <div class="cert-meta">
+                                    <span title="Exam Duration"><i class="fas fa-clock text-primary"></i> {{ cert.exam_duration_minutes }} min</span>
+                                    <span title="Number of Questions"><i class="fas fa-question-circle text-info"></i> {{ cert.number_of_questions }} Qs</span>
+                                    <span title="Passing Score"><i class="fas fa-check-circle text-success"></i> {{ cert.passing_percentage }}%</span>
+                                </div>
+                                <div class="cert-footer mt-3">
+                                    <div class="price mb-2">
+                                        <span class="h6 text-danger fw-bold">${{ cert.exam_voucher_price }}</span>
+                                        <span class="small text-muted">exam voucher</span>
+                                    </div>
+                                    <a href="{% url 'lms:certification_detail' cert.id %}" class="btn btn-primary btn-sm w-100">View & Register</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- All Certifications Grid -->
+    <div class="certifications-grid">
+        <h3 class="mb-4">All Available Certifications</h3>
+        {% if page_obj %}
+            <div class="row">
+                {% for cert in page_obj %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="cert-card h-100">
+                            <div class="cert-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="provider-badge">{{ cert.provider.short_name }}</span>
+                                    <span class="difficulty-badge difficulty-{{ cert.difficulty }} small">
+                                        {{ cert.get_difficulty_display }}
+                                    </span>
+                                </div>
+                                <h5 class="mt-2">{{ cert.title }}</h5>
+                                <p class="small text-muted">Code: {{ cert.exam_code|default:cert.code }}</p>
+                                <p class="cert-description small">{{ cert.description|truncatewords:15 }}</p>
+                                
+                                <div class="cert-specs my-3">
+                                    <div class="spec-row">
+                                        <small class="text-muted">Duration:</small>
+                                        <small class="fw-500">{{ cert.exam_duration_minutes }} minutes</small>
+                                    </div>
+                                    <div class="spec-row">
+                                        <small class="text-muted">Questions:</small>
+                                        <small class="fw-500">{{ cert.number_of_questions }}</small>
+                                    </div>
+                                    <div class="spec-row">
+                                        <small class="text-muted">Validity:</small>
+                                        <small class="fw-500">{{ cert.validity_years }} years</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="cert-price mb-3">
+                                    <span class="h6 text-primary fw-bold">${{ cert.exam_voucher_price }}</span>
+                                    <span class="text-muted small">exam voucher</span>
+                                </div>
+                                <a href="{% url 'lms:certification_detail' cert.id %}" class="btn btn-outline-primary btn-sm w-100">Register Now</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+                        <h3>No certifications found</h3>
+                        <p class="text-muted">Try adjusting your filters or check back soon.</p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-600: #0066cc;
+    --primary-800: #003d99;
+    --gray-100: #f3f4f6;
+    --gray-500: #6b7280;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --radius-lg: 0.75rem;
+}
+
+.partner-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.partner-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.cert-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.cert-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-600);
+}
+
+.cert-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 80px;
+}
+
+.cert-header .provider-logo {
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.difficulty-beginner { background: #10b981; color: white; }
+.difficulty-intermediate { background: #f59e0b; color: white; }
+.difficulty-advanced { background: #ef4444; color: white; }
+.difficulty-expert { background: #8b5cf6; color: white; }
+
+.cert-body {
+    padding: 20px;
+}
+
+.provider-badge {
+    display: inline-block;
+    background: var(--gray-100);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    text-transform: uppercase;
+}
+
+.cert-description {
+    color: var(--gray-500);
+    line-height: 1.5;
+}
+
+.cert-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin: 12px 0;
+}
+
+.cert-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cert-specs .spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.cert-price {
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+}
+
+.cert-footer {
+    border-top: 1px solid var(--gray-100);
+    padding-top: 12px;
+}
+
+.search-filter-section {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.featured-section {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "lms/base.html" %}
+
+{% block title %}{{ certification.title }} - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'lms:certification_catalog' %}">Certifications</a></li>
+            <li class="breadcrumb-item" aria-current="page">{{ certification.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-start">
+                        <div class="col-auto">
+                            {% if certification.logo %}
+                                <img src="{{ certification.logo.url }}" alt="{{ certification.provider }}" 
+                                     class="img-fluid" style="max-width: 100px; height: auto;">
+                            {% else %}
+                                <i class="fas fa-certificate fa-5x text-primary opacity-50"></i>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <h1 class="h3 mb-2">{{ certification.title }}</h1>
+                            <p class="mb-2 text-muted">{{ certification.provider.name }}</p>
+                            <div>
+                                <span class="badge bg-info">{{ certification.get_difficulty_display }}</span>
+                                {% if certification.is_featured %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-star"></i> Featured
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">About This Certification</h5>
+                    <p class="card-text">{{ certification.description }}</p>
+                </div>
+            </div>
+
+            <!-- Exam Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Exam Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div>
+                                <strong>Exam Code:</strong> {{ certification.exam_code }}
+                            </div>
+                            <div>
+                                <strong>Duration:</strong> {{ certification.exam_duration_minutes }} minutes
+                            </div>
+                            <div>
+                                <strong>Number of Questions:</strong> {{ certification.number_of_questions }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div>
+                                <strong>Passing Score:</strong> {{ certification.passing_score_display }}
+                            </div>
+                            <div>
+                                <strong>Validity Period:</strong> {{ certification.validity_years }} years
+                            </div>
+                            <div>
+                                <strong>CEU for Renewal:</strong> {{ certification.continuing_education_units }} units
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if certification.renewal_requirements %}
+                        <hr>
+                        <h6>Renewal Requirements:</h6>
+                        <p>{{ certification.renewal_requirements }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Pricing</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <strong>Exam Voucher:</strong>
+                                <h4 class="text-primary">${{ certification.exam_voucher_price }}</h4>
+                            </div>
+                        </div>
+                        {% if certification.training_material_price %}
+                            <div class="col-md-6">
+                                <div>
+                                    <strong>Training Materials:</strong>
+                                    <h4 class="text-primary">${{ certification.training_material_price }}</h4>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Syllabus -->
+            {% if certification.syllabus_pdf %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <a href="{{ certification.syllabus_pdf.url }}" class="btn btn-outline-primary" download>
+                            <i class="fas fa-download"></i> Download Syllabus
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Registration Card -->
+            <div class="card sticky-top mb-4" style="top: 20px;">
+                <div class="card-body">
+                    {% if user_registration %}
+                        <div class="alert alert-success mb-3">
+                            <i class="fas fa-check-circle"></i> You are registered for this certification.
+                        </div>
+                        <div class="mb-3">
+                            <strong>Registration Status:</strong>
+                            <p>
+                                {% if user_registration.status == 'passed' %}
+                                    <span class="badge bg-success">Passed</span>
+                                {% elif user_registration.status == 'certificate_issued' %}
+                                    <span class="badge bg-success">Certificate Issued</span>
+                                {% elif user_registration.status == 'exam_completed' %}
+                                    <span class="badge bg-info">Exam Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{{ user_registration.get_status_display }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        {% if user_registration.exam_date %}
+                            <div class="mb-3">
+                                <strong>Exam Date:</strong>
+                                <p>{{ user_registration.exam_date|date:"M d, Y" }}</p>
+                            </div>
+                        {% endif %}
+
+                        {% if user_registration.exam_score %}
+                            <div class="mb-3">
+                                <strong>Score:</strong>
+                                <p class="h5">{{ user_registration.exam_percentage }}%</p>
+                            </div>
+                        {% endif %}
+
+                        <a href="{% url 'lms:my_certifications' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-list"></i> My Certifications
+                        </a>
+                    {% else %}
+                        <h5 class="card-title mb-3">Ready to get certified?</h5>
+                        <p class="card-text text-muted small">
+                            Register for this exam and get access to exclusive study materials and practice tests.
+                        </p>
+                        <form method="post" action="{% url 'lms:register_for_exam' certification.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-user-plus"></i> Register for Exam
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Provider Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Provider Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>{{ certification.provider.name }}</strong>
+                    </div>
+                    {% if certification.provider.website %}
+                        <a href="{{ certification.provider.website }}" target="_blank" class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-globe"></i> Visit Website
+                        </a>
+                    {% endif %}
+                    {% if certification.provider.contact_email %}
+                        <a href="mailto:{{ certification.provider.contact_email }}" class="btn btn-sm btn-outline-secondary w-100">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Related Certifications -->
+            {% if related_certifications %}
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Related Certifications</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            {% for related in related_certifications %}
+                                <a href="{% url 'lms:certification_detail' related.id %}" 
+                                   class="list-group-item list-group-item-action py-2">
+                                    <small>{{ related.title }}</small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

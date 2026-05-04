@@ -317,7 +317,7 @@
     <nav aria-label="breadcrumb" class="navigation-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lms:course_detail' course.slug %}">{{ course.title }}</a></li>
             <li class="breadcrumb-item"><a href="{% url 'module_list' course.id %}">Modules</a></li>
             <li class="breadcrumb-item"><a href="{% url 'module_detail' course.id module.id %}">{{ module.name }}</a></li>
             <li class="breadcrumb-item"><a href="{% url 'section_detail' course.id module.id section.id %}">{{ section.name }}</a></li>

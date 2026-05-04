@@ -1,0 +1,257 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Select Course - Add Chapter{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-selector-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .page-header-section {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .page-header-section h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 12px;
+    }
+
+    .page-header-section p {
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .course-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+
+    .course-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-4px);
+        border-color: #2f80ed;
+    }
+
+    .course-card-icon {
+        font-size: 2.5rem;
+        color: #2f80ed;
+        margin-bottom: 16px;
+    }
+
+    .course-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+    }
+
+    .course-card-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .course-card-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .course-card-meta-item i {
+        color: #2f80ed;
+    }
+
+    .course-card-description {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+        line-height: 1.5;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .course-card-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-add-chapter {
+        flex: 1;
+        padding: 10px 16px;
+        background: #2f80ed;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .btn-add-chapter:hover {
+        background: #1f69db;
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+
+    .empty-state-text {
+        color: #9ca3af;
+        margin-bottom: 24px;
+    }
+
+    .back-button {
+        margin-bottom: 24px;
+    }
+
+    .back-button a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #2f80ed;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-button a:hover {
+        color: #1f69db;
+    }
+
+    @media (max-width: 768px) {
+        .course-selector-container {
+            padding: 20px 16px;
+        }
+
+        .page-header-section h1 {
+            font-size: 1.5rem;
+        }
+
+        .course-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-selector-container">
+    <!-- Back Button -->
+    <div class="back-button">
+        <a href="{% url 'lms:course_list' %}">
+            <i class="fas fa-arrow-left"></i> Back to Courses
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="page-header-section">
+        <h1><i class="fas fa-layer-group" style="color: #2f80ed;"></i> Add Chapter</h1>
+        <p>Select a course to add a new chapter</p>
+    </div>
+
+    {% if courses %}
+        <!-- Course Grid -->
+        <div class="course-grid">
+            {% for course in courses %}
+                <div class="course-card">
+                    <div class="course-card-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="course-card-title">{{ course.title }}</div>
+                    
+                    <div class="course-card-meta">
+                        <div class="course-card-meta-item">
+                            <i class="fas fa-layer-group fa-sm"></i>
+                            <span>{{ course.chapters.count }} chapters</span>
+                        </div>
+                        <div class="course-card-meta-item">
+                            <i class="fas fa-users fa-sm"></i>
+                            <span>{{ course.enrollments.count }} enrolled</span>
+                        </div>
+                    </div>
+
+                    {% if course.description %}
+                        <div class="course-card-description">{{ course.description }}</div>
+                    {% else %}
+                        <div class="course-card-description" style="color: #9ca3af; font-style: italic;">No description available</div>
+                    {% endif %}
+
+                    <div class="course-card-actions">
+                        <a href="{% url 'lms:admin_add_chapter' course.slug %}" class="btn-add-chapter">
+                            <i class="fas fa-plus"></i> Add Chapter
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h2 class="empty-state-title">No Courses Available</h2>
+            <p class="empty-state-text">
+                {% if user.is_superuser or user.groups.filter|length > 0 %}
+                    Create a course first to add chapters.
+                {% else %}
+                    You don't have any courses yet. Ask an admin to assign courses to you.
+                {% endif %}
+            </p>
+            {% if user.is_superuser or user.groups.filter|length > 0 %}
+                <a href="{% url 'lms:admin_create_course' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Course
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

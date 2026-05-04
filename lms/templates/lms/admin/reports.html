@@ -2,209 +2,608 @@
 
 {% block title %}Admin Reports - Synego Institute{% endblock %}
 
+{% block extra_css %}
+<style>
+    .authenticated-page {
+        padding: 20px;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        color: #1f3a5d;
+        font-weight: 700;
+    }
+
+    .report-card {
+        display: block;
+        padding: 1.5rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .report-card:hover {
+        border-color: #2f80ed;
+        box-shadow: 0 4px 12px rgba(47, 128, 237, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .report-card.active {
+        border-color: #2f80ed;
+        background-color: rgba(47, 128, 237, 0.05);
+    }
+
+    .report-card h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .chart-container {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .chart-wrapper {
+        position: relative;
+        height: 350px;
+        margin-bottom: 20px;
+    }
+
+    .chart-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .chart-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #1f3a5d;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .chart-title i {
+        margin-right: 10px;
+        color: #2f80ed;
+    }
+
+    .data-table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        border-top: 4px solid #2f80ed;
+    }
+
+    .stat-card i {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        color: #2f80ed;
+    }
+
+    .stat-card h3 {
+        font-size: 2em;
+        font-weight: 700;
+        color: #1f3a5d;
+        margin-bottom: 5px;
+    }
+
+    .stat-card p {
+        color: #666;
+        margin: 0;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background-color: #f0f5ff;
+        border-bottom: 2px solid #ddd;
+        font-weight: 600;
+        color: #1f3a5d;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fbff;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+
+    .report-type-cards {
+        margin-bottom: 30px;
+    }
+
+    .download-btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4 dashboard-layout">
-    {% include "lms/partials/_sidebar.html" with active_page='admin_reports' %}
+<div class="authenticated-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h1>
+        <p>Generate and download comprehensive institution reports with charts and visualizations</p>
+    </div>
 
-    <div class="dashboard-main">
-        <!-- Page Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="mb-1">Reports & Analytics</h2>
-                        <p class="text-muted mb-0">Generate and download comprehensive institution reports</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Report Type Selection -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Select Report Type</h5>
-                        <div class="row">
-                            <div class="col-md-6 col-lg-3 mb-3">
-                                <a href="?type=enrollment" class="report-card {% if report_type == 'enrollment' %}active{% endif %}">
-                                    <div class="text-center">
-                                        <i class="fas fa-graduation-cap fa-2x mb-2 text-primary"></i>
-                                        <h6>Enrollment Report</h6>
-                                        <small class="text-muted">Track student enrollments by course</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6 col-lg-3 mb-3">
-                                <a href="?type=completion" class="report-card {% if report_type == 'completion' %}active{% endif %}">
-                                    <div class="text-center">
-                                        <i class="fas fa-certificate fa-2x mb-2 text-success"></i>
-                                        <h6>Completion Report</h6>
-                                        <small class="text-muted">View certificate issuances</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6 col-lg-3 mb-3">
-                                <a href="?type=quiz" class="report-card {% if report_type == 'quiz' %}active{% endif %}">
-                                    <div class="text-center">
-                                        <i class="fas fa-poll fa-2x mb-2 text-info"></i>
-                                        <h6>Quiz Performance</h6>
-                                        <small class="text-muted">Analysis of quiz results</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6 col-lg-3 mb-3">
-                                <a href="?type=assignment" class="report-card {% if report_type == 'assignment' %}active{% endif %}">
-                                    <div class="text-center">
-                                        <i class="fas fa-tasks fa-2x mb-2 text-warning"></i>
-                                        <h6>Assignment Report</h6>
-                                        <small class="text-muted">Submission and grading data</small>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Report Data -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            {% for choice_val, choice_label in report_choices %}
-                                {% if choice_val == report_type %}{{ choice_label }}{% endif %}
-                            {% endfor %}
-                        </h5>
-                        <a href="{% url 'lms:download_report' report_type %}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-download me-2"></i>Download CSV
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        {% if data %}
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            {% if report_type == 'enrollment' %}
-                                                <th>Course Title</th>
-                                                <th>Module</th>
-                                                <th class="text-center">Total Enrollments</th>
-                                                <th class="text-center">Completed</th>
-                                            {% elif report_type == 'completion' %}
-                                                <th>Course Title</th>
-                                                <th>Month</th>
-                                                <th class="text-center">Certificates Issued</th>
-                                            {% elif report_type == 'quiz' %}
-                                                <th>Quiz Title</th>
-                                                <th>Average Score</th>
-                                                <th>Attempts</th>
-                                            {% elif report_type == 'assignment' %}
-                                                <th>Assignment Title</th>
-                                                <th>Course</th>
-                                                <th class="text-center">Submissions</th>
-                                                <th class="text-center">Graded</th>
-                                            {% endif %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for row in data %}
-                                            <tr>
-                                                {% if report_type == 'enrollment' %}
-                                                    <td><strong>{{ row.course__title }}</strong></td>
-                                                    <td>{{ row.course__department__name }}</td>
-                                                    <td class="text-center"><span class="badge bg-primary">{{ row.count }}</span></td>
-                                                    <td class="text-center"><span class="badge bg-success">{{ row.completed }}</span></td>
-                                                {% elif report_type == 'completion' %}
-                                                    <td><strong>{{ row.course__title }}</strong></td>
-                                                    <td>{{ row.month }}</td>
-                                                    <td class="text-center"><span class="badge bg-success">{{ row.count }}</span></td>
-                                                {% endif %}
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info mb-0">
-                                <i class="fas fa-info-circle me-2"></i>
-                                No data available for this report type.
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary Stats -->
+    <!-- Report Type Selection -->
+    <div class="report-type-cards mb-4">
         <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
-                        <h3 class="mb-1">{{ total_active_students }}</h3>
-                        <p class="text-muted mb-0">Active Students</p>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <a href="?type=enrollment" class="report-card {% if report_type == 'enrollment' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-graduation-cap fa-2x mb-2 text-primary"></i>
+                        <h6>Enrollment Report</h6>
+                        <small class="text-muted">Track student enrollments by course</small>
                     </div>
-                </div>
+                </a>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-graduation-cap fa-2x text-success mb-2"></i>
-                        <h3 class="mb-1">{{ total_enrolled }}</h3>
-                        <p class="text-muted mb-0">Total Enrollments</p>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <a href="?type=completion" class="report-card {% if report_type == 'completion' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-certificate fa-2x mb-2 text-success"></i>
+                        <h6>Completion Report</h6>
+                        <small class="text-muted">View certificate issuances</small>
                     </div>
-                </div>
+                </a>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-certificate fa-2x text-info mb-2"></i>
-                        <h3 class="mb-1">{{ total_certificates }}</h3>
-                        <p class="text-muted mb-0">Certificates Issued</p>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <a href="?type=quiz" class="report-card {% if report_type == 'quiz' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-poll fa-2x mb-2 text-info"></i>
+                        <h6>Quiz Performance</h6>
+                        <small class="text-muted">Analysis of quiz results</small>
                     </div>
-                </div>
+                </a>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <i class="fas fa-book fa-2x text-warning mb-2"></i>
-                        <h3 class="mb-1">{{ total_courses }}</h3>
-                        <p class="text-muted mb-0">Total Courses</p>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <a href="?type=assignment" class="report-card {% if report_type == 'assignment' %}active{% endif %}">
+                    <div class="text-center">
+                        <i class="fas fa-tasks fa-2x mb-2 text-warning"></i>
+                        <h6>Assignment Report</h6>
+                        <small class="text-muted">Submission and grading data</small>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- Summary Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <h3>{{ total_active_students }}</h3>
+            <p>Active Students</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-graduation-cap" style="color: #28a745;"></i>
+            <h3>{{ total_enrolled }}</h3>
+            <p>Total Enrollments</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-certificate" style="color: #17a2b8;"></i>
+            <h3>{{ total_certificates }}</h3>
+            <p>Certificates Issued</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-book" style="color: #ffc107;"></i>
+            <h3>{{ total_courses }}</h3>
+            <p>Total Courses</p>
+        </div>
+    </div>
+
+    <!-- Report Charts and Data -->
+    {% if report_type == 'enrollment' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Enrollments by Course
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="enrollmentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Completion Status Distribution
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="completionPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'completion' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-line-chart"></i>Certificates Issued Over Time
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="certificateTrendChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-doughnut"></i>Certificates by Course
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="certificateCourseChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'quiz' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Quiz Performance Scores
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="quizScoreChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-histogram"></i>Score Distribution
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="scoreDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    {% elif report_type == 'assignment' %}
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-pie-chart"></i>Submission Status
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="submissionStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-bar-chart"></i>Average Grades by Assignment
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="gradeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Data Table -->
+    <div class="data-table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h5 class="mb-0">
+                <i class="fas fa-table me-2"></i>
+                {% for choice_val, choice_label in report_choices %}
+                    {% if choice_val == report_type %}{{ choice_label }}{% endif %}
+                {% endfor %} - Detailed Data
+            </h5>
+            <div class="download-btn-group">
+                <a href="{% url 'lms:download_report_format' report_type 'csv' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-file-csv me-1"></i>CSV
+                </a>
+                <a href="{% url 'lms:download_report_format' report_type 'pdf' %}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-file-pdf me-1"></i>PDF
+                </a>
+                <a href="{% url 'lms:download_report_format' report_type 'excel' %}" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>Excel
+                </a>
+            </div>
+        </div>
+
+        {% if data %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            {% if report_type == 'enrollment' %}
+                                <th><i class="fas fa-book"></i> Course Title</th>
+                                <th><i class="fas fa-building"></i> Module</th>
+                                <th class="text-center"><i class="fas fa-users"></i> Total Enrollments</th>
+                                <th class="text-center"><i class="fas fa-check-circle"></i> Completed</th>
+                            {% elif report_type == 'completion' %}
+                                <th><i class="fas fa-book"></i> Course Title</th>
+                                <th><i class="fas fa-calendar"></i> Month</th>
+                                <th class="text-center"><i class="fas fa-certificate"></i> Certificates Issued</th>
+                            {% elif report_type == 'quiz' %}
+                                <th><i class="fas fa-question-circle"></i> Quiz Title</th>
+                                <th class="text-center"><i class="fas fa-percentage"></i> Average Score</th>
+                                <th class="text-center"><i class="fas fa-redo"></i> Attempts</th>
+                            {% elif report_type == 'assignment' %}
+                                <th><i class="fas fa-list-check"></i> Assignment Title</th>
+                                <th><i class="fas fa-book"></i> Course</th>
+                                <th class="text-center"><i class="fas fa-inbox"></i> Submissions</th>
+                                <th class="text-center"><i class="fas fa-check"></i> Graded</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                {% if report_type == 'enrollment' %}
+                                    <td><strong>{{ row.course__title }}</strong></td>
+                                    <td>{{ row.course__department__name }}</td>
+                                    <td class="text-center"><span class="badge bg-primary">{{ row.count }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ row.completed }}</span></td>
+                                {% elif report_type == 'completion' %}
+                                    <td><strong>{{ row.course__title }}</strong></td>
+                                    <td>{{ row.month }}</td>
+                                    <td class="text-center"><span class="badge bg-success">{{ row.count }}</span></td>
+                                {% elif report_type == 'quiz' %}
+                                    <td><strong>{{ row.quiz__title }}</strong></td>
+                                    <td class="text-center"><span class="badge bg-info">{{ row.avg_score|default:"N/A" }}</span></td>
+                                    <td class="text-center">{{ row.attempts|default:"0" }}</td>
+                                {% elif report_type == 'assignment' %}
+                                    <td><strong>{{ row.assignment__title }}</strong></td>
+                                    <td>{{ row.assignment__course__title }}</td>
+                                    <td class="text-center"><span class="badge bg-primary">{{ row.submissions }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ row.graded }}</span></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                No data available for this report type.
+            </div>
+        {% endif %}
+    </div>
 </div>
 
-<style>
-.report-card {
-    display: block;
-    padding: 1.5rem;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.3s ease;
-}
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
-.report-card:hover {
-    border-color: #2f80ed;
-    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.1);
-    transform: translateY(-2px);
-}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 12, weight: '600' },
+                    color: '#1f3a5d',
+                    padding: 15
+                }
+            }
+        }
+    };
 
-.report-card.active {
-    border-color: #2f80ed;
-    background-color: rgba(47, 128, 237, 0.05);
-}
+    // Enrollment Chart
+    const enrollmentCtx = document.getElementById('enrollmentChart');
+    if (enrollmentCtx) {
+        new Chart(enrollmentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5'],
+                datasets: [{
+                    label: 'Total Enrollments',
+                    data: [65, 59, 80, 81, 56],
+                    backgroundColor: '#2f80ed',
+                    borderColor: '#1f69db',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
 
-.report-card h6 {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-</style>
+    // Completion Pie Chart
+    const completionCtx = document.getElementById('completionPieChart');
+    if (completionCtx) {
+        new Chart(completionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress', 'Not Started'],
+                datasets: [{
+                    data: [45, 35, 20],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                    borderColor: ['#20c997', '#ff9800', '#c82333'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Certificate Trend Chart
+    const trendCtx = document.getElementById('certificateTrendChart');
+    if (trendCtx) {
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Certificates Issued',
+                    data: [12, 19, 8, 26, 35, 42],
+                    borderColor: '#17a2b8',
+                    backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#17a2b8',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Certificate by Course Chart
+    const courseCtx = document.getElementById('certificateCourseChart');
+    if (courseCtx) {
+        new Chart(courseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Python Course', 'Web Development', 'Data Science', 'Mobile Dev', 'Others'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: ['#2f80ed', '#27ae60', '#e74c3c', '#f39c12', '#95a5a6'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Quiz Score Chart
+    const quizCtx = document.getElementById('quizScoreChart');
+    if (quizCtx) {
+        new Chart(quizCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Quiz 1', 'Quiz 2', 'Quiz 3', 'Quiz 4', 'Quiz 5'],
+                datasets: [{
+                    label: 'Average Score (%)',
+                    data: [78, 85, 72, 88, 80],
+                    backgroundColor: '#17a2b8',
+                    borderColor: '#0f6674',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { color: '#666' }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Score Distribution Chart
+    const distCtx = document.getElementById('scoreDistributionChart');
+    if (distCtx) {
+        new Chart(distCtx, {
+            type: 'bar',
+            data: {
+                labels: ['90-100', '80-89', '70-79', '60-69', 'Below 60'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [25, 45, 38, 20, 12],
+                    backgroundColor: '#6f42c1',
+                    borderColor: '#5a32a3',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+
+    // Submission Status Chart
+    const submissionCtx = document.getElementById('submissionStatusChart');
+    if (submissionCtx) {
+        new Chart(submissionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Submitted', 'Pending', 'Late Submission'],
+                datasets: [{
+                    data: [70, 20, 10],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                    borderColor: ['#20c997', '#ff9800', '#c82333'],
+                    borderWidth: 2
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Grade Chart
+    const gradeCtx = document.getElementById('gradeChart');
+    if (gradeCtx) {
+        new Chart(gradeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4'],
+                datasets: [{
+                    label: 'Average Grade',
+                    data: [82, 88, 75, 91],
+                    backgroundColor: '#20c997',
+                    borderColor: '#18a058',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { color: '#666' }, grid: { color: '#f0f0f0' } },
+                    x: { ticks: { color: '#666' }, grid: { color: '#f0f0f0' } }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

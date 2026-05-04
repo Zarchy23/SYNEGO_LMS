@@ -1,0 +1,198 @@
+{% extends "lms/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if provider %}Edit Provider{% else %}Add Provider{% endif %} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'lms:list_providers' %}" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left"></i> Back to Providers
+            </a>
+            <h1 class="h3">
+                {% if provider %}
+                    Edit Provider: {{ provider.name }}
+                {% else %}
+                    Add New Provider
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Provider Name *</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Short Name *</label>
+                                {{ form.short_name }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Provider Type</label>
+                                {{ form.provider_type }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Website</label>
+                                {{ form.website }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Logo</label>
+                            {{ form.logo }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Partnership Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Partnership Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Partnership Status</label>
+                                {{ form.partnership_status }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Partnership Start Date</label>
+                                {{ form.partnership_start_date }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Partnership End Date</label>
+                                {{ form.partnership_end_date }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Partnership Agreement</label>
+                            {{ form.partnership_agreement }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Contact Person</label>
+                            {{ form.contact_person }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contact Email</label>
+                                {{ form.contact_email }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contact Phone</label>
+                                {{ form.contact_phone }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Configuration -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">API Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">API Endpoint</label>
+                            {{ form.api_endpoint }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">API Key</label>
+                                {{ form.api_key }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">API Secret</label>
+                                {{ form.api_secret }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Webhook URL</label>
+                            {{ form.webhook_url }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Settings -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Is Active
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            {{ form.requires_voucher }}
+                            <label class="form-check-label" for="{{ form.requires_voucher.id_for_label }}">
+                                Requires Voucher
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Voucher Price</label>
+                            {{ form.voucher_price }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Save Provider
+                    </button>
+                    <a href="{% url 'lms:list_providers' %}" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

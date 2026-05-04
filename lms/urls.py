@@ -6,6 +6,8 @@ from . import views_enterprise_admin
 from . import views_enterprise_instructor
 from . import views_enterprise_learner
 from . import views_enterprise_dept_head
+from . import views_scheduling
+from . import views_certification
 
 # Namespace for the app
 app_name = 'lms'
@@ -60,10 +62,13 @@ urlpatterns = [
     # -------------------------------------------------------------------
     path('profile/', views.profile_view, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
-    path('dashboard/', views.student_dashboard, name='student_dashboard'),
-    path('dashboard/instructor/', views.instructor_dashboard, name='instructor_dashboard'),
-    path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
-    path('dashboard/department/', views.module_head_dashboard, name='module_head_dashboard'),
+    # Unified Dashboard - replaces role-specific dashboards
+    path('dashboard/', views.unified_dashboard, name='unified_dashboard'),
+    # Legacy dashboard routes (redirect to unified dashboard)
+    path('dashboard/student/', views.unified_dashboard, name='student_dashboard'),
+    path('dashboard/instructor/', views.unified_dashboard, name='instructor_dashboard'),
+    path('dashboard/admin/', views.unified_dashboard, name='admin_dashboard'),
+    path('dashboard/department/', views.unified_dashboard, name='module_head_dashboard'),
     
     # -------------------------------------------------------------------
     # Module Views
@@ -76,6 +81,40 @@ urlpatterns = [
     # -------------------------------------------------------------------
     path('courses/', views.course_list, name='course_list'),
     path('my-courses/', views.my_enrolled_courses, name='my_enrolled_courses'),
+    
+    # ===================================================================
+    # SCHEDULING & CALENDAR FEATURES (MUST BE BEFORE courses/<slug:slug>/)
+    # ===================================================================
+    
+    # Calendar & Timetable
+    path('calendar/', views_scheduling.calendar_view, name='calendar'),
+    path('calendar/<int:year>/<int:month>/', views_scheduling.calendar_view, name='calendar_month'),
+    
+    # Course Schedules (Public)
+    path('courses/upcoming/', views_scheduling.upcoming_courses, name='upcoming_courses'),
+    path('intake/<int:intake_id>/', views_scheduling.intake_detail, name='intake_detail'),
+    path('schedule/<int:schedule_id>/', views_scheduling.course_schedule_detail, name='course_schedule_detail'),
+    path('schedule/<int:schedule_id>/enroll/', views_scheduling.enroll_in_schedule, name='enroll_in_schedule'),
+    
+    # Admin/Instructor: CourseIntake Management
+    path('admin/intakes/', views_scheduling.manage_intakes, name='manage_intakes'),
+    path('admin/intakes/create/', views_scheduling.create_intake, name='create_intake'),
+    path('admin/intakes/create/<int:course_id>/', views_scheduling.create_intake, name='create_intake_for_course'),
+    path('admin/intakes/<int:intake_id>/edit/', views_scheduling.edit_intake, name='edit_intake'),
+    path('admin/intakes/<int:intake_id>/delete/', views_scheduling.delete_intake, name='delete_intake'),
+    path('admin/intakes/<int:intake_id>/duplicate/', views_scheduling.duplicate_intake, name='duplicate_intake'),
+    
+    # Instructor Schedule Management
+    path('instructor/schedule/create/', views_scheduling.create_course_schedule, name='create_course_schedule'),
+    path('instructor/schedule/<int:schedule_id>/sessions/', views_scheduling.manage_class_sessions, name='manage_class_sessions'),
+    path('instructor/session/<int:session_id>/attendance/', views_scheduling.take_attendance, name='take_attendance'),
+    path('instructor/schedule/<int:schedule_id>/advertise/', views_scheduling.create_advertisement, name='create_advertisement'),
+    
+    # Student View
+    path('my-schedule/', views_scheduling.my_schedule, name='my_schedule'),
+    
+    # Redirect old numeric course IDs to slug-based URLs
+    path('courses/<int:course_id>/', views.course_redirect_to_slug, name='course_redirect'),
     path('courses/<slug:slug>/', views.course_detail, name='course_detail'),
     path('courses/<slug:slug>/enroll/', views.enroll_course, name='enroll_course'),
     path('courses/<slug:slug>/unenroll/', views.unenroll_course, name='unenroll_course'),
@@ -96,6 +135,7 @@ urlpatterns = [
     # -------------------------------------------------------------------
     # Assignment & Submission Views (Student)
     # -------------------------------------------------------------------
+    path('assignments/', views.student_assignment_list, name='student_assignment_list'),
     path('assignment/<int:assignment_id>/', views.assignment_detail, name='assignment_detail'),
     path('assignment/<int:assignment_id>/submit/', views.submit_assignment, name='submit_assignment'),
     path('submission/<int:submission_id>/', views.view_submission, name='view_submission'),
@@ -136,6 +176,34 @@ urlpatterns = [
     path('instructor/assignment/<int:assignment_id>/delete/', 
          views.delete_assignment, 
          name='delete_assignment'),
+    
+    # -------------------------------------------------------------------
+    # Document Storage & Management
+    # -------------------------------------------------------------------
+    path('documents/', 
+         views.document_storage_list, 
+         name='document_storage_list'),
+    path('documents/upload/', 
+         views.document_upload, 
+         name='document_upload'),
+    path('documents/<slug:slug>/', 
+         views.document_detail, 
+         name='document_detail'),
+    path('documents/<slug:slug>/download/', 
+         views.document_download, 
+         name='document_download'),
+    path('documents/<slug:slug>/delete/', 
+         views.document_delete, 
+         name='document_delete'),
+    path('documents/<slug:slug>/edit/', 
+         views.document_edit, 
+         name='document_edit'),
+    path('documents/<slug:slug>/share/', 
+         views.document_share, 
+         name='document_share'),
+    path('assignment/<int:assignment_id>/import-document/', 
+         views.document_import_assignment_endpoint, 
+         name='document_import_from_assignment'),
     
     # -------------------------------------------------------------------
     # Course Management (Instructor)
@@ -183,6 +251,10 @@ urlpatterns = [
          views.admin_edit_module, 
          name='admin_edit_module'),
     path('admin-panel/reports/', views.admin_reports, name='admin_reports'),
+    path('admin-panel/reports/financial/', views.financial_reports, name='financial_reports'),
+    path('admin-panel/reports/download/<str:report_type>/<str:file_format>/', 
+         views.download_report, 
+         name='download_report_format'),
     path('admin-panel/reports/download/<str:report_type>/', 
          views.download_report, 
          name='download_report'),
@@ -192,6 +264,7 @@ urlpatterns = [
      # Course Material Management (Admin)
      path('admin-panel/course/<slug:course_slug>/manage/', views.manage_course, name='manage_course'),
      path('admin-panel/course/<slug:course_slug>/add-material/', views.add_course_material, name='add_course_material'),
+     path('admin-panel/add-chapter/', views.select_course_for_chapter, name='select_course_for_chapter'),
      path('admin-panel/course/<slug:course_slug>/add-chapter/', views.admin_add_chapter, name='admin_add_chapter'),
      path('admin-panel/course/<slug:course_slug>/add-assignment/', views.admin_add_assignment, name='admin_add_assignment'),
      path('admin-panel/course/<slug:course_slug>/add-quiz/', views.admin_add_quiz, name='admin_add_quiz'),
@@ -210,8 +283,15 @@ urlpatterns = [
     # Bulk Operations (Admin)
     # -------------------------------------------------------------------
     path('admin-panel/bulk-enroll/download-template/', views.download_bulk_enroll_template, name='download_bulk_enroll_template'),
+    path('admin-panel/bulk-upload/download-template/', views.download_bulk_courses_template, name='download_bulk_courses_template'),
     path('admin-panel/bulk-enroll/', views.bulk_enroll_students, name='bulk_enroll_students'),
     path('admin-panel/bulk-upload/', views.bulk_upload_courses, name='bulk_upload_courses'),
+    
+    # -------------------------------------------------------------------
+    # Course Management (Admin)
+    # -------------------------------------------------------------------
+    path('admin-panel/courses/create/', views.admin_create_course, name='admin_create_course'),
+    path('admin-panel/courses/<slug:course_slug>/edit/', views.admin_edit_course, name='admin_edit_course'),
     
     # -------------------------------------------------------------------
     # Certificate Views
@@ -266,48 +346,36 @@ urlpatterns = [
     path('grades/', views.my_grades, name='my_grades'),
     path('grades/<slug:course_slug>/', views.course_grades, name='course_grades'),
     
+    # ===================================================================
+    # CERTIFICATION PROGRAMS (Third-Party Integration)
+    # ===================================================================
+    
+    # Student: Certification Catalog & Registration
+    path('certifications/', views_certification.certification_catalog, name='certification_catalog'),
+    path('certification/<int:certification_id>/', views_certification.certification_detail, name='certification_detail'),
+    path('certification/<int:certification_id>/register/', views_certification.register_for_exam, name='register_for_exam'),
+    path('exam-registration/<int:registration_id>/payment/', views_certification.exam_payment, name='exam_payment'),
+    path('my-certifications/', views_certification.my_certifications, name='my_certifications'),
+    
+    # Admin: Provider Management
+    path('admin-panel/certification-providers/', views_certification.list_providers, name='list_providers'),
+    path('admin-panel/certification-providers/add/', views_certification.create_provider, name='create_provider'),
+    path('admin-panel/certification-providers/<int:provider_id>/edit/', views_certification.edit_provider, name='edit_provider'),
+    
+    # Admin: Certification Management
+    path('admin-panel/certifications/', views_certification.list_certifications, name='list_certifications'),
+    path('admin-panel/certifications/add/', views_certification.create_certification, name='create_certification'),
+    path('admin-panel/certifications/<int:certification_id>/edit/', views_certification.edit_certification, name='edit_certification'),
+    
+    # Webhook for Provider Results
+    path('webhooks/certification/<int:provider_id>/', views_certification.certification_webhook, name='certification_webhook'),
+    
     # -------------------------------------------------------------------
     # Help & Support
     # -------------------------------------------------------------------
     path('help/', views.help_center, name='help_center'),
     path('help/<slug:topic>/', views.help_topic, name='help_topic'),
     path('support/ticket/', views.create_support_ticket, name='create_support_ticket'),
-    
-    # ===================================================================
-    # ENTERPRISE ADMIN FEATURES
-    # ===================================================================
-    
-    # AI Administration
-    path('admin/ai/models/', views_enterprise_admin.ai_models_view, name='ai_models'),
-    path('admin/ai/config/', views_enterprise_admin.ai_model_config_view, name='ai_config'),
-    path('admin/ai/performance/', views_enterprise_admin.ai_performance_view, name='ai_performance'),
-    
-    # Blockchain
-    path('admin/blockchain/contracts/', views_enterprise_admin.smart_contracts_view, name='smart_contracts'),
-    path('admin/blockchain/registry/', views_enterprise_admin.contract_registry_view, name='contract_registry'),
-    
-    # Integrations & API
-    path('admin/api/management/', views_enterprise_admin.api_management_view, name='api_management'),
-    path('admin/integrations/third-party/', views_enterprise_admin.third_party_services_view, name='third_party_services'),
-    path('admin/integrations/webhooks/', views_enterprise_admin.webhooks_view, name='webhooks'),
-    
-    # Security & Compliance
-    path('admin/security/authentication/', views_enterprise_admin.authentication_config_view, name='authentication'),
-    path('admin/security/encryption/', views_enterprise_admin.encryption_keys_view, name='encryption'),
-    path('admin/security/audit-trail/', views_enterprise_admin.audit_trail_view, name='audit_trail'),
-    path('admin/security/compliance/', views_enterprise_admin.compliance_view, name='compliance'),
-    
-    # System Configuration
-    path('admin/config/email/', views_enterprise_admin.email_config_view, name='email_config'),
-    path('admin/config/storage-backup/', views_enterprise_admin.storage_backup_view, name='storage_backup'),
-    path('admin/config/theme/', views_enterprise_admin.theme_customization_view, name='theme'),
-    path('admin/config/plugins/', views_enterprise_admin.plugins_view, name='plugins'),
-    path('admin/config/licenses/', views_enterprise_admin.licenses_view, name='licenses'),
-    
-    # Enterprise Analytics
-    path('admin/analytics/bi/', views_enterprise_admin.bi_integration_view, name='bi_integration'),
-    path('admin/analytics/reports/', views_enterprise_admin.report_scheduling_view, name='report_scheduling'),
-    path('admin/analytics/health/', views_enterprise_admin.system_health_view, name='system_health'),
     
     # ===================================================================
     # ENTERPRISE INSTRUCTOR FEATURES
@@ -325,10 +393,6 @@ urlpatterns = [
     # Advanced Assessment
     path('instructor/assessment/code-exercises/', views_enterprise_instructor.code_exercises_view, name='code_exercises'),
     path('instructor/assessment/proctoring/', views_enterprise_instructor.proctoring_view, name='proctoring'),
-    
-    # Blockchain & Credentials
-    path('instructor/credentials/issue-certificates/', views_enterprise_instructor.issue_certificates_view, name='issue_certificates'),
-    path('instructor/credentials/mint-badges/', views_enterprise_instructor.mint_badges_view, name='mint_badges'),
     
     # Teaching Analytics
     path('instructor/analytics/engagement/', views_enterprise_instructor.engagement_dashboard_view, name='engagement_dashboard'),
@@ -351,11 +415,6 @@ urlpatterns = [
     # Collaboration
     path('learner/collaboration/study-groups/', views_enterprise_learner.study_groups_view, name='study_groups'),
     path('learner/collaboration/peer-reviews/', views_enterprise_learner.peer_reviews_view, name='peer_reviews'),
-    
-    # Blockchain & Credentials
-    path('learner/credentials/certificates/', views_enterprise_learner.verified_certificates_view, name='verified_certificates'),
-    path('learner/credentials/badges/', views_enterprise_learner.nft_badges_view, name='nft_badges'),
-    path('learner/credentials/wallet/', views_enterprise_learner.my_wallet_view, name='my_wallet'),
     
     # Personal Analytics
     path('learner/analytics/learning-analytics/', views_enterprise_learner.learning_analytics_view, name='learning_analytics'),
@@ -382,6 +441,7 @@ urlpatterns = [
     # Analytics
     path('dept-head/analytics/cohort-comparison/', views_enterprise_dept_head.cohort_comparison_view, name='cohort_comparison'),
     path('dept-head/analytics/cross-course/', views_enterprise_dept_head.cross_course_analytics_view, name='cross_course_analytics'),
+    
 ]
 
 # -------------------------------------------------------------------

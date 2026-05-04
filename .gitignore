@@ -4,27 +4,89 @@ __pycache__/
 *.pyo
 *.pyd
 *.so
+*.egg-info/
+dist/
+build/
 
 # Virtual environments
 venv/
 .venv/
 env/
+ENV/
+env.bak/
+venv.bak/
 
 # Django
-
+*.sqlite3
+db.sqlite3
+/staticfiles/
+/media/
+/static/
+*.log
+migrations/__pycache__/
+.django_db_shell_history
 
 # Environment
 .env
+.env.local
+.env.*.local
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.code-workspace
 
 # Test / coverage
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.tox/
+pytest.ini
 
 # OS
 .DS_Store
 Thumbs.db
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# Celery
+celerybeat-schedule
+dump.rdb
+
+# Database backups
+*.sql
+db_dump_*.sql
+
+# Logs
+logs/
+*.log
+*.pot
+
+# pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Node (if using npm/yarn)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# IDE specific
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+

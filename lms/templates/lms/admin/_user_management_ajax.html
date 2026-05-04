@@ -1,0 +1,142 @@
+<!-- User Management Content -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0"><i class="fas fa-users me-2"></i>User Management</h1>
+    <div>
+        <a href="{% url 'lms:admin_add_student' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus me-2"></i>Add New User
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-select" onchange="loadAjaxContent(this.form)">
+                    <option value="">All Roles</option>
+                    {% for role_value, role_label in role_choices %}
+                        <option value="{{ role_value }}" {% if role_filter == role_value %}selected{% endif %}>
+                            {{ role_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select" onchange="loadAjaxContent(this.form)">
+                    <option value="">All</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Approval</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Search</label>
+                <input type="text" name="q" class="form-control" placeholder="Name, email, username..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100 btn-sm">Filter</button>
+            </div>
+            <input type="hidden" name="ajax" value="true">
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="padding: 12px 15px;">Name</th>
+                        <th style="padding: 12px 15px;">Email</th>
+                        <th style="padding: 12px 15px;">Role</th>
+                        <th style="padding: 12px 15px;">Status</th>
+                        <th style="padding: 12px 15px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in page_obj %}
+                    <tr>
+                        <td style="padding: 12px 15px; vertical-align: middle;">{{ user.get_full_name|default:user.username }}</td>
+                        <td style="padding: 12px 15px; vertical-align: middle;">{{ user.email }}</td>
+                        <td style="padding: 12px 15px; vertical-align: middle;">
+                            <span class="badge bg-info text-dark">{{ user.get_role_display }}</span>
+                        </td>
+                        <td style="padding: 12px 15px; vertical-align: middle;">
+                            {% if user.is_approved %}
+                                <span class="badge bg-success">Approved</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 12px 15px; vertical-align: middle;">
+                            <a href="{% url 'lms:admin_edit_user' user.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'lms:admin_delete_user' user.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px 15px; color: #999;">No users found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav style="margin-top: 20px;" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}&ajax=true">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}&ajax=true">Previous</a>
+            </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}&ajax=true">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}&ajax=true">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}&ajax=true">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<script>
+function loadAjaxContent(form) {
+    const url = new URL(form.action || window.location.href);
+    const formData = new FormData(form);
+    formData.append('ajax', 'true');
+    
+    const params = new URLSearchParams(formData);
+    fetch('?' + params.toString())
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('content-container').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>

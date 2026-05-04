@@ -1,0 +1,188 @@
+﻿<!-- lms/templates/lms/certification/certifications/create.html -->
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Create Certification - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout glass-dashboard" style="padding: 0; margin: 0;">
+    {% include "lms/partials/_sidebar.html" with active_page='admin_dashboard' %}
+    
+    <div class="dashboard-main" style="padding: 20px;">
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">
+            <i class="fas fa-plus-circle text-primary me-2"></i>
+            Add New Certification
+        </h4>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <h5 class="mb-3">Basic Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Provider *</label>
+                    <select name="provider" class="form-select" required>
+                        <option value="">Select a provider</option>
+                        {% for provider in providers %}
+                            {% if provider.is_active %}
+                                <option value="{{ provider.id }}">{{ provider.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Certification Code *</label>
+                    <input type="text" name="code" class="form-control" required>
+                    <small class="text-muted">e.g., "SEC-PLUS", "CISSP", "CEH"</small>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Title *</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Full Title</label>
+                    <input type="text" name="full_title" class="form-control" placeholder="Complete formal title">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Description *</label>
+                <textarea name="description" class="form-control" rows="3" required></textarea>
+            </div>
+            
+            <!-- Exam Details -->
+            <h5 class="mt-4 mb-3">Exam Details</h5>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Difficulty Level *</label>
+                    <select name="difficulty" class="form-select" required>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Duration (minutes) *</label>
+                    <input type="number" name="exam_duration_minutes" class="form-control" value="90" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Number of Questions *</label>
+                    <input type="number" name="number_of_questions" class="form-control" value="90" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Passing Score %</label>
+                    <input type="number" name="passing_percentage" class="form-control" min="0" max="100" value="70">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Exam Code</label>
+                <input type="text" name="exam_code" class="form-control" placeholder="Official exam code from provider">
+            </div>
+            
+            <!-- Validity & Renewal -->
+            <h5 class="mt-4 mb-3">Validity & Renewal</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Valid For (Years) *</label>
+                    <input type="number" name="validity_years" class="form-control" value="3" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">CEUs Required for Renewal</label>
+                    <input type="number" name="continuing_education_units" class="form-control" value="0">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Renewal Requirements</label>
+                <textarea name="renewal_requirements" class="form-control" rows="2" placeholder="Describe renewal process..."></textarea>
+            </div>
+            
+            <!-- Synego Course Mapping -->
+            <h5 class="mt-4 mb-3">Synego Course Mapping (Optional)</h5>
+            <div class="mb-3">
+                <label class="form-label">Recommended Training Course</label>
+                <select name="synego_course" class="form-select">
+                    <option value="">-- No course mapping --</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.title }}</option>
+                    {% endfor %}
+                </select>
+                <small class="text-muted">Link a training course to this certification</small>
+            </div>
+            
+            <!-- Pricing -->
+            <h5 class="mt-4 mb-3">Pricing</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Exam Voucher Price *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" name="exam_voucher_price" class="form-control" step="0.01" required>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Training Materials Price (Optional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" name="training_material_price" class="form-control" step="0.01">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Media & Documents -->
+            <h5 class="mt-4 mb-3">Media & Documents</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Logo</label>
+                    <input type="file" name="logo" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Featured Image</label>
+                    <input type="file" name="featured_image" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Syllabus (PDF)</label>
+                    <input type="file" name="syllabus_pdf" class="form-control" accept=".pdf">
+                </div>
+            </div>
+            
+            <!-- Status -->
+            <h5 class="mt-4 mb-3">Status</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="isActive" checked>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured">
+                        <label class="form-check-label" for="isFeatured">Featured on catalog</label>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'lms:list_certifications' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i> Create Certification
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

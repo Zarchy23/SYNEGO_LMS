@@ -28,6 +28,7 @@ from .base import (
     Notification,
     SystemLog,
     StudentProgress,
+    DocumentStorage,
 )
 
 # Phase 2A: Course Hierarchy Models (phase2_hierarchy.py)
@@ -82,6 +83,29 @@ from .phase2c_assessments import (
     StudentCompetency,
 )
 
+# Scheduling & Calendar (scheduling.py)
+from .scheduling import (
+    CourseIntake,
+    IntakeEnrollment,
+    ClassSession,
+    SessionAttendance,
+    CalendarEvent,
+    CourseAdvertisement,
+    CourseReminder,
+    # Backward compatibility
+    CourseSchedule,
+    ScheduleEnrollment,
+)
+
+# Certification Partners (certification_partners.py)
+from .certification_partners import (
+    CertificationProvider,
+    Certification,
+    ExamRegistration,
+    StudentCertification,
+    PartnerIntegrationLog,
+)
+
 __all__ = [
     # Helper functions
     'generate_certificate_id',
@@ -103,6 +127,7 @@ __all__ = [
     'Notification',
     'SystemLog',
     'StudentProgress',
+    'DocumentStorage',
     # Phase 2A Hierarchy
     'Module',
     'Section',
@@ -143,4 +168,21 @@ __all__ = [
     'CourseAnalytics',
     'CompetencyFramework',
     'StudentCompetency',
+    # Scheduling & Calendar
+    'CourseIntake',
+    'IntakeEnrollment',
+    'ClassSession',
+    'SessionAttendance',
+    'CalendarEvent',
+    'CourseAdvertisement',
+    'CourseReminder',
+    # Backward compatibility aliases
+    'CourseSchedule',
+    'ScheduleEnrollment',
+    # Certification Partners
+    'CertificationProvider',
+    'Certification',
+    'ExamRegistration',
+    'StudentCertification',
+    'PartnerIntegrationLog',
 ]

@@ -1,0 +1,168 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Edit Course - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    
+    .form-section-title {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: #1f3a5d;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #2f80ed;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #1f3a5d;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 0.95em;
+    }
+    
+    .form-control:focus {
+        border-color: #2f80ed;
+        box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.1);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .course-info-box {
+        background: #f0f5ff;
+        border-left: 4px solid #2f80ed;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="authenticated-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-edit me-2"></i>Edit Course</h1>
+        <p>Update course details and settings</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Course Info Box -->
+    <div class="course-info-box">
+        <strong>Current Course:</strong> {{ course.title }} ({{ course.code }})
+    </div>
+
+    <!-- Edit Course Form -->
+    <form method="POST" class="form-card">
+        {% csrf_token %}
+        
+        <h3 class="form-section-title"><i class="fas fa-info-circle me-2"></i>Course Information</h3>
+        
+        <!-- Course Title -->
+        <div class="form-group">
+            <label for="title" class="form-label">Course Title <span style="color: red;">*</span></label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="title" 
+                name="title" 
+                value="{{ course.title }}"
+                placeholder="e.g., Introduction to Python Programming"
+                required
+            >
+            <small class="text-muted d-block mt-2">Enter a clear and descriptive course title</small>
+        </div>
+
+        <!-- Course Code -->
+        <div class="form-group">
+            <label for="code" class="form-label">Course Code <span style="color: red;">*</span></label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="code" 
+                name="code" 
+                value="{{ course.code }}"
+                placeholder="e.g., COMP101"
+                required
+            >
+            <small class="text-muted d-block mt-2">Unique identifier for the course</small>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+            <label for="department_id" class="form-label">Department <span style="color: red;">*</span></label>
+            <select class="form-control" id="department_id" name="department_id" required>
+                <option value="">-- Select Department --</option>
+                {% for department in departments %}
+                    <option value="{{ department.id }}" {% if department.id == course.department.id %}selected{% endif %}>
+                        {{ department.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <small class="text-muted d-block mt-2">Select the department that manages this course</small>
+        </div>
+
+        <!-- Course Description -->
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+                class="form-control" 
+                id="description" 
+                name="description" 
+                placeholder="Enter a detailed course description..."
+            >{{ course.description }}</textarea>
+            <small class="text-muted d-block mt-2">Provide a comprehensive overview of the course</small>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+            <a href="{% url 'lms:course_list' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-times me-2"></i>Cancel
+            </a>
+        </div>
+    </form>
+
+    <!-- Help Section -->
+    <div class="form-card bg-light">
+        <h5 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Editing Tips</h5>
+        <ul class="text-muted mb-0">
+            <li><strong>Course Title:</strong> Update to reflect the latest version or focus</li>
+            <li><strong>Course Code:</strong> Typically shouldn't change, but can be updated if the code scheme changes</li>
+            <li><strong>Department:</strong> Move the course to a different department if needed</li>
+            <li><strong>Description:</strong> Keep the description up-to-date with current content and objectives</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

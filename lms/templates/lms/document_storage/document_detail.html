@@ -1,0 +1,161 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}{{ document.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-layout" style="padding: 0; margin: 0;">
+    <div class="dashboard-main" style="padding: 0; margin: 0; margin-left: 0; width: 100%;">
+        <div style="padding: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                <div>
+                    <h1 style="margin: 0 0 10px 0; font-size: 32px; font-weight: 600; color: #333;">
+                        {{ document.get_file_icon }} {{ document.name }}
+                    </h1>
+                    <div style="color: #999; font-size: 14px;">
+                        <span style="background: #f0f0f0; padding: 4px 12px; border-radius: 3px; display: inline-block; margin-right: 10px;">
+                            {{ document.get_document_type_display }}
+                        </span>
+                        <span>Uploaded {{ document.uploaded_at|date:"F d, Y" }} by {{ document.uploaded_by.get_full_name|default:document.uploaded_by.username }}</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    {% if can_download %}
+                        <a href="{% url 'lms:document_download' document.slug %}" style="padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: 600;">
+                            ⬇️ Download
+                        </a>
+                    {% endif %}
+                    {% if can_delete %}
+                        <a href="{% url 'lms:document_delete' document.slug %}" style="padding: 12px 24px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-weight: 600;">
+                            🗑️ Delete
+                        </a>
+                        <a href="{% url 'lms:document_edit' document.slug %}" style="padding: 12px 24px; background-color: #ffc107; color: white; text-decoration: none; border-radius: 4px; font-weight: 600;">
+                            ✏️ Edit
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 30px;">
+                <!-- Main Content -->
+                <div>
+                    {% if document.description %}
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                            <h3 style="margin: 0 0 10px 0; color: #333;">Description</h3>
+                            <p style="margin: 0; color: #666; line-height: 1.6;">{{ document.description }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div style="background: white; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin: 0 0 20px 0; color: #333;">📋 Document Information</h3>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">File Name:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.file.name|default:"N/A" }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">File Size:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.file_size_mb }} MB</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">File Type:</td>
+                                <td style="padding: 12px; color: #333;"><code style="background: #f0f0f0; padding: 4px 8px; border-radius: 3px;">{{ document.file_extension|default:"unknown" }}</code></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">Uploaded:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.uploaded_at|date:"F d, Y \a\t H:i" }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">Last Updated:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.updated_at|date:"F d, Y \a\t H:i" }}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px; color: #666; font-weight: 500;">Views:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.view_count }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; color: #666; font-weight: 500;">Downloads:</td>
+                                <td style="padding: 12px; color: #333;">{{ document.download_count }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div>
+                    <!-- Quick Actions -->
+                    <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 15px 0; color: #667eea;">Quick Info</h4>
+                        <div style="font-size: 13px; color: #666; line-height: 1.8;">
+                            <div>✅ <strong>Accessibility:</strong></div>
+                            <div style="margin-left: 20px; margin-bottom: 10px;">
+                                {% if document.is_public %}
+                                    <span style="color: #28a745;">🔓 Public</span>
+                                {% else %}
+                                    <span style="color: #ffc107;">🔒 Private</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div>⚙️ <strong>Permissions:</strong></div>
+                            <div style="margin-left: 20px; margin-bottom: 10px;">
+                                {% if document.can_download %}
+                                    <div style="color: #28a745;">✓ Download enabled</div>
+                                {% endif %}
+                                {% if document.can_view_online %}
+                                    <div style="color: #28a745;">✓ Online viewing enabled</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    {% if tags_list %}
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: #333;">📌 Tags</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                {% for tag in tags_list %}
+                                    <a href="?search={{ tag|urlencode }}" style="display: inline-block; padding: 6px 12px; background-color: #667eea; color: white; border-radius: 20px; font-size: 12px; text-decoration: none;">
+                                        {{ tag }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Course -->
+                    {% if document.course %}
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: #333;">📚 Related Course</h4>
+                            <a href="{% url 'lms:course_detail' document.course.slug %}" style="color: #667eea; text-decoration: none; font-weight: 600;">
+                                {{ document.course.title }}
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <!-- Statistics -->
+                    <div style="background: white; padding: 20px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 15px 0; color: #333;">📊 Statistics</h4>
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: 15px;">
+                                <div style="font-size: 28px; font-weight: 600; color: #667eea;">{{ document.view_count }}</div>
+                                <div style="color: #999; font-size: 12px;">Total Views</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 28px; font-weight: 600; color: #28a745;">{{ document.download_count }}</div>
+                                <div style="color: #999; font-size: 12px;">Total Downloads</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 30px;">
+                <a href="{% url 'lms:document_storage_list' %}" style="padding: 10px 20px; background-color: #999; color: white; text-decoration: none; border-radius: 4px; font-weight: 600;">
+                    ← Back to Documents
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -44,32 +44,294 @@
             background-color: var(--bg-light);
             color: #1f2835;
             margin: 0;
-            padding-top: 80px;
+            min-height: 100vh;
         }
-
-        .navbar {
-            padding: 0.9rem 1rem;
-            transition: background-color 0.3s ease;
+        
+        /* AUTHENTICATED USER LAYOUT */
+        body.authenticated-user {
+            padding-left: 280px;
         }
-
-        .navbar-brand {
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            font-size: 1.45rem;
+        
+        /* ============================================================
+           SIDEBAR STYLES
+        ============================================================ */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0;
         }
-
-        .navbar-brand span {
-            color: var(--secondary-color);
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(0, 119, 182, 0.1));
         }
-
-        .navbar-nav .nav-link {
-            color: #e9edf5;
+        
+        .sidebar-header-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #00b4d8;
+            display: block;
+        }
+        
+        .sidebar-header-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #fff;
+            line-height: 1.3;
+        }
+        
+        .sidebar-profile {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .sidebar-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #00b4d8;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-avatar-placeholder {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: 3px solid #fff;
+        }
+        
+        .sidebar-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-role {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            list-style: none;
+            padding-right: 10px;
+        }
+        
+        .nav-item {
+            list-style: none;
+            margin: 0;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item > a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
             font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .nav-item > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #00b4d8;
+            color: #fff;
+        }
+        
+        .nav-item > a.active {
+            background: rgba(0, 180, 216, 0.1);
+            border-left-color: #00b4d8;
+            color: #00b4d8;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+        
+        .nav-item.has-submenu > a::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.75rem;
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item.has-submenu > a.active::after {
+            transform: rotate(180deg);
+        }
+        
+        .nav-submenu {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 180, 216, 0.05);
+        }
+        
+        .nav-item.has-submenu.open > .nav-submenu {
+            max-height: 800px;
+        }
+        
+        .nav-submenu .nav-item > a {
+            padding: 10px 25px 10px 60px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            border-left: none;
+        }
+        
+        .nav-submenu .nav-item > a:hover {
+            background: rgba(0, 180, 216, 0.15);
+            color: rgba(255, 255, 255, 0.9);
+            border-left: none;
+        }
+        
+        .nav-submenu .nav-item > a.active {
+            background: rgba(0, 180, 216, 0.2);
+            color: #00b4d8;
+            border-left: none;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-footer a:hover {
+            color: #fff;
+        }
+        
+        .sidebar-footer i {
+            margin-right: 10px;
+            width: 24px;
+        }
+        
+        /* Hide sidebar on mobile */
+        @media (max-width: 992px) {
+            body.authenticated-user {
+                padding-left: 0;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 1001;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
         }
 
-        .navbar-nav .nav-link:hover,
-        .navbar-nav .nav-link.active {
-            color: #ffffff;
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: none;
+            z-index: 1002;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        @media (max-width: 992px) {
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        
+        /* Main Content Area */
+        .main-content-wrapper {
+            padding: 20px 30px;
+            min-height: 100vh;
+        }
+
+        .dropdown-toggle::after {
+            border-top-color: #666 !important;
+        }
+
+        .nav-link.dropdown-toggle:hover::after {
+            border-top-color: #1a1a2e !important;
+        }
+
+        /* Hide nav items for authenticated users (show only body section) */
+        .authenticated-user .navbar-nav > li:not(.dropdown) {
+            display: none;
         }
 
         .btn-primary {
@@ -82,338 +344,1191 @@
             border-color: #1f69db;
         }
 
-        .btn-outline-white {
-            color: white;
-            border-color: rgba(255,255,255,0.75);
-        }
-
-        .btn-outline-white:hover {
-            color: white;
-            background-color: rgba(255,255,255,0.12);
-            border-color: rgba(255,255,255,0.9);
-        }
-
-        .hero-section {
-            background-image:
-                linear-gradient(120deg, rgba(16, 33, 57, 0.82), rgba(28, 69, 120, 0.72)),
-                url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 90px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 85% 25%, rgba(255,255,255,0.2), rgba(255,255,255,0) 36%);
-            pointer-events: none;
-        }
-
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            right: -120px;
-            bottom: -70px;
-            width: 320px;
-            height: 320px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%;
-        }
-
-        .hero-section .container {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-text {
-            max-width: 560px;
-        }
-
-        .hero-text h1 {
-            font-size: clamp(2.8rem, 2.8vw, 4.2rem);
-            line-height: 1.05;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .hero-text p {
-            max-width: 680px;
-            color: rgba(255,255,255,0.85);
-            font-size: 1.05rem;
-            margin-bottom: 1.75rem;
-        }
-
-        .hero-card {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 18px;
-            color: white;
-            padding: 24px;
-            min-height: 150px;
-        }
-
-        .hero-card .icon {
-            font-size: 1.5rem;
-            color: #ffffff;
-            margin-bottom: 16px;
-        }
-
-        .section {
-            padding: 70px 0;
-        }
-
-        .section-title {
-            margin-bottom: 2rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            line-height: 1.1;
-            font-weight: 700;
-        }
-
-        .section-title p {
-            color: var(--text-muted);
-            max-width: 700px;
-        }
-
-        .feature-card,
-        .stat-card,
-        .course-card {
-            border: 1px solid rgba(46, 68, 99, 0.12);
-            border-radius: 18px;
-            background: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover,
-        .stat-card:hover,
-        .course-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 24px 40px rgba(31, 58, 93, 0.08);
-        }
-
-        .feature-card {
-            padding: 28px;
-            min-height: 220px;
-        }
-
-        .feature-card .icon {
-            font-size: 1.6rem;
-            color: var(--secondary-color);
-            margin-bottom: 18px;
-        }
-
-        .stat-card {
-            padding: 28px;
-        }
-
-        .stat-card h3 {
-            font-size: 2.4rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .course-card .card-img-top {
-            height: 230px;
-            object-fit: cover;
-            border-top-left-radius: 18px;
-            border-top-right-radius: 18px;
-        }
-
-        .course-card .card-body {
-            padding: 1.25rem;
-        }
-
-        .course-card .badge {
-            font-size: 0.8rem;
-            letter-spacing: 0.02em;
-        }
-
-        .modules-list {
-            gap: 1rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        .module-chip {
-            padding: 18px 20px;
-            border-radius: 16px;
-            background: #ffffff;
-            border: 1px solid rgba(46, 68, 99, 0.12);
-            transition: transform 0.3s ease;
-        }
-
-        .module-chip:hover {
-            transform: translateY(-4px);
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #2f80ed 0%, #17a2b8 100%);
-            color: white;
-            padding: 70px 0;
-            border-radius: 24px;
-        }
-
         .alert {
             border-radius: 14px;
+            margin-bottom: 20px;
         }
-
-        .dashboard-layout {
-            display: block;
+        
+        /* ============================================================
+           UNIFIED AUTHENTICATED PAGE STYLES
+        ============================================================ */
+        
+        /* Page Container */
+        .authenticated-page {
+            background: var(--bg-light);
+            min-height: 100vh;
+            width: 100%;
         }
-
-        .dashboard-sidebar {
-            position: fixed;
-            top: 96px;
-            left: 16px;
-            width: 260px;
-            max-height: calc(100vh - 112px);
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid rgba(46, 68, 99, 0.12);
-            border-radius: 16px;
-            padding: 1rem;
-            box-shadow: 0 12px 30px rgba(31, 58, 93, 0.08);
-            z-index: 1020;
+        
+        /* Page Header */
+        .page-header {
+            margin-bottom: 30px;
         }
-
-        .dashboard-sidebar .nav-link {
-            color: #314763;
-            border-radius: 10px;
-            padding: 0.55rem 0.7rem;
-            margin-bottom: 0.2rem;
-            font-weight: 500;
+        
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #1a1a2e;
         }
-
-        .dashboard-sidebar .nav-link:hover,
-        .dashboard-sidebar .nav-link.active {
-            background: rgba(47, 128, 237, 0.12);
-            color: #1f3a5d;
+        
+        .page-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 0;
         }
-
-        .dashboard-main {
-            margin-left: 284px;
-            width: calc(100% - 284px);
+        
+        /* Content Cards */
+        .content-card,
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .content-card:hover,
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .content-card.elevated,
+        .card.elevated {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        
+        /* Statistics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        /* Tables */
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+            background: white;
+        }
+        
+        .table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table thead th {
+            font-weight: 600;
+            color: #495057;
+            padding: 15px;
+            font-size: 0.95rem;
+            border: none;
+        }
+        
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-color: #f0f0f0;
+        }
+        
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f9fbff;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #667eea !important;
+            border-color: #667eea !important;
+            color: white !important;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5568d3 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268 !important;
+        }
+        
+        /* Forms */
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        /* List Styles */
+        .list-group-item {
+            border: 1px solid #f0f0f0;
+            padding: 15px;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
         @media (max-width: 991px) {
             body {
                 padding-top: 70px;
             }
-
-            .hero-section::after {
-                display: none;
-            }
-
-            .dashboard-sidebar {
-                position: static;
-                top: auto;
-                left: auto;
-                width: 100%;
-                max-height: none;
-                margin-bottom: 1rem;
-            }
-
-            .dashboard-main {
-                margin-left: 0;
-                width: 100%;
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
-        @media (max-width: 575px) {
-            .hero-section {
-                padding-top: 70px;
-                padding-bottom: 60px;
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
-
-            .hero-text h1 {
-                font-size: 2.4rem;
+            
+            .page-header h1 {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'lms:index' %}">
-                🏫 Synego <span>Institute</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-lg-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lms:course_list' %}"><i class="fas fa-book me-1"></i> Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lms:module_list' %}"><i class="fas fa-building me-1"></i> Modules</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lms:about' %}"><i class="fas fa-info-circle me-1"></i> About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lms:contact' %}"><i class="fas fa-envelope me-1"></i> Contact</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i>{{ user.first_name|default:user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'lms:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'lms:student_dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'lms:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'lms:login' %}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-primary rounded-pill px-4 py-2" href="{% url 'lms:register' %}"><i class="fas fa-user-plus me-2"></i>Register</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="{% if user.is_authenticated %}authenticated-user{% endif %}">
 
-    <div class="container mt-4">
+{% if user.is_authenticated %}
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="mainSidebar">
+        <!-- School Branding Section -->
+        <div class="sidebar-header">
+            <i class="fas fa-graduation-cap sidebar-header-icon"></i>
+            <div class="sidebar-header-title">Synego<br>Learning Institute</div>
+        </div>
+        
+        <!-- Profile Section -->
+        <div class="sidebar-profile">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar-placeholder">
+                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                </div>
+            {% endif %}
+            <div class="sidebar-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="sidebar-role">{{ user.get_role_display }}</div>
+        </div>
+        
+        <!-- Navigation - LEARNER -->
+        {% if user.role == 'learner' %}
+        <ul class="sidebar-nav">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="{% url 'lms:unified_dashboard' %}" class="{% if '/dashboard/' in request.path %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            
+            <!-- Courses Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-book"></i>
+                    Courses
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:course_list' %}">
+                            <i class="fas fa-list"></i> Browse Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:my_enrolled_courses' %}">
+                            <i class="fas fa-check-circle"></i> My Enrolled
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:upcoming_courses' %}">
+                            <i class="fas fa-clock"></i> Upcoming Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_upload' %}">
+                            <i class="fas fa-file-upload"></i> Add Materials
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Assessments Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-question-circle"></i>
+                    Assessments
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:student_assignment_list' %}">
+                            <i class="fas fa-tasks"></i> My Assignments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:my_grades' %}">
+                            <i class="fas fa-star"></i> My Grades
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:my_progress' %}">
+                            <i class="fas fa-chart-line"></i> My Progress
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Certifications Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-award"></i>
+                    Certifications
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:certification_catalog' %}">
+                            <i class="fas fa-compass"></i> Browse Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:my_certifications' %}">
+                            <i class="fas fa-certificate"></i> My Certifications
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Schedule -->
+            <li class="nav-item">
+                <a href="{% url 'lms:my_schedule' %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    My Schedule
+                </a>
+            </li>
+            
+            <!-- Certificates Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-certificate"></i>
+                    Certifications
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:certification_catalog' %}">
+                            <i class="fas fa-compass"></i> Browse Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:my_certifications' %}">
+                            <i class="fas fa-certificate"></i> My Certifications
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Profile Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:profile' %}">
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:edit_profile' %}">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:notification_list' %}">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        {% endif %}
+        
+        <!-- Navigation - INSTRUCTOR -->
+        {% if user.role == 'instructor' %}
+        <ul class="sidebar-nav">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="{% url 'lms:unified_dashboard' %}">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'lms:instructor_dashboard' %}">
+                    <i class="fas fa-chalkboard-user"></i>
+                    Instructor Dashboard
+                </a>
+            </li>
+            
+            <!-- Courses Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-book"></i>
+                    Courses
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:course_list' %}">
+                            <i class="fas fa-list"></i> Browse Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:select_course_for_chapter' %}">
+                            <i class="fas fa-layer-group"></i> Add Chapter
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_upload' %}">
+                            <i class="fas fa-file-upload"></i> Add Materials
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Assignments Submenu -->
+            <li class="nav-item">
+                <a href="{% url 'lms:instructor_assignments' %}">
+                    <i class="fas fa-file-alt"></i>
+                    Assignments
+                </a>
+            </li>
+            
+            <!-- Document Storage with Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-folder-open"></i>
+                    Documents & Materials
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_storage_list' %}">
+                            <i class="fas fa-list"></i> All Documents
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_upload' %}">
+                            <i class="fas fa-file-upload"></i> Add Course Materials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_storage_list' %}?my=true">
+                            <i class="fas fa-user-circle"></i> My Documents
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Quizzes Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-question-circle"></i>
+                    Quizzes
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> All Quizzes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-plus"></i> Create Quiz
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Class Management Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-chalkboard"></i>
+                    Class Management
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-clipboard"></i> Take Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> Attendance Reports
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Grades Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-star"></i>
+                    Grades
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> Student Grades
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-edit"></i> Submit Grades
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Profile Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:profile' %}">
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:edit_profile' %}">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        {% endif %}
+        
+        <!-- Navigation - ADMIN -->
+        {% if user.role == 'admin' or user.is_superuser %}
+        <ul class="sidebar-nav">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a href="{% url 'lms:unified_dashboard' %}">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            
+            <!-- Profile Section -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:profile' %}">
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:edit_profile' %}">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- User Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_users' %}">
+                            <i class="fas fa-list"></i> All Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_add_student' %}">
+                            <i class="fas fa-user-plus"></i> Add Student
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:bulk_enroll_students' %}">
+                            <i class="fas fa-upload"></i> Bulk Enroll
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:download_bulk_enroll_template' %}">
+                            <i class="fas fa-download"></i> Download Bulk Template
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Department/Module Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-building"></i>
+                    Modules
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_modules' %}">
+                            <i class="fas fa-list"></i> All Modules
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_add_module' %}">
+                            <i class="fas fa-plus"></i> Create Module
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Course Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-book"></i>
+                    Courses
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:course_list' %}">
+                            <i class="fas fa-list"></i> All Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_create_course' %}">
+                            <i class="fas fa-plus"></i> Add New Course
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:select_course_for_chapter' %}">
+                            <i class="fas fa-layer-group"></i> Add Chapter
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:bulk_upload_courses' %}">
+                            <i class="fas fa-upload"></i> Bulk Upload
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_upload' %}">
+                            <i class="fas fa-file-upload"></i> Add Materials
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Enrollment Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-file-invoice"></i>
+                    Enrollment
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_enrollment_requests' %}">
+                            <i class="fas fa-clock"></i> Pending Requests
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:manage_intakes' %}">
+                            <i class="fas fa-list"></i> All Intakes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_intake' %}">
+                            <i class="fas fa-plus"></i> Create Intake
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:upcoming_courses' %}">
+                            <i class="fas fa-clock"></i> Upcoming Courses
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Reports & Analytics -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-chart-bar"></i>
+                    Reports
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_reports' %}">
+                            <i class="fas fa-chart-line"></i> All Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:financial_reports' %}">
+                            <i class="fas fa-dollar-sign"></i> Financial Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_reports' %}?type=enrollment">
+                            <i class="fas fa-users"></i> Enrollment Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_reports' %}?type=enrollment">
+                            <i class="fas fa-clipboard-check"></i> Attendance Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_reports' %}?type=quiz">
+                            <i class="fas fa-graduation-cap"></i> Academic Performance Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_reports' %}?type=quiz">
+                            <i class="fas fa-book"></i> Course Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item has-submenu">
+                        <a style="cursor: pointer;">
+                            <i class="fas fa-download"></i> Download Reports
+                        </a>
+                        <ul class="nav-submenu" style="margin-left: 20px;">
+                            <li class="nav-item">
+                                <a href="#">
+                                    <i class="fas fa-file-pdf"></i> Download as PDF
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#">
+                                    <i class="fas fa-file-excel"></i> Download as Excel
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#">
+                                    <i class="fas fa-file-csv"></i> Download as CSV
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#">
+                                    <i class="fas fa-file-word"></i> Download as Word
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Document Storage with Submenu -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-folder-open"></i>
+                    Documents
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_storage_list' %}">
+                            <i class="fas fa-list"></i> All Documents
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_upload' %}">
+                            <i class="fas fa-plus"></i> Upload Document
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:document_storage_list' %}?my=true">
+                            <i class="fas fa-user-circle"></i> My Documents
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Assignment & Grading -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-file-alt"></i>
+                    Assignments
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:instructor_assignments' %}">
+                            <i class="fas fa-list"></i> All Assignments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_assignment_new' %}">
+                            <i class="fas fa-plus"></i> Create Assignment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:instructor_assignments' %}">
+                            <i class="fas fa-inbox"></i> Submissions to Grade
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Quiz Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-question-circle"></i>
+                    Quizzes
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> All Quizzes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-plus"></i> Create Quiz
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-question"></i> Add Questions
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Certifications -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-award"></i>
+                    Certifications
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:certification_catalog' %}">
+                            <i class="fas fa-compass"></i> Browse Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:list_providers' %}">
+                            <i class="fas fa-building"></i> Certification Providers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:list_certifications' %}">
+                            <i class="fas fa-certificate"></i> All Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_certification' %}">
+                            <i class="fas fa-plus"></i> Issue Certification
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Course Advertising -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-megaphone"></i>
+                    Advertising
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-plus"></i> Create Ad
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> All Advertisements
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-tags"></i> Promo Codes
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Class Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-chalkboard"></i>
+                    Class Management
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-clipboard"></i> Take Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-list"></i> Attendance Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <i class="fas fa-calendar-day"></i> Today's Sessions
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Calendar & Scheduling -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-calendar-alt"></i>
+                    Calendar & Scheduling
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:calendar' %}">
+                            <i class="fas fa-calendar"></i> Interactive Calendar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:manage_intakes' %}">
+                            <i class="fas fa-list"></i> All Course Intakes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_intake' %}">
+                            <i class="fas fa-plus"></i> Create Intake
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:upcoming_courses' %}">
+                            <i class="fas fa-clock"></i> Upcoming Courses
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Notifications -->
+            <li class="nav-item">
+                <a href="{% url 'lms:notification_list' %}">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </a>
+            </li>
+            
+            <!-- Certification Providers Management -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-award"></i>
+                    Certification Providers
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:list_providers' %}">
+                            <i class="fas fa-list"></i> All Providers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_provider' %}">
+                            <i class="fas fa-plus"></i> Add Provider
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:list_certifications' %}">
+                            <i class="fas fa-certificate"></i> All Certifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:create_certification' %}">
+                            <i class="fas fa-plus"></i> Add Certification
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- System Configuration -->
+            <li class="nav-item has-submenu">
+                <a style="cursor: pointer;">
+                    <i class="fas fa-cogs"></i>
+                    Settings
+                </a>
+                <ul class="nav-submenu">
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_system_settings' %}">
+                            <i class="fas fa-sliders-h"></i> System Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'lms:admin_system_logs' %}">
+                            <i class="fas fa-history"></i> System Logs
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Help & Support -->
+            <li class="nav-item">
+                <a href="{% url 'lms:help_center' %}">
+                    <i class="fas fa-question-circle"></i>
+                    Help Center
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+        
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <a href="{% url 'lms:help_center' %}">
+                <i class="fas fa-question-circle"></i>
+                Help Center
+            </a>
+            <a href="{% url 'lms:logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <div class="main-content-wrapper">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                     <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
         {% endif %}
-    </div>
-
-    <main>
+        
         {% block content %}{% endblock %}
+    </div>
+    
+{% else %}
+    <!-- Navbar for Public Users -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+        <div class="container-fluid px-4">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'lms:index' %}" style="font-weight: 600; letter-spacing: 0.5px;">
+                <i class="fas fa-graduation-cap" style="color: #00b4d8; font-size: 1.5rem;"></i>
+                <span>Synego Institute</span>
+            </a>
+            
+            <!-- Toggler for mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navigation items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex gap-2 flex-wrap justify-content-end">
+                    <!-- Login button -->
+                    <a href="{% url 'lms:login' %}" class="btn btn-outline-light" style="border-color: #7fc7d9; color: #7fc7d9; font-weight: 500;">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    
+                    <!-- Sign up button -->
+                    <a href="{% url 'lms:register' %}" class="btn" style="background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); color: white; font-weight: 500; border: none;">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content for Public Users -->
+    <main style="margin-top: 0;">
+        <div class="container-fluid">
+            {% if messages %}
+                <div class="container mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% block public_content %}{% endblock %}
+        </div>
     </main>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; {% now "Y" %} Synego Training Institute. All rights reserved.</p>
+        </div>
+    </footer>
+{% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        window.SynegoConfig = {
-            csrfToken: '{{ csrf_token }}',
-            userId: '{{ user.id }}',
-            isAuthenticated: {% if user.is_authenticated %}true{% else %}false{% endif %}
-        };
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.SynegoConfig = {
+        csrfToken: '{{ csrf_token }}',
+        userId: '{{ user.id }}',
+        isAuthenticated: {% if user.is_authenticated %}true{% else %}false{% endif %}
+    };
 
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
+    // Mobile sidebar toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('mainSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (mobileBtn) {
+        mobileBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        });
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+    }
+
+    // Sidebar dropdown toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const submenuToggles = document.querySelectorAll('.nav-item.has-submenu > a');
+        
+        submenuToggles.forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const parentLi = this.closest('.nav-item.has-submenu');
+                const isOpen = parentLi.classList.contains('open');
+                
+                // Close all other open submenus
+                document.querySelectorAll('.nav-item.has-submenu.open').forEach(function(item) {
+                    if (item !== parentLi) {
+                        item.classList.remove('open');
+                        item.querySelector('a').classList.remove('active');
+                    }
+                });
+                
+                // Toggle current submenu
+                if (isOpen) {
+                    parentLi.classList.remove('open');
+                    this.classList.remove('active');
+                } else {
+                    parentLi.classList.add('open');
+                    this.classList.add('active');
+                }
             });
-        }, 5000);
-    </script>
-    {% block extra_js %}{% endblock %}
+        });
+    });
+
+    // Auto-dismiss alerts
+    setTimeout(function() {
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

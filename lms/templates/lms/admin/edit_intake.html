@@ -1,0 +1,246 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Edit Course Intake - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <h4 class="mb-1"><i class="fas fa-edit text-primary me-2"></i>Edit Course Intake</h4>
+                <p class="text-muted small">Update intake details and settings</p>
+            </div>
+
+            <form method="post" class="card">
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Course <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" value="{{ intake.course.title }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Intake Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control" value="{{ intake.title }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3">{{ intake.description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Dates -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Registration Period</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Registration Start Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="registration_start_date" class="form-control" 
+                                   value="{{ intake.registration_start_date|date:'Y-m-dTH:i' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Registration End Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="registration_end_date" class="form-control" 
+                                   value="{{ intake.registration_end_date|date:'Y-m-dTH:i' }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Dates -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Course Duration</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Course Start Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="course_start_date" class="form-control" 
+                                   value="{{ intake.course_start_date|date:'Y-m-dTH:i' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Course End Date <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="course_end_date" class="form-control" 
+                                   value="{{ intake.course_end_date|date:'Y-m-dTH:i' }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Duration (Weeks)</label>
+                            <input type="number" name="duration_weeks" class="form-control" value="{{ intake.duration_weeks }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Total Hours</label>
+                            <input type="number" name="total_hours" class="form-control" value="{{ intake.total_hours }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Details -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Schedule Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Class Day <span class="text-danger">*</span></label>
+                            <select name="weekday" class="form-select" required>
+                                {% for code, label in weekdays %}
+                                    <option value="{{ code }}" {% if code == intake.weekday %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                            <input type="time" name="start_time" class="form-control" value="{{ intake.start_time }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">End Time <span class="text-danger">*</span></label>
+                            <input type="time" name="end_time" class="form-control" value="{{ intake.end_time }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery & Location -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Delivery & Location</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Delivery Mode <span class="text-danger">*</span></label>
+                            <select name="delivery_mode" class="form-select" required>
+                                {% for code, label in delivery_modes %}
+                                    <option value="{{ code }}" {% if code == intake.delivery_mode %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Venue (For In-Person)</label>
+                            <input type="text" name="venue" class="form-control" value="{{ intake.venue }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Meeting Link (For Online)</label>
+                            <input type="url" name="meeting_link" class="form-control" value="{{ intake.meeting_link }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-users me-2"></i>Capacity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Maximum Students <span class="text-danger">*</span></label>
+                            <input type="number" name="max_students" class="form-control" value="{{ intake.max_students }}" min="1" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Currently Enrolled</label>
+                            <input type="text" class="form-control" value="{{ intake.current_enrolled }}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Pricing</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Regular Price <span class="text-danger">*</span></label>
+                            <input type="number" name="regular_price" class="form-control" step="0.01" value="{{ intake.regular_price }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Early Bird Price</label>
+                            <input type="number" name="early_bird_price" class="form-control" step="0.01" value="{{ intake.early_bird_price|default:'' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Early Bird Deadline</label>
+                            <input type="datetime-local" name="early_bird_deadline" class="form-control" 
+                                   value="{% if intake.early_bird_deadline %}{{ intake.early_bird_deadline|date:'Y-m-dTH:i' }}{% endif %}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select" required>
+                                {% for code, label in status_choices %}
+                                    <option value="{{ code }}" {% if code == intake.status %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructor -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-chalkboard-user me-2"></i>Instructor</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Assign Instructor</label>
+                            <select name="instructor" class="form-select">
+                                <option value="">-- No Instructor --</option>
+                                {% for instructor in instructors %}
+                                    <option value="{{ instructor.id }}" {% if instructor.id == intake.instructor.id %}selected{% endif %}>
+                                        {{ instructor.get_full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Options -->
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Additional Options</h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured" 
+                               {% if intake.is_featured %}checked{% endif %}>
+                        <label class="form-check-label" for="isFeatured">
+                            Featured on homepage
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card-footer bg-light">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'lms:manage_intakes' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Update Intake
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-danger { color: #dc3545 !important; }
+.bg-light { background-color: #f8f9fa !important; }
+</style>
+{% endblock %}

@@ -98,32 +98,26 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4 dashboard-layout">
-    {% include "lms/partials/_sidebar.html" with active_page='admin_users' %}
+<div class="authenticated-page">
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-users me-2"></i>Bulk Enroll Students</h1>
+        <p>Upload a CSV file to quickly enroll multiple students in courses</p>
+    </div>
 
-    <div class="dashboard-main">
-        <div class="bulk-enroll-container">
-            <!-- Header -->
-            <div class="card mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-                <div class="card-body">
-                    <h1 class="mb-2"><i class="fas fa-users me-2"></i>Bulk Enroll Students</h1>
-                    <p class="mb-0">Upload a CSV file to quickly enroll multiple students in courses in bulk.</p>
-                </div>
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+        {% endfor %}
+    {% endif %}
 
-            <!-- Messages -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- Main Form -->
-            <form method="POST" enctype="multipart/form-data" id="bulkEnrollForm">
-                {% csrf_token %}
+    <!-- Main Form -->
+    <form method="POST" enctype="multipart/form-data" id="bulkEnrollForm">
+        {% csrf_token %}
                 
                 <!-- CSV Upload Section -->
                 <div class="form-card">
@@ -197,53 +191,6 @@
                     </div>
                 </div>
 
-                <!-- Available Courses Info -->
-                <div class="form-card">
-                    <h3 class="form-section-title"><i class="fas fa-list me-2"></i>Available Courses</h3>
-                    
-                    {% if courses %}
-                        <p class="text-muted mb-3">The following courses are available for enrollment:</p>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Course Code</th>
-                                        <th>Course Title</th>
-                                        <th>Module</th>
-                                        <th>Enrolled Students</th>
-                                        <th>Duration</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for course in courses %}
-                                        <tr>
-                                            <td><code>{{ course.code }}</code></td>
-                                            <td>{{ course.title }}</td>
-                                            <td>
-                                                {% if course.department %}
-                                                    {{ course.department.name }}
-                                                {% else %}
-                                                    <span class="text-muted">-</span>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">{{ course.enrollment_set.count }}</span>
-                                            </td>
-                                            <td><small>{{ course.duration }}</small></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            No active courses available. Please create and publish courses before bulk enrolling students.
-                        </div>
-                    {% endif %}
-                </div>
-
                 <!-- Submit Section -->
                 <div class="form-card">
                     <div class="d-flex gap-2">
@@ -273,8 +220,6 @@
                 </div>
             </form>
         </div>
-    </div>
-</div>
 
 <!-- JavaScript for File Upload -->
 <script>

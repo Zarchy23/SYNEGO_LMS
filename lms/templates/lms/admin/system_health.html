@@ -53,6 +53,13 @@
 
 {% block content %}
 <div class="container-fluid admin-content">
+    <!-- Navigation Button -->
+    <div class="mb-3">
+        <a href="{% url 'lms:admin_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
     {% include 'lms/partials/_breadcrumb.html' %}
     
     <h2 class="mb-4">{{ page_title }}</h2>

@@ -1,0 +1,142 @@
+{% extends "lms/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register for {{ certification.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Back Link -->
+            <a href="{% url 'lms:certification_detail' certification.id %}" class="btn btn-outline-secondary mb-4">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-1">{{ certification.title }}</h2>
+                    <p class="text-muted">{{ certification.provider.name }}</p>
+                    <p class="text-muted mb-0">Exam Code: <strong>{{ certification.exam_code }}</strong></p>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Registration Details</h5>
+                </div>
+                <form method="post" class="card-body needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Form Fields -->
+                    <div class="mb-3">
+                        <label class="form-label">Preferred Exam Date & Time *</label>
+                        {{ form.exam_date }}
+                        {% if form.exam_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.exam_date.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Testing Center Location *</label>
+                        {{ form.exam_location }}
+                        <small class="form-text text-muted">
+                            Provide the name and address of your preferred testing center.
+                        </small>
+                        {% if form.exam_location.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.exam_location.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Exam Language</label>
+                        {{ form.exam_language }}
+                        {% if form.exam_language.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.exam_language.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">Summary</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>Duration:</strong> {{ certification.exam_duration_minutes }} minutes
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Questions:</strong> {{ certification.number_of_questions }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>Passing Score:</strong> {{ certification.passing_score_display }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Validity:</strong> {{ certification.validity_years }} years
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if certification.provider.requires_voucher %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            This certification requires a voucher purchase. You'll proceed to payment after registration.
+                        </div>
+                    {% endif %}
+
+                    <!-- Submit -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-check"></i> Complete Registration
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Information -->
+            <div class="alert alert-light mt-4">
+                <h6>What happens next?</h6>
+                <ol class="mb-0 small">
+                    <li>You'll receive an email confirmation of your registration.</li>
+                    {% if certification.provider.requires_voucher %}
+                        <li>Proceed to payment to receive your exam voucher.</li>
+                    {% endif %}
+                    <li>Your exam appointment will be scheduled at the testing center.</li>
+                    <li>Take your exam and receive instant results.</li>
+                    <li>Download your certificate upon passing.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bootstrap form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

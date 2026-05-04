@@ -1,0 +1,535 @@
+{% extends "lms/base.html" %}
+{% load static %}
+
+{% block title %}Upcoming Courses - Synego Institute{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-banner {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    border-radius: 1.5rem;
+    padding: 48px 32px;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+
+.hero-banner h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.hero-banner p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Featured Course Card */
+.featured-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.featured-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.featured-date-box {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    color: white;
+    padding: 16px;
+    text-align: center;
+    width: 80px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-bottom-right-radius: 16px;
+}
+
+.featured-date-day {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.featured-date-month {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.featured-content {
+    padding: 24px 24px 24px 110px;
+}
+
+.featured-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.featured-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 12px 0;
+}
+
+.featured-meta i {
+    width: 16px;
+    color: #1e40af;
+}
+
+.price-section {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #d1d5db;
+    font-size: 14px;
+}
+
+.new-price {
+    font-size: 28px;
+    font-weight: 800;
+    color: #059669;
+}
+
+.early-bird-badge {
+    background: #fef3c7;
+    color: #d97706;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Regular Course Card */
+.course-card {
+    background: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.course-card-header {
+    background: linear-gradient(135deg, #374151, #1f2937);
+    color: white;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.course-date-badge {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 6px 12px;
+    text-align: center;
+    min-width: 60px;
+}
+
+.course-date-day {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.course-date-month {
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.course-mode-badge {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.course-card-body {
+    padding: 20px;
+    flex: 1;
+}
+
+.course-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.course-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.course-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.course-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.course-info-item i {
+    width: 20px;
+    color: #1e40af;
+}
+
+.course-price {
+    text-align: right;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: auto;
+}
+
+.course-price-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e40af;
+}
+
+.course-price-original {
+    font-size: 0.8rem;
+    text-decoration: line-through;
+    color: #d1d5db;
+    margin-left: 8px;
+}
+
+/* Filters Card */
+.filters-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 24px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 32px;
+}
+
+.filter-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 0.875rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 1rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .hero-banner {
+        padding: 32px 20px;
+    }
+    .hero-banner h1 {
+        font-size: 1.75rem;
+    }
+    .featured-content {
+        padding: 20px;
+    }
+    .featured-date-box {
+        position: relative;
+        width: 100%;
+        border-radius: 0;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation Button -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{% url 'lms:student_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'lms:course_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i> View All Courses
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h1>Upcoming Courses</h1>
+        <p>Plan your learning journey with our scheduled course intakes</p>
+    </div>
+    
+    <!-- Featured Courses Section -->
+    {% if featured_schedules %}
+        <div class="mb-5">
+            <h2 class="mb-4">
+                <i class="fas fa-fire text-warning me-2"></i> Featured Courses
+            </h2>
+            <div class="row">
+                {% for schedule in featured_schedules %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="featured-card">
+                            <div class="featured-badge">
+                                <i class="fas fa-star me-1"></i> Featured
+                            </div>
+                            <div class="featured-date-box">
+                                <div class="featured-date-day">{{ schedule.start_date|date:"d" }}</div>
+                                <div class="featured-date-month">{{ schedule.start_date|date:"M" }}</div>
+                            </div>
+                            <div class="featured-content">
+                                <span class="badge bg-primary mb-2">{{ schedule.course.department.name }}</span>
+                                <h3 class="featured-title">{{ schedule.course.title }}</h3>
+                                <p class="text-muted small">{{ schedule.description|truncatewords:20 }}</p>
+                                <div class="featured-meta">
+                                    <span><i class="fas fa-clock"></i> {{ schedule.session_duration_hours }}h/week</span>
+                                    <span><i class="fas fa-users"></i> {{ schedule.available_spots }} spots left</span>
+                                    <span><i class="fas fa-globe"></i> {{ schedule.get_delivery_mode_display }}</span>
+                                </div>
+                                <div class="price-section">
+                                    {% if schedule.is_early_bird_available %}
+                                        <span class="old-price">${{ schedule.regular_price }}</span>
+                                        <span class="new-price">${{ schedule.early_bird_price }}</span>
+                                        <span class="early-bird-badge">Early Bird</span>
+                                    {% else %}
+                                        <span class="new-price">${{ schedule.regular_price }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'lms:course_schedule_detail' schedule.id %}" class="btn btn-primary w-100">
+                                    View Details <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="filter-label">
+                    <i class="fas fa-building me-1"></i> Department
+                </label>
+                <select name="department" class="form-select" onchange="applyFilters()" id="departmentFilter">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="filter-label">
+                    <i class="fas fa-laptop me-1"></i> Delivery Mode
+                </label>
+                <select name="delivery_mode" class="form-select" onchange="applyFilters()" id="deliveryModeFilter">
+                    <option value="">All Modes</option>
+                    <option value="online">Online Live</option>
+                    <option value="in_person">In Person</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="self_paced">Self-Paced</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="filter-label">
+                    <i class="fas fa-calendar me-1"></i> Month
+                </label>
+                <select name="month" class="form-select" onchange="applyFilters()" id="monthFilter">
+                    <option value="">All Months</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <a href="{% url 'lms:upcoming_courses' %}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-times me-1"></i> Clear
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Grid -->
+    <div class="row" id="courseGrid">
+        {% for schedule in page_obj %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-card-header">
+                        <div class="course-date-badge">
+                            <div class="course-date-day">{{ schedule.start_date|date:"d" }}</div>
+                            <div class="course-date-month">{{ schedule.start_date|date:"M" }}</div>
+                        </div>
+                        <div class="course-mode-badge">
+                            {% if schedule.delivery_mode == 'online' %}
+                                <i class="fas fa-laptop"></i> Online
+                            {% elif schedule.delivery_mode == 'in_person' %}
+                                <i class="fas fa-building"></i> In Person
+                            {% elif schedule.delivery_mode == 'hybrid' %}
+                                <i class="fas fa-blender"></i> Hybrid
+                            {% else %}
+                                <i class="fas fa-tachometer-alt"></i> Self-Paced
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="course-card-body">
+                        <span class="badge bg-secondary mb-2">{{ schedule.course.department.name }}</span>
+                        <h5 class="course-title">{{ schedule.course.title }}</h5>
+                        <p class="course-description">{{ schedule.description|truncatewords:20 }}</p>
+                        <div class="course-info-list">
+                            <div class="course-info-item">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>{{ schedule.start_date|date:"M d, Y" }} - {{ schedule.end_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="course-info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ schedule.session_duration_hours }} hours per session</span>
+                            </div>
+                            <div class="course-info-item">
+                                <i class="fas fa-users"></i>
+                                <span>{{ schedule.available_spots }} / {{ schedule.max_capacity }} spots available</span>
+                            </div>
+                        </div>
+                        <div class="course-price">
+                            {% if schedule.is_early_bird_available %}
+                                <span class="course-price-original">${{ schedule.regular_price }}</span>
+                                <span class="course-price-current">${{ schedule.early_bird_price }}</span>
+                                <span class="badge bg-warning ms-2">Early Bird</span>
+                            {% else %}
+                                <span class="course-price-current">${{ schedule.regular_price }}</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'lms:course_schedule_detail' schedule.id %}" class="btn btn-outline-primary w-100 mt-3">
+                            View Schedule <i class="fas fa-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <h3>No Upcoming Courses</h3>
+                    <p class="text-muted">Check back later for new course schedules or adjust your filters.</p>
+                    <a href="{% url 'lms:upcoming_courses' %}" class="btn btn-primary mt-3">
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_delivery_mode %}&delivery_mode={{ selected_delivery_mode }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_delivery_mode %}&delivery_mode={{ selected_delivery_mode }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if selected_delivery_mode %}&delivery_mode={{ selected_delivery_mode }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+<script>
+    function applyFilters() {
+        const department = document.getElementById('departmentFilter').value;
+        const deliveryMode = document.getElementById('deliveryModeFilter').value;
+        const month = document.getElementById('monthFilter').value;
+        
+        let url = '{% url "lms:upcoming_courses" %}?';
+        if (department) url += `department=${department}&`;
+        if (deliveryMode) url += `delivery_mode=${deliveryMode}&`;
+        if (month) url += `month=${month}&`;
+        
+        window.location.href = url;
+    }
+</script>
+{% endblock %}

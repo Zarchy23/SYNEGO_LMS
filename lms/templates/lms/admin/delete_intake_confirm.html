@@ -1,0 +1,57 @@
+{% extends "lms/base.html" %}
+
+{% block title %}Delete Course Intake - Synego Institute{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Delete Course Intake</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. All associated enrollments and data may be affected.
+                    </div>
+                    
+                    <p class="mb-3">
+                        Are you sure you want to delete the course intake:
+                    </p>
+                    
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="mb-1"><strong>{{ intake.course.title }}</strong></h6>
+                            <p class="text-muted mb-1">{{ intake.title }}</p>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt"></i> 
+                                {{ intake.course_start_date|date:"M d, Y" }} - {{ intake.course_end_date|date:"M d, Y" }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Enrollments:</strong> There are currently {{ intake.enrollments.count }} students enrolled in this intake.
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2 justify-content-between">
+                            <a href="{% url 'lms:manage_intakes' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i> Yes, Delete This Intake
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
